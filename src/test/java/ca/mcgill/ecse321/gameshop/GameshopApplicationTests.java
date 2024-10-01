@@ -1,4 +1,4 @@
-package com.ecse321.gameshop;
+package ca.mcgill.ecse321.gameshop;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
