@@ -9,4 +9,24 @@ public class Policy {
     private int id;
     @Column(nullable = false)
     private String description;
+
+    public Policy(String description) {
+        this.description = description;
+    }
+
+    public Policy() {
+
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }
