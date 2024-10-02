@@ -2,7 +2,14 @@
 
 ## Scope of The Project
 
-[insert here]
+Our team has been tasked with creating a fully functional web application for an independent game shop's online store. Throughout the project, we will also be delivering documentation that includes all of the software development process and procedures. A local database will be used to store important information for the application.
+
+**The application must support a seamless experience for every stakeholder**
+- The Owner: Manage all accounts, create/deactivate employee accounts, approve new game requests (update of the game catalog), and respond to customer reviews.
+- Employees: Request new games (update of the game catalog), review refund requests, and view customer accounts (email, physical address, username, order history, wishlist). 
+- Customers: View the game catalog, add/remove games into their cart, add/remove games to their wishlist, rate games they have bought out of 5, open a refund request, and view their order history.
+
+  All accounts must be able to login with a username and password.
 
 ## Tasks
 
@@ -20,5 +27,14 @@ The main goal of this deliverable was to start the project's software design pro
 - **Project Report:** A README file should also be made to introduce the team, the main scope of the project, and individual efforts (in hours). The project wiki should also be visible.
 - **Project Management:** Creation of communication channels (Discord, Instagram). Each issue needs an assignee to trace responsibilities within the team.
 
+## Team Members
 
+| Name | GitHub Username | Deliverable 1 | Deliverable 2 | Deliverable 3 | Total Hours |
+| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+| Ana Gordon  | 
+| Aerin Brown | 
+| Tarek Namani |
+| Jake |
+| Camille |
+| Clara| 
 
