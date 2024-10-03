@@ -34,7 +34,7 @@ The main goal of this deliverable was to start the project's software design pro
 | Ana Gordon  | 
 | Aerin Brown | 
 | Tarek Namani |
-| Jake |
-| Camille |
-| Clara| 
+| Jake Kogut |
+| Camille Pouliot |
+| Clara Mickail | 
 
