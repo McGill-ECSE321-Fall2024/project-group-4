@@ -31,7 +31,7 @@ The main goal of this deliverable was to start the project's software design pro
 
 | Name | GitHub Username | Deliverable 1 | Deliverable 2 | Deliverable 3 | Total Hours |
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
-| Ana Gordon  | 
+| Ana Gordon  | [anagordon](https://github.com/anagordon) |
 | Aerin Brown | 
 | Tarek Namani |
 | Jake Kogut |
