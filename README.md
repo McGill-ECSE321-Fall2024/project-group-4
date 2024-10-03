@@ -28,7 +28,6 @@ The main goal of this deliverable was to start the project's software design pro
 - **Project Management:** Creation of communication channels (Discord, Instagram). Each issue needs an assignee to trace responsibilities within the team.
 
 ## Team Members
-
 | Name | GitHub Username | Deliverable 1 | Deliverable 2 | Deliverable 3 | Total Hours |
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
 | Ana Gordon  | [anagordon](https://github.com/anagordon) |
@@ -37,4 +36,3 @@ The main goal of this deliverable was to start the project's software design pro
 | Jake Kogut |
 | Camille Pouliot |
 | Clara Mickail | 
-
