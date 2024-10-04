@@ -1,0 +1,228 @@
+class Category
+{
+  name;
+  1..* catalog -- * Game games;
+}
+
+class Game
+{
+  name;
+  description;
+  coverPicture;
+  Integer price;
+  Boolean is_active;
+  stock;
+  
+}
+
+class Promotion
+{
+  discount;
+  * promotion -- 1..* Game game;
+  * promotion -- 1 Manager creator;
+}
+
+class Manager
+{
+  isA Account;
+  1 approver -- * GameRequest requests;
+  1 manager -- * Reply comments;
+  1 creator -- * Employee employee;
+}
+
+class Policy
+{
+  description;
+  * policies -- 1 Manager manager;
+}
+
+class Employee
+{
+  isA Account;
+  Boolean is_active;
+}
+
+class GameRequest
+{
+  RequestStatus status;
+  externalReviews;
+  1 request -- 1 Game game;
+  * requests -- 1 Employee requestor;
+}
+
+class Reply
+{
+  text;
+  0..1 reply -- 1 Review review;
+}
+
+class Review
+{
+  rating;
+  text;
+  0..1 review -- 1 Purchase game;
+}
+
+class Customer
+{
+  isA Account;
+  email;
+  Integer phoneNumber;
+  1 customer <@>- 1 Wishlist wishlist;
+  1 customer <@>- 1 Cart cart;
+  1 customer <@>- * Purchase purchases;
+  * likedBy <@>- * Review likes;
+}
+
+class CreditCard
+{
+  Integer cardNumber;
+  Date expiry;
+  Integer cvv;
+  * cards -- 1 Customer name;
+  1 paymentCard -- * Purchase purchase;
+}
+
+class Address
+{
+  street;
+  city;
+  province;
+  country;
+  postalCode;
+  * address -- 1 Customer customer;
+  1 bilingAddress -- * CreditCard cards;
+  1 deliveryAddress -- * Purchase delivery;
+}
+
+class RefundRequest
+{
+  RequestStatus status;
+  reason;
+  * assignedRefund -- 0..1 Employee reviewer;
+}
+
+class Wishlist
+{
+  * wishlists -- * Game games;
+
+}
+
+class Cart
+{
+  * carts -- * Game games;
+}
+
+class Purchase
+{
+  Date purchaseDate;
+  Integer purchasePrice;
+  1 purchase -- 0..1 RefundRequest refund;
+  * purchase -- 1 Game game;
+}
+
+class Account
+{
+  abstract;
+  username;
+  password;
+}
+
+enum RequestStatus {approved, denied, pending}//$?[End_of_model]$?
+
+namespace -;
+
+
+class Category
+{
+  position 187 39 112.271 57.8646;
+  position.association Category__Game 19,58 142,0;
+}
+
+class Game
+{
+  position 50 130 109 45;
+}
+
+class Promotion
+{
+  position 327 55 131 57.8646;
+  position.association Manager:creator__Promotion:promotion 0,10 110,0;
+}
+
+class Manager
+{
+  position 50 330 109 45;
+  position.association GameRequest:requests__Manager:approver 110,10 0,10;
+  position.association Manager:manager__Reply:comments 110,10 0,10;
+  position.association Employee:employee__Manager:creator 110,0 0,10;
+}
+
+class Policy
+{
+  position 310 156 148.156 57.8646;
+  position.association Manager:manager__Policy:policies 0,10 110,0;
+}
+
+class Employee
+{
+  position 225 266 146.49 57.8646;
+}
+
+class GameRequest
+{
+  position 402 254 183.979 74.8646;
+  position.association Game:game__GameRequest:request 0,10 158,27;
+  position.association Employee:requestor__GameRequest:requests 0,10 147,0;
+}
+
+class Reply
+{
+  position 503 144 109 57.8646;
+  position.association Reply:reply__Review:review 0,10 17,0;
+}
+
+class Review
+{
+  position 51 412 114.042 74.8646;
+}
+
+class Customer
+{
+  position 281 373 178.177 74.8646;
+}
+
+class CreditCard
+{
+  position 488 15 163.333 100.865;
+}
+
+class Address
+{
+  position 731 168 80.2604 221.865;
+}
+
+class RefundRequest
+{
+  position 559 346 163.333 83.8646;
+}
+
+class Wishlist
+{
+  position 450 330 109 45;
+}
+
+class Cart
+{
+  position 450 430 109 45;
+}
+
+class Purchase
+{
+  position 650 30 109 45;
+}
+
+class Account
+{
+  position 928 211 109 122.865;
+}
