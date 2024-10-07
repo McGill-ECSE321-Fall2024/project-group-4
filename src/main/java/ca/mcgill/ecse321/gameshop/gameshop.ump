@@ -70,8 +70,8 @@ class Customer
   isA Account;
   email;
   Integer phoneNumber;
-  1 customer <@>- 1 Wishlist wishlist;
-  1 customer <@>- 1 Cart cart;
+  1 customer_wish <@>- 1 Game wishlist;
+  1 customer_cart <@>- 1 Game cart;
   1 customer <@>- * Purchase purchases;
   * likedBy <@>- * Review likes;
 }
@@ -104,16 +104,6 @@ class RefundRequest
   * assignedRefund -- 0..1 Employee reviewer;
 }
 
-class Wishlist
-{
-  * wishlists -- * Game games;
-
-}
-
-class Cart
-{
-  * carts -- * Game games;
-}
 
 class Purchase
 {
@@ -131,5 +121,3 @@ class Account
 }
 
 enum RequestStatus {approved, denied, pending}
-
-
