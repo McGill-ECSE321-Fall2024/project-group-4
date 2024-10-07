@@ -14,7 +14,7 @@ public class Game {
     private String description;
     private String coverPicture;
     private float price;
-    private boolean is_active;
+    private boolean isActive;
     private int stock;
     @ManyToMany(mappedBy = "wishlist")
     private Set<Customer> wishlistedBy;
@@ -27,12 +27,12 @@ public class Game {
     @OneToMany(mappedBy = "gamePurchased")
     private Set<Purchase> purchases;
 
-    public Game(String name, String description, String coverPicture, float price, boolean is_active, int stock) {
+    public Game(String name, String description, String coverPicture, float price, boolean isActive, int stock) {
         this.name = name;
         this.description = description;
         this.coverPicture = coverPicture;
         this.price = price;
-        this.is_active = is_active;
+        this.isActive = isActive;
         this.stock = stock;
     }
 
@@ -96,12 +96,12 @@ public class Game {
         this.price = price;
     }
 
-    public boolean isIs_active() {
-        return is_active;
+    public boolean isActive() {
+        return isActive;
     }
 
-    public void setIs_active(boolean is_active) {
-        this.is_active = is_active;
+    public void setActive(boolean active) {
+        this.isActive = active;
     }
 
     public int getStock() {
