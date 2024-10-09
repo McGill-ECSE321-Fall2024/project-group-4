@@ -32,7 +32,7 @@ The main goal of this deliverable was to start the project's software design pro
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
 | Ana Gordon  | [anagordon](https://github.com/anagordon) |
 | Aerin Brown | 
-| Tarek Namani |
+| Tarek Namani | [Tatok-n](https://github.com/Tatok-n) |
 | Jake Kogut |
 | Camille Pouliot |
 | Clara Mickail | 
