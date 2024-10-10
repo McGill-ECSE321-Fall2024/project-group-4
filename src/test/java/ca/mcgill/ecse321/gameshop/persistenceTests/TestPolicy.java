@@ -40,6 +40,8 @@ public class TestPolicy {
 
 
     }
+
+    //extra functionality
     @Test
     void testUpdatePolicy() {
         //create and save policy
@@ -57,7 +59,7 @@ public class TestPolicy {
         assertEquals(policy.getDescription(), loadedPolicy.getDescription());
 
     }
-
+    //extra functionality
     @Test
     void testDeletePolicy() {
         //create and save policy
