@@ -1,6 +1,5 @@
 package ca.mcgill.ecse321.gameshop.persistence;
 
-import ca.mcgill.ecse321.gameshop.persistence.Game;
 import jakarta.persistence.*;
 
 import java.sql.Date;

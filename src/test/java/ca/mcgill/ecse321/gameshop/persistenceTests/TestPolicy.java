@@ -10,6 +10,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+/**
+ * Author : Tarek Namani
+ */
 @SpringBootTest
 public class TestPolicy {
 
@@ -20,8 +23,12 @@ public class TestPolicy {
     public void clearDatabase() {policyRepository.deleteAll();}
 
 
+    /**
+     * Author : Tarek Namani
+     * Description : Tests saving and loading a Policy object from the database
+     */
     @Test
-    void testCreatePolicy() {
+    void testSaveAndLoadPolicy() {
         //create policy
         Policy policy = new Policy("Nothing allowed");
 
@@ -31,7 +38,7 @@ public class TestPolicy {
         int id = policy.getId();
 
         //read from database
-        Policy loadedPolicy = policyRepository.findById(id).orElse(null);
+        Policy loadedPolicy = policyRepository.findById(id);
 
 
         //Assert correct response
@@ -53,7 +60,7 @@ public class TestPolicy {
         policy.setDescription("Updated description");
         policy = policyRepository.save(policy);
 
-        Policy loadedPolicy = policyRepository.findById(id).orElse(null);
+        Policy loadedPolicy = policyRepository.findById(id);
         assertNotNull(loadedPolicy);
         assertEquals(1, policyRepository.count());
         assertEquals(policy.getDescription(), loadedPolicy.getDescription());
