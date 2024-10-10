@@ -4,8 +4,8 @@
 
 import java.sql.Date;
 
-// line 107 "model.ump"
-// line 213 "model.ump"
+// line 109 "model.ump"
+// line 216 "model.ump"
 public class Purchase
 {
 

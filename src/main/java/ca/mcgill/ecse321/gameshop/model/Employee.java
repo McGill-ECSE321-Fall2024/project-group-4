@@ -4,8 +4,8 @@
 
 import java.util.*;
 
-// line 40 "model.ump"
-// line 160 "model.ump"
+// line 42 "model.ump"
+// line 162 "model.ump"
 public class Employee extends Account
 {
 

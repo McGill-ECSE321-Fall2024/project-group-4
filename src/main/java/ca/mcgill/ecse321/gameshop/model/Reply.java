@@ -3,8 +3,8 @@
 
 
 
-// line 54 "model.ump"
-// line 172 "model.ump"
+// line 56 "model.ump"
+// line 174 "model.ump"
 public class Reply
 {
 

@@ -3,9 +3,10 @@
 
 
 import java.util.*;
+import java.sql.Date;
 
-// line 26 "model.ump"
-// line 146 "model.ump"
+// line 28 "model.ump"
+// line 148 "model.ump"
 public class Manager extends Account
 {
 
@@ -415,9 +416,9 @@ public class Manager extends Account
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Promotion addPromotion(String aDiscount, Game... allGame)
+  public Promotion addPromotion(String aDiscount, Date aStartdate, Date aEndDate, Game... allGame)
   {
-    return new Promotion(aDiscount, this, allGame);
+    return new Promotion(aDiscount, aStartdate, aEndDate, this, allGame);
   }
 
   public boolean addPromotion(Promotion aPromotion)

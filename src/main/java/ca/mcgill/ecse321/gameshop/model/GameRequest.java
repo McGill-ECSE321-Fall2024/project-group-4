@@ -3,8 +3,8 @@
 
 
 
-// line 46 "model.ump"
-// line 165 "model.ump"
+// line 48 "model.ump"
+// line 167 "model.ump"
 public class GameRequest
 {
 
@@ -52,11 +52,11 @@ public class GameRequest
     }
   }
 
-  public GameRequest(RequestStatus aStatus, String aExternalReviews, String aNameForGame, String aDescriptionForGame, String aCoverPictureForGame, int aPriceForGame, boolean aIs_activeForGame, String aStockForGame, Customer aCustomer_wishForGame, Customer aCustomer_cartForGame, Category... allCatalogForGame, Employee aRequestor, Manager aApprover)
+  public GameRequest(RequestStatus aStatus, String aExternalReviews, String aNameForGame, String aDescriptionForGame, String aCoverPictureForGame, int aPriceForGame, boolean aIs_activeForGame, String aStockForGame, Category... allCatalogForGame, Employee aRequestor, Manager aApprover)
   {
     status = aStatus;
     externalReviews = aExternalReviews;
-    game = new Game(aNameForGame, aDescriptionForGame, aCoverPictureForGame, aPriceForGame, aIs_activeForGame, aStockForGame, this, aCustomer_wishForGame, aCustomer_cartForGame, allCatalogForGame);
+    game = new Game(aNameForGame, aDescriptionForGame, aCoverPictureForGame, aPriceForGame, aIs_activeForGame, aStockForGame, this, allCatalogForGame);
     boolean didAddRequestor = setRequestor(aRequestor);
     if (!didAddRequestor)
     {

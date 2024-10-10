@@ -6,7 +6,7 @@ import java.util.*;
 import java.sql.Date;
 
 // line 8 "model.ump"
-// line 134 "model.ump"
+// line 136 "model.ump"
 public class Game
 {
 
@@ -26,15 +26,15 @@ public class Game
   private List<Category> catalog;
   private List<Promotion> promotion;
   private GameRequest request;
-  private Customer customer_wish;
-  private Customer customer_cart;
+  private List<Customer> customer_wish;
+  private List<Customer> customer_cart;
   private List<Purchase> purchase;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Game(String aName, String aDescription, String aCoverPicture, int aPrice, boolean aIs_active, String aStock, GameRequest aRequest, Customer aCustomer_wish, Customer aCustomer_cart, Category... allCatalog)
+  public Game(String aName, String aDescription, String aCoverPicture, int aPrice, boolean aIs_active, String aStock, GameRequest aRequest, Category... allCatalog)
   {
     name = aName;
     description = aDescription;
@@ -54,20 +54,12 @@ public class Game
       throw new RuntimeException("Unable to create Game due to aRequest. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
     request = aRequest;
-    if (aCustomer_wish == null || aCustomer_wish.getWishlist() != null)
-    {
-      throw new RuntimeException("Unable to create Game due to aCustomer_wish. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
-    customer_wish = aCustomer_wish;
-    if (aCustomer_cart == null || aCustomer_cart.getCart() != null)
-    {
-      throw new RuntimeException("Unable to create Game due to aCustomer_cart. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
-    customer_cart = aCustomer_cart;
+    customer_wish = new ArrayList<Customer>();
+    customer_cart = new ArrayList<Customer>();
     purchase = new ArrayList<Purchase>();
   }
 
-  public Game(String aName, String aDescription, String aCoverPicture, int aPrice, boolean aIs_active, String aStock, RequestStatus aStatusForRequest, String aExternalReviewsForRequest, Employee aRequestorForRequest, Manager aApproverForRequest, String aUsernameForCustomer_wish, String aPasswordForCustomer_wish, String aEmailForCustomer_wish, int aPhoneNumberForCustomer_wish, Game aCartForCustomer_wish, String aUsernameForCustomer_cart, String aPasswordForCustomer_cart, String aEmailForCustomer_cart, int aPhoneNumberForCustomer_cart, Game aWishlistForCustomer_cart, Category... allCatalog)
+  public Game(String aName, String aDescription, String aCoverPicture, int aPrice, boolean aIs_active, String aStock, RequestStatus aStatusForRequest, String aExternalReviewsForRequest, Employee aRequestorForRequest, Manager aApproverForRequest, Category... allCatalog)
   {
     name = aName;
     description = aDescription;
@@ -83,8 +75,8 @@ public class Game
     }
     promotion = new ArrayList<Promotion>();
     request = new GameRequest(aStatusForRequest, aExternalReviewsForRequest, this, aRequestorForRequest, aApproverForRequest);
-    customer_wish = new Customer(aUsernameForCustomer_wish, aPasswordForCustomer_wish, aEmailForCustomer_wish, aPhoneNumberForCustomer_wish, this, aCartForCustomer_wish);
-    customer_cart = new Customer(aUsernameForCustomer_cart, aPasswordForCustomer_cart, aEmailForCustomer_cart, aPhoneNumberForCustomer_cart, aWishlistForCustomer_cart, this);
+    customer_wish = new ArrayList<Customer>();
+    customer_cart = new ArrayList<Customer>();
     purchase = new ArrayList<Purchase>();
   }
 
@@ -239,15 +231,65 @@ public class Game
   {
     return request;
   }
-  /* Code from template association_GetOne */
-  public Customer getCustomer_wish()
+  /* Code from template association_GetMany */
+  public Customer getCustomer_wish(int index)
   {
-    return customer_wish;
+    Customer aCustomer_wish = customer_wish.get(index);
+    return aCustomer_wish;
   }
-  /* Code from template association_GetOne */
-  public Customer getCustomer_cart()
+
+  public List<Customer> getCustomer_wish()
   {
-    return customer_cart;
+    List<Customer> newCustomer_wish = Collections.unmodifiableList(customer_wish);
+    return newCustomer_wish;
+  }
+
+  public int numberOfCustomer_wish()
+  {
+    int number = customer_wish.size();
+    return number;
+  }
+
+  public boolean hasCustomer_wish()
+  {
+    boolean has = customer_wish.size() > 0;
+    return has;
+  }
+
+  public int indexOfCustomer_wish(Customer aCustomer_wish)
+  {
+    int index = customer_wish.indexOf(aCustomer_wish);
+    return index;
+  }
+  /* Code from template association_GetMany */
+  public Customer getCustomer_cart(int index)
+  {
+    Customer aCustomer_cart = customer_cart.get(index);
+    return aCustomer_cart;
+  }
+
+  public List<Customer> getCustomer_cart()
+  {
+    List<Customer> newCustomer_cart = Collections.unmodifiableList(customer_cart);
+    return newCustomer_cart;
+  }
+
+  public int numberOfCustomer_cart()
+  {
+    int number = customer_cart.size();
+    return number;
+  }
+
+  public boolean hasCustomer_cart()
+  {
+    boolean has = customer_cart.size() > 0;
+    return has;
+  }
+
+  public int indexOfCustomer_cart(Customer aCustomer_cart)
+  {
+    int index = customer_cart.indexOf(aCustomer_cart);
+    return index;
   }
   /* Code from template association_GetMany */
   public Purchase getPurchase(int index)
@@ -496,6 +538,170 @@ public class Game
     return wasAdded;
   }
   /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfCustomer_wish()
+  {
+    return 0;
+  }
+  /* Code from template association_AddManyToManyMethod */
+  public boolean addCustomer_wish(Customer aCustomer_wish)
+  {
+    boolean wasAdded = false;
+    if (customer_wish.contains(aCustomer_wish)) { return false; }
+    customer_wish.add(aCustomer_wish);
+    if (aCustomer_wish.indexOfWishlist(this) != -1)
+    {
+      wasAdded = true;
+    }
+    else
+    {
+      wasAdded = aCustomer_wish.addWishlist(this);
+      if (!wasAdded)
+      {
+        customer_wish.remove(aCustomer_wish);
+      }
+    }
+    return wasAdded;
+  }
+  /* Code from template association_RemoveMany */
+  public boolean removeCustomer_wish(Customer aCustomer_wish)
+  {
+    boolean wasRemoved = false;
+    if (!customer_wish.contains(aCustomer_wish))
+    {
+      return wasRemoved;
+    }
+
+    int oldIndex = customer_wish.indexOf(aCustomer_wish);
+    customer_wish.remove(oldIndex);
+    if (aCustomer_wish.indexOfWishlist(this) == -1)
+    {
+      wasRemoved = true;
+    }
+    else
+    {
+      wasRemoved = aCustomer_wish.removeWishlist(this);
+      if (!wasRemoved)
+      {
+        customer_wish.add(oldIndex,aCustomer_wish);
+      }
+    }
+    return wasRemoved;
+  }
+  /* Code from template association_AddIndexControlFunctions */
+  public boolean addCustomer_wishAt(Customer aCustomer_wish, int index)
+  {  
+    boolean wasAdded = false;
+    if(addCustomer_wish(aCustomer_wish))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfCustomer_wish()) { index = numberOfCustomer_wish() - 1; }
+      customer_wish.remove(aCustomer_wish);
+      customer_wish.add(index, aCustomer_wish);
+      wasAdded = true;
+    }
+    return wasAdded;
+  }
+
+  public boolean addOrMoveCustomer_wishAt(Customer aCustomer_wish, int index)
+  {
+    boolean wasAdded = false;
+    if(customer_wish.contains(aCustomer_wish))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfCustomer_wish()) { index = numberOfCustomer_wish() - 1; }
+      customer_wish.remove(aCustomer_wish);
+      customer_wish.add(index, aCustomer_wish);
+      wasAdded = true;
+    } 
+    else 
+    {
+      wasAdded = addCustomer_wishAt(aCustomer_wish, index);
+    }
+    return wasAdded;
+  }
+  /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfCustomer_cart()
+  {
+    return 0;
+  }
+  /* Code from template association_AddManyToManyMethod */
+  public boolean addCustomer_cart(Customer aCustomer_cart)
+  {
+    boolean wasAdded = false;
+    if (customer_cart.contains(aCustomer_cart)) { return false; }
+    customer_cart.add(aCustomer_cart);
+    if (aCustomer_cart.indexOfCart(this) != -1)
+    {
+      wasAdded = true;
+    }
+    else
+    {
+      wasAdded = aCustomer_cart.addCart(this);
+      if (!wasAdded)
+      {
+        customer_cart.remove(aCustomer_cart);
+      }
+    }
+    return wasAdded;
+  }
+  /* Code from template association_RemoveMany */
+  public boolean removeCustomer_cart(Customer aCustomer_cart)
+  {
+    boolean wasRemoved = false;
+    if (!customer_cart.contains(aCustomer_cart))
+    {
+      return wasRemoved;
+    }
+
+    int oldIndex = customer_cart.indexOf(aCustomer_cart);
+    customer_cart.remove(oldIndex);
+    if (aCustomer_cart.indexOfCart(this) == -1)
+    {
+      wasRemoved = true;
+    }
+    else
+    {
+      wasRemoved = aCustomer_cart.removeCart(this);
+      if (!wasRemoved)
+      {
+        customer_cart.add(oldIndex,aCustomer_cart);
+      }
+    }
+    return wasRemoved;
+  }
+  /* Code from template association_AddIndexControlFunctions */
+  public boolean addCustomer_cartAt(Customer aCustomer_cart, int index)
+  {  
+    boolean wasAdded = false;
+    if(addCustomer_cart(aCustomer_cart))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfCustomer_cart()) { index = numberOfCustomer_cart() - 1; }
+      customer_cart.remove(aCustomer_cart);
+      customer_cart.add(index, aCustomer_cart);
+      wasAdded = true;
+    }
+    return wasAdded;
+  }
+
+  public boolean addOrMoveCustomer_cartAt(Customer aCustomer_cart, int index)
+  {
+    boolean wasAdded = false;
+    if(customer_cart.contains(aCustomer_cart))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfCustomer_cart()) { index = numberOfCustomer_cart() - 1; }
+      customer_cart.remove(aCustomer_cart);
+      customer_cart.add(index, aCustomer_cart);
+      wasAdded = true;
+    } 
+    else 
+    {
+      wasAdded = addCustomer_cartAt(aCustomer_cart, index);
+    }
+    return wasAdded;
+  }
+  /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfPurchase()
   {
     return 0;
@@ -595,17 +801,17 @@ public class Game
     {
       existingRequest.delete();
     }
-    Customer existingCustomer_wish = customer_wish;
-    customer_wish = null;
-    if (existingCustomer_wish != null)
+    ArrayList<Customer> copyOfCustomer_wish = new ArrayList<Customer>(customer_wish);
+    customer_wish.clear();
+    for(Customer aCustomer_wish : copyOfCustomer_wish)
     {
-      existingCustomer_wish.delete();
+      aCustomer_wish.removeWishlist(this);
     }
-    Customer existingCustomer_cart = customer_cart;
-    customer_cart = null;
-    if (existingCustomer_cart != null)
+    ArrayList<Customer> copyOfCustomer_cart = new ArrayList<Customer>(customer_cart);
+    customer_cart.clear();
+    for(Customer aCustomer_cart : copyOfCustomer_cart)
     {
-      existingCustomer_cart.delete();
+      aCustomer_cart.removeCart(this);
     }
     for(int i=purchase.size(); i > 0; i--)
     {
@@ -624,8 +830,6 @@ public class Game
             "price" + ":" + getPrice()+ "," +
             "is_active" + ":" + getIs_active()+ "," +
             "stock" + ":" + getStock()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "request = "+(getRequest()!=null?Integer.toHexString(System.identityHashCode(getRequest())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "customer_wish = "+(getCustomer_wish()!=null?Integer.toHexString(System.identityHashCode(getCustomer_wish())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "customer_cart = "+(getCustomer_cart()!=null?Integer.toHexString(System.identityHashCode(getCustomer_cart())):"null");
+            "  " + "request = "+(getRequest()!=null?Integer.toHexString(System.identityHashCode(getRequest())):"null");
   }
 }

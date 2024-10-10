@@ -2,10 +2,11 @@
 /*This code was generated using the UMPLE 1.34.0.7242.6b8819789 modeling language!*/
 
 
+import java.sql.Date;
 import java.util.*;
 
 // line 19 "model.ump"
-// line 139 "model.ump"
+// line 141 "model.ump"
 public class Promotion
 {
 
@@ -15,6 +16,8 @@ public class Promotion
 
   //Promotion Attributes
   private String discount;
+  private Date startdate;
+  private Date endDate;
 
   //Promotion Associations
   private List<Game> game;
@@ -24,9 +27,11 @@ public class Promotion
   // CONSTRUCTOR
   //------------------------
 
-  public Promotion(String aDiscount, Manager aCreator, Game... allGame)
+  public Promotion(String aDiscount, Date aStartdate, Date aEndDate, Manager aCreator, Game... allGame)
   {
     discount = aDiscount;
+    startdate = aStartdate;
+    endDate = aEndDate;
     game = new ArrayList<Game>();
     boolean didAddGame = setGame(allGame);
     if (!didAddGame)
@@ -52,9 +57,35 @@ public class Promotion
     return wasSet;
   }
 
+  public boolean setStartdate(Date aStartdate)
+  {
+    boolean wasSet = false;
+    startdate = aStartdate;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setEndDate(Date aEndDate)
+  {
+    boolean wasSet = false;
+    endDate = aEndDate;
+    wasSet = true;
+    return wasSet;
+  }
+
   public String getDiscount()
   {
     return discount;
+  }
+
+  public Date getStartdate()
+  {
+    return startdate;
+  }
+
+  public Date getEndDate()
+  {
+    return endDate;
   }
   /* Code from template association_GetMany */
   public Game getGame(int index)
@@ -266,6 +297,8 @@ public class Promotion
   {
     return super.toString() + "["+
             "discount" + ":" + getDiscount()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "startdate" + "=" + (getStartdate() != null ? !getStartdate().equals(this)  ? getStartdate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
+            "  " + "endDate" + "=" + (getEndDate() != null ? !getEndDate().equals(this)  ? getEndDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "creator = "+(getCreator()!=null?Integer.toHexString(System.identityHashCode(getCreator())):"null");
   }
 }
