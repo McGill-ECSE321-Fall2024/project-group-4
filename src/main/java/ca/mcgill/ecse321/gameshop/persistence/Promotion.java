@@ -3,6 +3,7 @@ package ca.mcgill.ecse321.gameshop.persistence;
 import ca.mcgill.ecse321.gameshop.persistence.Game;
 import jakarta.persistence.*;
 
+import java.sql.Date;
 import java.util.Set;
 
 @Entity
@@ -12,6 +13,12 @@ public class Promotion {
     private int id;
     @Column(nullable = false)
     private String discount;
+
+    @Column
+    Date startDate;
+
+    @Column
+    Date endDate;
 
     @ManyToMany
     @JoinTable(
