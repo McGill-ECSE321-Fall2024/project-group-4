@@ -22,6 +22,8 @@ class Promotion
   discount;
   * promotion -- 1..* Game game;
   * promotion -- 1 Manager creator;
+  Date startdate;
+  Date endDate;
 }
 
 class Manager
@@ -70,8 +72,8 @@ class Customer
   isA Account;
   email;
   Integer phoneNumber;
-  1 customer_wish <@>- 1 Game wishlist;
-  1 customer_cart <@>- 1 Game cart;
+  * customer_wish <@>- * Game wishlist;
+  * customer_cart <@>- * Game cart;
   1 customer <@>- * Purchase purchases;
   * likedBy <@>- * Review likes;
 }
