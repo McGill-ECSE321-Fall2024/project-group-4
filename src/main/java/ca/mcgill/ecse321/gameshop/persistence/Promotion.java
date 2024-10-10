@@ -2,6 +2,8 @@ package ca.mcgill.ecse321.gameshop.persistence;
 
 import ca.mcgill.ecse321.gameshop.persistence.Game;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.Date;
 import java.util.Set;
@@ -14,11 +16,11 @@ public class Promotion {
     @Column(nullable = false)
     private String discount;
 
-    @Column
-    Date startDate;
+    @Column @Setter @Getter
+    private Date startDate;
 
-    @Column
-    Date endDate;
+    @Column @Setter @Getter
+    private Date endDate;
 
     @ManyToMany
     @JoinTable(
