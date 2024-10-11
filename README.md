@@ -35,4 +35,4 @@ The main goal of this deliverable was to start the project's software design pro
 | Tarek Namani | [Tatok-n](https://github.com/Tatok-n) |
 | Jake Kogut |
 | Camille Pouliot |
-| Clara Mickail | 
+| Clara Mickail |  [claraMickail](https://github.com/claraMickail) |
