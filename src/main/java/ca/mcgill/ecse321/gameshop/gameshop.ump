@@ -72,8 +72,8 @@ class Customer
   isA Account;
   email;
   Integer phoneNumber;
-  * customer_wish <@>- * Game wishlist;
-  * customer_cart <@>- * Game cart;
+  * customer_wish -- * Game wishlist;
+  * customer_cart -- * Game cart;
   1 customer <@>- * Purchase purchases;
   * likedBy <@>- * Review likes;
 }
