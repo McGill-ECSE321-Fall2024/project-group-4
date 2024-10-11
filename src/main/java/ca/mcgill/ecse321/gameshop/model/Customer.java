@@ -1,5 +1,5 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.34.0.7242.6b8819789 modeling language!*/
+/*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 
 import java.util.*;
@@ -717,20 +717,18 @@ public class Customer extends Account
 
   public void delete()
   {
-    while (wishlist.size() > 0)
+    ArrayList<Game> copyOfWishlist = new ArrayList<Game>(wishlist);
+    wishlist.clear();
+    for(Game aWishlist : copyOfWishlist)
     {
-      Game aWishlist = wishlist.get(wishlist.size() - 1);
-      aWishlist.delete();
-      wishlist.remove(aWishlist);
+      aWishlist.removeCustomer_wish(this);
     }
-    
-    while (cart.size() > 0)
+    ArrayList<Game> copyOfCart = new ArrayList<Game>(cart);
+    cart.clear();
+    for(Game aCart : copyOfCart)
     {
-      Game aCart = cart.get(cart.size() - 1);
-      aCart.delete();
-      cart.remove(aCart);
+      aCart.removeCustomer_cart(this);
     }
-    
     while (purchases.size() > 0)
     {
       Purchase aPurchase = purchases.get(purchases.size() - 1);
