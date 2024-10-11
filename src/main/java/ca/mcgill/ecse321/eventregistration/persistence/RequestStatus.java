@@ -1,4 +1,4 @@
-package ca.mcgill.ecse321.gameshop.persistence;
+package ca.mcgill.ecse321.eventregistration.persistence;
 
 public enum RequestStatus {
     APPROVED,
