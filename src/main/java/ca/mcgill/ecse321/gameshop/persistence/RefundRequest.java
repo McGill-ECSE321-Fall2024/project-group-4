@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 
 @Entity
 public class RefundRequest {
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
+    private int id;
     @OneToOne(optional = false)
     private Purchase purchase;
     @Enumerated(EnumType.STRING)
