@@ -1,0 +1,10 @@
+package ca.mcgill.ecse321.gameshop.DAO;
+
+import ca.mcgill.ecse321.gameshop.persistence.Account;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface AccountRepository extends JpaRepository<Account, Integer> {
+    Account findByUsername(String username);
+}
