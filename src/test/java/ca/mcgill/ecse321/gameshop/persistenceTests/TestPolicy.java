@@ -1,6 +1,6 @@
 package ca.mcgill.ecse321.gameshop.persistenceTests;
 
-import ca.mcgill.ecse321.gameshop.persistence.Policy;
+import ca.mcgill.ecse321.gameshop.model.Policy;
 import ca.mcgill.ecse321.gameshop.DAO.PolicyRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;

@@ -1,7 +1,7 @@
 package ca.mcgill.ecse321.gameshop.persistenceTests;
 
 import ca.mcgill.ecse321.gameshop.DAO.PromotionRepository;
-import ca.mcgill.ecse321.gameshop.persistence.Promotion;
+import ca.mcgill.ecse321.gameshop.model.Promotion;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

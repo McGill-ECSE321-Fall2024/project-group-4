@@ -1,15 +1,15 @@
 package ca.mcgill.ecse321.gameshop.persistenceTests;
 
 import ca.mcgill.ecse321.gameshop.DAO.*;
-import ca.mcgill.ecse321.gameshop.persistence.Purchase;
-import ca.mcgill.ecse321.gameshop.persistence.Game;
-import ca.mcgill.ecse321.gameshop.persistence.Customer;
-import ca.mcgill.ecse321.gameshop.persistence.Address;
-import ca.mcgill.ecse321.gameshop.persistence.CreditCard;
-import ca.mcgill.ecse321.gameshop.persistence.Review;
-import ca.mcgill.ecse321.gameshop.persistence.RefundRequest;
-import ca.mcgill.ecse321.gameshop.persistence.RequestStatus;
-import ca.mcgill.ecse321.gameshop.persistence.Employee;
+import ca.mcgill.ecse321.gameshop.model.Purchase;
+import ca.mcgill.ecse321.gameshop.model.Game;
+import ca.mcgill.ecse321.gameshop.model.Customer;
+import ca.mcgill.ecse321.gameshop.model.Address;
+import ca.mcgill.ecse321.gameshop.model.CreditCard;
+import ca.mcgill.ecse321.gameshop.model.Review;
+import ca.mcgill.ecse321.gameshop.model.RefundRequest;
+import ca.mcgill.ecse321.gameshop.model.RequestStatus;
+import ca.mcgill.ecse321.gameshop.model.Employee;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

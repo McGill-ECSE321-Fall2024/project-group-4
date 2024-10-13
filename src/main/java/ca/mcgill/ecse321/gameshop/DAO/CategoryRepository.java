@@ -1,6 +1,6 @@
 package ca.mcgill.ecse321.gameshop.DAO;
 
-import ca.mcgill.ecse321.gameshop.persistence.Category;
+import ca.mcgill.ecse321.gameshop.model.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

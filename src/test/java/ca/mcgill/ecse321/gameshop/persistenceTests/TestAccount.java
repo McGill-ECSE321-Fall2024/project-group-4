@@ -1,8 +1,8 @@
 package ca.mcgill.ecse321.gameshop.persistenceTests;
 
 import ca.mcgill.ecse321.gameshop.DAO.AccountRepository;
-import ca.mcgill.ecse321.gameshop.persistence.Customer; 
-import ca.mcgill.ecse321.gameshop.persistence.Account;
+import ca.mcgill.ecse321.gameshop.model.Customer;
+import ca.mcgill.ecse321.gameshop.model.Account;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

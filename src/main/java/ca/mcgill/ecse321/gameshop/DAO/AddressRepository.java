@@ -1,6 +1,6 @@
 package ca.mcgill.ecse321.gameshop.DAO;
 
-import ca.mcgill.ecse321.gameshop.persistence.Address;
+import ca.mcgill.ecse321.gameshop.model.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

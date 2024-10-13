@@ -1,7 +1,7 @@
 package ca.mcgill.ecse321.gameshop.persistenceTests;
 
 import ca.mcgill.ecse321.gameshop.DAO.ManagerRepository;
-import ca.mcgill.ecse321.gameshop.persistence.Manager;
+import ca.mcgill.ecse321.gameshop.model.Manager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

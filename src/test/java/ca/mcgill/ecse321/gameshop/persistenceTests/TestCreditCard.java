@@ -1,8 +1,8 @@
 package ca.mcgill.ecse321.gameshop.persistenceTests;
 
-import ca.mcgill.ecse321.gameshop.persistence.CreditCard;
-import ca.mcgill.ecse321.gameshop.persistence.Customer;
-import ca.mcgill.ecse321.gameshop.persistence.Address;
+import ca.mcgill.ecse321.gameshop.model.CreditCard;
+import ca.mcgill.ecse321.gameshop.model.Customer;
+import ca.mcgill.ecse321.gameshop.model.Address;
 import ca.mcgill.ecse321.gameshop.DAO.CreditCardRepository;
 import ca.mcgill.ecse321.gameshop.DAO.CustomerRepository;
 import ca.mcgill.ecse321.gameshop.DAO.AddressRepository;

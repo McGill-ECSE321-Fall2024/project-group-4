@@ -1,7 +1,7 @@
 package ca.mcgill.ecse321.gameshop.persistenceTests;
 
 import ca.mcgill.ecse321.gameshop.DAO.CategoryRepository;
-import ca.mcgill.ecse321.gameshop.persistence.Category;
+import ca.mcgill.ecse321.gameshop.model.Category;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
