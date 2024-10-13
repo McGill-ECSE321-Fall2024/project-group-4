@@ -16,9 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * Author: Camille Pouliot
  */
 @SpringBootTest
-public class TestReply {
-    @Autowired
-    private ReplyRepository replyRepository;
+public class TestReview {
     @Autowired
     private ReviewRepository reviewRepository;
     @Autowired
@@ -32,39 +30,37 @@ public class TestReply {
     @Autowired
     private CreditCardRepository creditCardRepository;
 
-    private Reply reply;
     private Customer customer = new Customer("customer", "password", "customer@email.com", "0123456789");
     private Address address = new Address("street", "city", "province", "country", "1A2 B3C", customer);
     private CreditCard creditCard = new CreditCard(1234, 123, LocalDate.now(), customer, address);
     private Game game = new Game("game", "description", "picture", 12, true, 1);
     private Purchase purchase = new Purchase(LocalDate.now(), 12, game, customer, address, creditCard);
-    private Review review = new Review(3, "review", purchase);
+    private Review review;
 
     @AfterEach
     public void tearDown() {
-        replyRepository.deleteAll();
         reviewRepository.deleteAll();
         purchaseRepository.deleteAll();
         gameRepository.deleteAll();
         creditCardRepository.deleteAll();
         addressRepository.deleteAll();
         customerRepository.deleteAll();
-
     }
 
     @BeforeEach
     public void setUp() {
-        reply = new Reply();
-        reply.setReview(review);
-        reply.setText("reply");
+        review = new Review();
+        review.setPurchase(purchase);
+        review.setRating(3);
+        review.setText("review");
     }
 
     @Test
     /**
      * Author: Camille Pouliot
-     * Description: Tests saving and loading a Reply object from the database
+     * Description: Tests saving and loading a Review object from the database
      */
-    public void testSaveAndLoadReply() {
+    public void testSaveAndLoadingReview() {
         //save
         customerRepository.save(customer);
         addressRepository.save(address);
@@ -76,18 +72,13 @@ public class TestReply {
         reviewRepository.save(review);
         purchaseRepository.save(purchase);
 
-        review.setReply(reply);
-        replyRepository.save(reply);
-        reviewRepository.save(review);
-
         //load
-        Reply loadedReply = replyRepository.findById(reply.getId());
+        Review loadedReview = reviewRepository.findById(review.getId());
 
         //compare
-        assertNotNull(reply);
-        assertEquals(reply.getText(), loadedReply.getText());
-        assertEquals(reply.getReview().getId(), loadedReply.getReview().getId());
+        assertNotNull(review);
+        assertEquals(review.getRating(), loadedReview.getRating());
+        assertEquals(review.getText(), loadedReview.getText());
+        assertEquals(review.getPurchase().getId(), loadedReview.getPurchase().getId());
     }
-
-    
 }
