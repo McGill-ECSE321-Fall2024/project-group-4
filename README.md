@@ -34,5 +34,5 @@ The main goal of this deliverable was to start the project's software design pro
 | Aerin Brown | [aerin-brown-codes](https://github.com/aerin-brown-codes) |
 | Tarek Namani | [Tatok-n](https://github.com/Tatok-n) |
 | Jake Kogut | [jacobkogut](https://github.com/jacobkogut) |
-| Camille Pouliot | [Camomille103](https://github.com/Camomille103) |
+| Camille Pouliot | [Camomille103](https://github.com/Camomille103) | 11 | | | 11 |
 | Clara Mickail |  [claraMickail](https://github.com/claraMickail) |
