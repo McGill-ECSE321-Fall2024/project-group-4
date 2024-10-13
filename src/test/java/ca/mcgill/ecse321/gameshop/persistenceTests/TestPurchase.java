@@ -88,7 +88,7 @@ public class TestPurchase {
         gameRepository.save(game);
         purchaseRepository.save(purchase);
 
-        purchase.setRefundRequest(refundRequest); //Because of databse schema, we should not set the refund and review just yet, save purchase first
+        purchase.setRefundRequest(refundRequest); //Because of database schema, we should not set the refund and review just yet, save purchase first
         purchase.setReview(review);
         refundRequestRepository.save(refundRequest); //then save them individually
         reviewRepository.save(review);
