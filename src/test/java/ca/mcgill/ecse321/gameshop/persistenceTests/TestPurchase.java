@@ -13,7 +13,6 @@ import ca.mcgill.ecse321.gameshop.persistence.Employee;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.matchers.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDate;
@@ -54,14 +53,15 @@ public class TestPurchase {
 
     @AfterEach
     public void tearDown() {
-        purchaseRepository.deleteAll();
-        customerRepository.deleteAll();
-        reviewRepository.deleteAll();
-        gameRepository.deleteAll();
-        addressRepository.deleteAll();
-        creditCardRepository.deleteAll();
-        employeeRepository.deleteAll();
         refundRequestRepository.deleteAll();
+        reviewRepository.deleteAll();
+        purchaseRepository.deleteAll();
+        creditCardRepository.deleteAll();
+        addressRepository.deleteAll();
+        customerRepository.deleteAll();
+        employeeRepository.deleteAll();
+        gameRepository.deleteAll();
+
     }
 
     @BeforeEach
@@ -69,8 +69,6 @@ public class TestPurchase {
         purchase.setCustomer(customer);
         purchase.setGamePurchased(game);
         purchase.setPurchaseDate(LocalDate.now());
-        purchase.setReview(review);
-        purchase.setRefundRequest(refundRequest);
         purchase.setDeliveryAddress(address);
         purchase.setPurchasePrice(12);
         purchase.setPaymentMethod(creditCard);
@@ -83,24 +81,30 @@ public class TestPurchase {
      */
     public void testSaveAndLoadPurchase() {
         //save
-        employeeRepository.save(employee);
         customerRepository.save(customer);
         addressRepository.save(address);
         creditCardRepository.save(creditCard);
+        employeeRepository.save(employee);
         gameRepository.save(game);
         purchaseRepository.save(purchase);
-        refundRequestRepository.save(refundRequest);
+
+        purchase.setRefundRequest(refundRequest); //Because of databse schema, we should not set the refund and review just yet, save purchase first
+        purchase.setReview(review);
+        refundRequestRepository.save(refundRequest); //then save them individually
         reviewRepository.save(review);
 
+        purchaseRepository.save(purchase); //then update purchase with the new info
+
+
         //load
-        Purchase loadedPurchase = purchaseRepository.findbyId(purchase.getId());
+        Purchase loadedPurchase = purchaseRepository.findById(purchase.getId());
 
         //compare
         assertNotNull(purchase);
         assertEquals(loadedPurchase.getCustomer().getUsername(), purchase.getCustomer().getUsername());
         assertEquals(loadedPurchase.getGamePurchased().getId(), purchase.getGamePurchased().getId());
         assertEquals(loadedPurchase.getReview().getId(), purchase.getReview().getId());
-        assertEquals(loadedPurchase.getRefundRequest().getPurchase(), purchase.getRefundRequest().getPurchase());
+        assertEquals(loadedPurchase.getRefundRequest().getPurchase().getId(), purchase.getRefundRequest().getPurchase().getId());
         assertEquals(loadedPurchase.getDeliveryAddress().getId(), purchase.getDeliveryAddress().getId());
         assertEquals(loadedPurchase.getPurchasePrice(), purchase.getPurchasePrice());
         assertEquals(loadedPurchase.getPaymentMethod().getId(), purchase.getPaymentMethod().getId());
