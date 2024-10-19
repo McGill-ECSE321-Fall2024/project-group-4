@@ -28,11 +28,11 @@ The main goal of this deliverable was to start the project's software design pro
 - **Project Management:** Creation of communication channels (Discord, Instagram). Each issue needs an assignee to trace responsibilities within the team.
 
 ## Team Members
-| Name | GitHub Username                                 | Deliverable 1 | Deliverable 2 | Deliverable 3 | Total Hours |
-| ------------- |-------------------------------------------------| ------------- | ------------- | ------------- | ------------- |
-| Ana Gordon  | [anagordon](https://github.com/anagordon)       |
-| Aerin Brown | 
-| Tarek Namani | [Tatok-n](https://github.com/Tatok-n)           |
-| Jake Kogut |
+| Name | GitHub Username | Deliverable 1 | Deliverable 2 | Deliverable 3 | Total Hours |
+| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+| Ana Gordon  | [anagordon](https://github.com/anagordon) | 11 | | | 11|
+| Aerin Brown | [aerin-brown-codes](https://github.com/aerin-brown-codes) |
+| Tarek Namani | [Tatok-n](https://github.com/Tatok-n) |
+| Jake Kogut | [jacobkogut](https://github.com/jacobkogut) |
 | Camille Pouliot | [Camomille103](https://github.com/Camomille103) |
-| Clara Mickail | 
+| Clara Mickail |  [claraMickail](https://github.com/claraMickail) |
