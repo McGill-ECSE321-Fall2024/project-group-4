@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import java.sql.Date;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Author: Camille Pouliot
@@ -45,10 +45,11 @@ public class TestPromotion {
         promotionRepository.save(promotion);
 
         //load
-        Promotion loadedPromotion = promotionRepository.findById(promotion.getId());
+        Optional<Promotion> loadedPromotionOpt = promotionRepository.findById(promotion.getId());
 
         //compare
-        assertNotNull(promotion);
+        assertTrue(loadedPromotionOpt.isPresent());
+        Promotion loadedPromotion = loadedPromotionOpt.get();
         assertEquals(promotion.getId(), loadedPromotion.getId());
         assertEquals(promotion.getDiscount(), loadedPromotion.getDiscount());
         assertEquals(promotion.getStartDate(), loadedPromotion.getStartDate());
@@ -66,10 +67,11 @@ public class TestPromotion {
         promotionRepository.save(promotion);
 
         //load
-        Promotion loadedPromotion = promotionRepository.findById(promotion.getId());
+        Optional<Promotion> loadedPromotionOpt = promotionRepository.findById(promotion.getId());
 
         //Compare
-        assertNotNull(promotion);
+        assertTrue(loadedPromotionOpt.isPresent());
+        Promotion loadedPromotion = loadedPromotionOpt.get();
         assertEquals(promotion.getId(), loadedPromotion.getId());
         assertEquals(promotion.getDiscount(), loadedPromotion.getDiscount());
     }

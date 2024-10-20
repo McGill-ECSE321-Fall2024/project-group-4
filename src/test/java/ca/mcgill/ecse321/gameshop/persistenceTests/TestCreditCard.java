@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -75,10 +76,10 @@ public class TestCreditCard {
         assertNotNull(creditCard.getId()); 
 
         // read
-        CreditCard creditCardFromDb = creditCardRepository.findCreditCardById(cardId);
-
+        Optional<CreditCard> creditCardFromDbOpt = creditCardRepository.findById(cardId);
         //assert
-        assertNotNull(creditCardFromDb);
+        assertTrue(creditCardFromDbOpt.isPresent());
+        CreditCard creditCardFromDb = creditCardFromDbOpt.get();
         assertEquals(creditCardFromDb.getCardNumber(), cardNumber);
         assertEquals(creditCardFromDb.getCvv(), cvv);
         assertEquals(creditCardFromDb.getExpiryDate(), expiryDate);

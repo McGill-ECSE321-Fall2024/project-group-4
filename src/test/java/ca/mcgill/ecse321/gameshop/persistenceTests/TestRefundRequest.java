@@ -7,10 +7,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.time.LocalDate;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Author: Camille Pouliot
@@ -80,10 +81,11 @@ public class TestRefundRequest {
         purchaseRepository.save(purchase);
 
         //load
-        RefundRequest loadedRefundRequest = refundRequestRepository.findRefundRequestById(refundRequest.getId());
+        Optional<RefundRequest> loadedRefundRequestOpt = refundRequestRepository.findById(Long.valueOf(refundRequest.getId()));
 
         //compare
-        assertNotNull(refundRequest);
+        assertTrue(loadedRefundRequestOpt.isPresent());
+        RefundRequest loadedRefundRequest = loadedRefundRequestOpt.get();
         assertEquals(refundRequest.getReason(), loadedRefundRequest.getReason());
         assertEquals(refundRequest.getReviewer().getId(), loadedRefundRequest.getReviewer().getId());
         assertEquals(refundRequest.getPurchase().getId(), loadedRefundRequest.getPurchase().getId());

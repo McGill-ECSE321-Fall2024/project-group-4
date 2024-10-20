@@ -8,7 +8,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Author : Tarek Namani
@@ -46,9 +49,11 @@ public class TestGame {
         gameRepostitory.save(game);
 
         //load
-        Game loadedGame = gameRepostitory.findById(game.getId());
+        Optional<Game> loadedGameOpt = gameRepostitory.findById(game.getId());
 
         //compare
+        assertTrue(loadedGameOpt.isPresent());
+        Game loadedGame = loadedGameOpt.get();
         assertEquals(game.getId(),loadedGame.getId());
         assertEquals(game.getName(),loadedGame.getName());
         assertEquals(game.getDescription(),loadedGame.getDescription());

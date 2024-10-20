@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDate;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Author: Camille Pouliot
@@ -73,10 +73,11 @@ public class TestReview {
         purchaseRepository.save(purchase);
 
         //load
-        Review loadedReview = reviewRepository.findById(review.getId());
+        Optional<Review> loadedReviewOpt = reviewRepository.findById(review.getId());
 
         //compare
-        assertNotNull(review);
+        assertTrue(loadedReviewOpt.isPresent());
+        Review loadedReview = loadedReviewOpt.get();
         assertEquals(review.getRating(), loadedReview.getRating());
         assertEquals(review.getText(), loadedReview.getText());
         assertEquals(review.getPurchase().getId(), loadedReview.getPurchase().getId());

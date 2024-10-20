@@ -7,8 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Author : Tarek Namani
@@ -38,12 +39,12 @@ public class TestPolicy {
         int id = policy.getId();
 
         //read from database
-        Policy loadedPolicy = policyRepository.findById(id);
+        Optional<Policy> loadedPolicyOpt = policyRepository.findById(id);
 
 
         //Assert correct response
-        assertNotNull(loadedPolicy);
-        assertEquals(policy.getDescription(), loadedPolicy.getDescription());
+        assertTrue(loadedPolicyOpt.isPresent());
+        assertEquals(policy.getDescription(), loadedPolicyOpt.get().getDescription());
 
 
     }
@@ -60,10 +61,10 @@ public class TestPolicy {
         policy.setDescription("Updated description");
         policy = policyRepository.save(policy);
 
-        Policy loadedPolicy = policyRepository.findById(id);
-        assertNotNull(loadedPolicy);
+        Optional<Policy> loadedPolicyOpt = policyRepository.findById(id);
+        assertTrue(loadedPolicyOpt.isPresent());
         assertEquals(1, policyRepository.count());
-        assertEquals(policy.getDescription(), loadedPolicy.getDescription());
+        assertEquals(policy.getDescription(), loadedPolicyOpt.get().getDescription());
 
     }
     //extra functionality

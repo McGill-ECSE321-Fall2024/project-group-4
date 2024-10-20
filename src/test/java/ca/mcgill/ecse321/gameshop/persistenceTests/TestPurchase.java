@@ -16,9 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDate;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Author: Camille Pouliot
@@ -97,10 +97,11 @@ public class TestPurchase {
 
 
         //load
-        Purchase loadedPurchase = purchaseRepository.findById(purchase.getId());
+        Optional<Purchase> loadedPurchaseOpt = purchaseRepository.findById(purchase.getId());
 
         //compare
-        assertNotNull(purchase);
+        assertTrue(loadedPurchaseOpt.isPresent());
+        Purchase loadedPurchase = loadedPurchaseOpt.get();
         assertEquals(loadedPurchase.getCustomer().getUsername(), purchase.getCustomer().getUsername());
         assertEquals(loadedPurchase.getGamePurchased().getId(), purchase.getGamePurchased().getId());
         assertEquals(loadedPurchase.getReview().getId(), purchase.getReview().getId());

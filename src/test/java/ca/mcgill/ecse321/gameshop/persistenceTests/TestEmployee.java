@@ -8,7 +8,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Author : Tarek Namani
  */
@@ -43,9 +47,11 @@ public class TestEmployee {
         employeeRepository.save(employee);
 
         //load
-        Employee loadedEmployee = employeeRepository.findById(employee.getId());
+        Optional<Employee> loadedEmployeeOpt = employeeRepository.findById(employee.getId());
 
         //compare
+        assertTrue(loadedEmployeeOpt.isPresent());
+        Employee loadedEmployee = loadedEmployeeOpt.get();
         assertEquals(employee.getId(),loadedEmployee.getId());
         assertEquals(employee.getPassword(),loadedEmployee.getPassword());
         assertEquals(employee.getUsername(),loadedEmployee.getUsername());
