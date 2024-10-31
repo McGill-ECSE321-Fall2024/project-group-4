@@ -11,7 +11,7 @@ public class Category {
     private int id;
     @Column(unique = true)
     private String name;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "category_map",
             joinColumns = @JoinColumn(name = "category_id"),
@@ -30,6 +30,8 @@ public class Category {
     public Set<Game> getInCategory() {
         return inCategory;
     }
+
+    public void setInCategory(Set<Game> inCategory) {this.inCategory = inCategory;}
 
     public int getId() {
         return id;

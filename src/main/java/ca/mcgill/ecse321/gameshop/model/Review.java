@@ -16,7 +16,7 @@ public class Review {
     private Reply reply;
     @OneToOne(optional = false)
     private Purchase purchase;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "like_map",
             joinColumns = @JoinColumn(name = "review_id"),
@@ -40,6 +40,10 @@ public class Review {
 
     public Set<Customer> getLikedBy() {
         return likedBy;
+    }
+
+    public void setLikedBy(Set<Customer> likedBy) {
+        this.likedBy = likedBy;
     }
 
     public int getRating() {

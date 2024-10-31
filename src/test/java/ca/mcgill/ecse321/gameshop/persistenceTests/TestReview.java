@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDate;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -81,5 +81,39 @@ public class TestReview {
         assertEquals(review.getRating(), loadedReview.getRating());
         assertEquals(review.getText(), loadedReview.getText());
         assertEquals(review.getPurchase().getId(), loadedReview.getPurchase().getId());
+    }
+
+    @Test
+    /**
+     * Author : Tarek Namani
+     * Description : Tests saving and loading the likedBy association from databases
+     */
+    public void testSaveAndLoadLikedBy() {
+        //add list of customers who liked review
+        Set<Customer> likedBy = new HashSet<>();
+        likedBy.add(customer);
+        review.setLikedBy(likedBy);
+
+        //save
+        customerRepository.save(customer);
+        addressRepository.save(address);
+        creditCardRepository.save(creditCard);
+        gameRepository.save(game);
+        purchaseRepository.save(purchase);
+
+        purchase.setReview(review);
+        reviewRepository.save(review);
+        purchaseRepository.save(purchase);
+
+        //load
+        Optional<Review> loadedReviewOpt = reviewRepository.findById(review.getId());
+
+        //compare
+        assertTrue(loadedReviewOpt.isPresent());
+        Review loadedReview = loadedReviewOpt.get();
+        assertFalse(loadedReview.getLikedBy().isEmpty());
+        List<Customer> likedByCustomersFromDb = new ArrayList<>(loadedReview.getLikedBy());
+        assertEquals(customer.getUsername(), likedByCustomersFromDb.get(0).getUsername());
+
     }
 }

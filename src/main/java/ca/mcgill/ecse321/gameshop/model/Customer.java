@@ -8,14 +8,14 @@ import java.util.Set;
 public class Customer extends Account {
     private String email;
     private String phoneNumber;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "wishlist_map",
             joinColumns = @JoinColumn(name = "customer_id"),
             inverseJoinColumns = @JoinColumn(name = "game_id")
     )
     private Set<Game> wishlist;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "cart_map",
             joinColumns = @JoinColumn(name = "customer_id"),
@@ -55,9 +55,15 @@ public class Customer extends Account {
         return wishlist;
     }
 
+    public void setWishlist(Set<Game> wishlist) {
+        this.wishlist = wishlist;
+    }
+
     public Set<Game> getCart() {
         return cart;
     }
+
+    public void setCart(Set<Game> cart) {this.cart = cart;}
 
     public String getEmail() {
         return email;

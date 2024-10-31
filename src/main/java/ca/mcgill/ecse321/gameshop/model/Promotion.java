@@ -19,7 +19,7 @@ public class Promotion {
     @Column
     private Date endDate;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "promotion_map",
             joinColumns = @JoinColumn(name = "promotion_id"),
@@ -46,6 +46,8 @@ public class Promotion {
     public Set<Game> getGames() {
         return games;
     }
+
+    public void setGames(Set<Game> games) {this.games = games;}
 
     public void setDiscount(String discount) {
         this.discount = discount;
