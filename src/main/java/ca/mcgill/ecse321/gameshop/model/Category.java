@@ -12,7 +12,7 @@ public class Category {
     private int id;
     @Column(unique = true)
     private String name;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "category_map",
             joinColumns = @JoinColumn(name = "category_id"),

@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.gameshop.persistenceTests;
 
 import ca.mcgill.ecse321.gameshop.DAO.*;
 import ca.mcgill.ecse321.gameshop.model.*;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -77,7 +78,7 @@ public class TestReview {
         assertEquals(review.getPurchase().getId(), loadedReview.getPurchase().getId());
     }
 
-    @Test
+    @Test @Transactional //test should be transational to properly initialze many to many associations
     /**
      * Author : Tarek Namani
      * Description : Tests saving and loading the likedBy association from databases

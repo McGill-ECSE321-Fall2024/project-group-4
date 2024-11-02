@@ -20,7 +20,7 @@ public class Promotion {
     @Column
     private Date endDate;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "promotion_map",
             joinColumns = @JoinColumn(name = "promotion_id"),

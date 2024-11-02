@@ -17,7 +17,7 @@ public class Review {
     private Reply reply;
     @OneToOne(optional = false)
     private Purchase purchase;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "like_map",
             joinColumns = @JoinColumn(name = "review_id"),

@@ -4,6 +4,7 @@ import ca.mcgill.ecse321.gameshop.DAO.CategoryRepository;
 import ca.mcgill.ecse321.gameshop.DAO.GameRepository;
 import ca.mcgill.ecse321.gameshop.model.Category;
 import ca.mcgill.ecse321.gameshop.model.Game;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +69,7 @@ public class TestCategory {
         assertEquals(categoryName, categoryFromDb.getName());
     }
 
-    @Test
+    @Test @Transactional//test should be transational to properly initialze many to many associations
     /**
      * Author : Tarek Namani
      * Description : Tests saving and loading the games in a category from databases
