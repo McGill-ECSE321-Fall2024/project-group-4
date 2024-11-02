@@ -4,6 +4,7 @@ import ca.mcgill.ecse321.gameshop.DAO.GameRepository;
 import ca.mcgill.ecse321.gameshop.DAO.PromotionRepository;
 import ca.mcgill.ecse321.gameshop.model.Game;
 import ca.mcgill.ecse321.gameshop.model.Promotion;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -94,7 +95,7 @@ public class TestPromotion {
         assertEquals(0, promotionRepository.count());
     }
 
-    @Test
+    @Test @Transactional//test should be transational to properly initialze many to many associations
     /**
      * Author : Tarek Namani
      * Description : Tests saving and loading the games in promotion from databases
