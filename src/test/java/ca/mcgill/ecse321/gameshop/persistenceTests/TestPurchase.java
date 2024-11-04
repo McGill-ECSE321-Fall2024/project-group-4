@@ -10,6 +10,7 @@ import ca.mcgill.ecse321.gameshop.model.Review;
 import ca.mcgill.ecse321.gameshop.model.RefundRequest;
 import ca.mcgill.ecse321.gameshop.model.RequestStatus;
 import ca.mcgill.ecse321.gameshop.model.Employee;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,13 +43,13 @@ public class TestPurchase {
     @Autowired
     private RefundRequestRepository refundRequestRepository;
 
-    private Purchase purchase = new Purchase();
+    private Purchase purchase;
     private Customer customer = new Customer("customer", "password", "customer@email.com", "0123456789");
     private Address address = new Address("street", "city", "province", "country", "postalCode", customer);
     private CreditCard creditCard = new CreditCard(4567, 123, LocalDate.now(), customer, address);
-    private Review review = new Review(3, "review", purchase);
+    private Review review;
     private Employee employee = new Employee("employee", "password", true);
-    private RefundRequest refundRequest = new RefundRequest(purchase, RequestStatus.PENDING, "reason", employee);
+    private RefundRequest refundRequest;
     private Game game = new Game("game", "description", "coverPicture", 12, true, 1);
 
     @AfterEach
@@ -66,15 +67,13 @@ public class TestPurchase {
 
     @BeforeEach
     public void setUp() {
-        purchase.setCustomer(customer);
-        purchase.setGamePurchased(game);
-        purchase.setPurchaseDate(LocalDate.now());
-        purchase.setDeliveryAddress(address);
-        purchase.setPurchasePrice(12);
-        purchase.setPaymentMethod(creditCard);
+        this.purchase = new Purchase(LocalDate.now(), 12f, game, customer, address, creditCard);
+        this.review = new Review(3, "review", purchase);
+        this.refundRequest = new RefundRequest(purchase, RequestStatus.PENDING, "reason", employee);
     }
 
     @Test
+    @Transactional
     /**
      * Author: Camille Pouliot
      * Description: Tests saving and loading a Purchase object from the database
