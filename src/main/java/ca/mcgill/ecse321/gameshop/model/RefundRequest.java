@@ -21,9 +21,11 @@ public class RefundRequest {
         this.status = status;
         this.reason = reason;
         this.reviewer = reviewer;
+
+        purchase.setRefundRequest(this);
     }
 
-    public RefundRequest() {
+    protected RefundRequest() {
 
     }
 
@@ -57,7 +59,11 @@ public class RefundRequest {
         return reviewer;
     }
 
-    public void setReviewer(Employee reviewer) {
+    public boolean setReviewer(Employee reviewer) {
+        if(this.reviewer != null){
+            this.reviewer.removeRefundRequest(this);
+        }
         this.reviewer = reviewer;
+        return reviewer.getRefundRequests().add(this);
     }
 }

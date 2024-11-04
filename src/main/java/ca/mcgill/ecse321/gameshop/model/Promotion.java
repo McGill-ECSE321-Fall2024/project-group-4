@@ -3,6 +3,7 @@ package ca.mcgill.ecse321.gameshop.model;
 import jakarta.persistence.*;
 
 import java.sql.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -25,13 +26,13 @@ public class Promotion {
             joinColumns = @JoinColumn(name = "promotion_id"),
             inverseJoinColumns = @JoinColumn(name = "game_id")
     )
-    private Set<Game> games;
+    private Set<Game> games = new HashSet<>();
 
     public Promotion(String discount) {
         this.discount = discount;
     }
 
-    public Promotion() {
+    protected Promotion() {
 
     }
 
@@ -43,12 +44,26 @@ public class Promotion {
         return discount;
     }
 
-    public Set<Game> getGames() {
+    protected Set<Game> getGames() {
         return games;
     }
+    public boolean addGame(Game game){
+        game.getPromotions().add(this);
+        return games.add(game);
+    }
 
-    public void setGames(Set<Game> games) {this.games = games;}
+    public boolean removeGame(Game game){
+        game.getPromotions().remove(this);
+        return games.remove(game);
+    }
 
+    public boolean containsGame(Game game){
+        return games.contains(game);
+    }
+
+    public Set<Game> getCopyGames(){
+        return new HashSet<>(games);
+    }
     public void setDiscount(String discount) {
         this.discount = discount;
     }

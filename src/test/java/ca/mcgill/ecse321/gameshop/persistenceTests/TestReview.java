@@ -49,10 +49,14 @@ public class TestReview {
 
     @BeforeEach
     public void setUp() {
-        review = new Review();
-        review.setPurchase(purchase);
-        review.setRating(3);
-        review.setText("review");
+        customerRepository.save(customer);
+        addressRepository.save(address);
+        creditCardRepository.save(creditCard);
+        gameRepository.save(game);
+        purchaseRepository.save(purchase);
+
+        review = new Review(3, "review", purchase);
+        reviewRepository.save(review);
     }
 
     @Test
@@ -61,16 +65,6 @@ public class TestReview {
      * Description: Tests saving and loading a Review object from the database
      */
     public void testSaveAndLoadingReview() {
-        //save
-        customerRepository.save(customer);
-        addressRepository.save(address);
-        creditCardRepository.save(creditCard);
-        gameRepository.save(game);
-        purchaseRepository.save(purchase);
-
-        purchase.setReview(review);
-        reviewRepository.save(review);
-        purchaseRepository.save(purchase);
 
         //load
         Optional<Review> loadedReviewOpt = reviewRepository.findById(review.getId());
@@ -90,20 +84,9 @@ public class TestReview {
      */
     public void testSaveAndLoadLikedBy() {
         //add list of customers who liked review
-        Set<Customer> likedBy = new HashSet<>();
-        likedBy.add(customer);
-        review.setLikedBy(likedBy);
+        review.addLikedBy(customer);
 
-        //save
-        customerRepository.save(customer);
-        addressRepository.save(address);
-        creditCardRepository.save(creditCard);
-        gameRepository.save(game);
-        purchaseRepository.save(purchase);
-
-        purchase.setReview(review);
         reviewRepository.save(review);
-        purchaseRepository.save(purchase);
 
         //load
         Optional<Review> loadedReviewOpt = reviewRepository.findById(review.getId());
@@ -111,8 +94,9 @@ public class TestReview {
         //compare
         assertTrue(loadedReviewOpt.isPresent());
         Review loadedReview = loadedReviewOpt.get();
-        assertFalse(loadedReview.getLikedBy().isEmpty());
-        List<Customer> likedByCustomersFromDb = new ArrayList<>(loadedReview.getLikedBy());
+        List<Customer> likedByCustomersFromDb = new ArrayList<>(loadedReview.getCopyLikedBy());
+
+        assertFalse(likedByCustomersFromDb.isEmpty());
         assertEquals(customer.getUsername(), likedByCustomersFromDb.get(0).getUsername());
 
     }

@@ -54,11 +54,13 @@ public class TestRefundRequest {
 
     @BeforeEach
     public void setUp() {
-        refundRequest = new RefundRequest();
-        refundRequest.setPurchase(purchase);
-        refundRequest.setReason("reason");
-        refundRequest.setStatus(RequestStatus.APPROVED);
-        refundRequest.setReviewer(employee);
+        employeeRepository.save(employee);
+        customerRepository.save(customer);
+        addressRepository.save(address);
+        creditCardRepository.save(creditCard);
+        gameRepository.save(game);
+        purchaseRepository.save(purchase);
+        refundRequest = new RefundRequest(purchase, RequestStatus.APPROVED, "reason", employee);
     }
 
     @Test
@@ -68,15 +70,6 @@ public class TestRefundRequest {
      */
     public void testSaveAndLoadRefundRequest() {
         //save
-        employeeRepository.save(employee);
-        customerRepository.save(customer);
-        addressRepository.save(address);
-        creditCardRepository.save(creditCard);
-        gameRepository.save(game);
-        purchaseRepository.save(purchase);
-
-
-        purchase.setRefundRequest(refundRequest);
         refundRequestRepository.save(refundRequest);
         purchaseRepository.save(purchase);
 

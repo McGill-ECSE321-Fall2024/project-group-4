@@ -26,7 +26,7 @@ public class CreditCard {
         this.billingAddress = billingAddress;
     }
 
-    public CreditCard() {
+    protected CreditCard() {
 
     }
 
