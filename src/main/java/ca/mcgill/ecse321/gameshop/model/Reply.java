@@ -15,9 +15,11 @@ public class Reply {
     public Reply(String text, Review review) {
         this.text = text;
         this.review = review;
+
+        review.setReply(this);
     }
 
-    public Reply() {
+    protected Reply() {
 
     }
 
@@ -38,6 +40,8 @@ public class Reply {
     }
 
     public void setReview(Review review) {
+        this.review.setReply(null);
         this.review = review;
+        review.setReply(this);
     }
 }

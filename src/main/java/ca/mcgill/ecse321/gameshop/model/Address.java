@@ -27,10 +27,16 @@ public class Address {
         this.country = country;
         this.postalCode = postalCode;
         this.customer = customer;
+
+        customer.getAddresses().add(this);
     }
 
-    public Address() {
+    protected Address() {
 
+    }
+
+    public Customer getCustomer() {
+        return customer;
     }
 
     public int getId() {

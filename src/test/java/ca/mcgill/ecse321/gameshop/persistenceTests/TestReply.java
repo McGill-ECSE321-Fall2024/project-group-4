@@ -37,8 +37,8 @@ public class TestReply {
     private Address address = new Address("street", "city", "province", "country", "1A2 B3C", customer);
     private CreditCard creditCard = new CreditCard(1234, 123, LocalDate.now(), customer, address);
     private Game game = new Game("game", "description", "picture", 12, true, 1);
-    private Purchase purchase = new Purchase(LocalDate.now(), 12, game, customer, address, creditCard);
-    private Review review = new Review(3, "review", purchase);
+    private Purchase purchase;
+    private Review review;
 
     @AfterEach
     public void tearDown() {
@@ -54,9 +54,16 @@ public class TestReply {
 
     @BeforeEach
     public void setUp() {
-        reply = new Reply();
-        reply.setReview(review);
-        reply.setText("reply");
+        customerRepository.save(customer);
+        addressRepository.save(address);
+        creditCardRepository.save(creditCard);
+        gameRepository.save(game);
+        purchase = new Purchase(LocalDate.now(), 12, game, customer, address, creditCard);
+        purchaseRepository.save(purchase);
+        review = new Review(3, "review", purchase);
+        reviewRepository.save(review);
+        reply = new Reply("reply", review);
+        replyRepository.save(reply);
     }
 
     @Test
@@ -66,19 +73,6 @@ public class TestReply {
      */
     public void testSaveAndLoadReply() {
         //save
-        customerRepository.save(customer);
-        addressRepository.save(address);
-        creditCardRepository.save(creditCard);
-        gameRepository.save(game);
-        purchaseRepository.save(purchase);
-
-        purchase.setReview(review);
-        reviewRepository.save(review);
-        purchaseRepository.save(purchase);
-
-        review.setReply(reply);
-        replyRepository.save(reply);
-        reviewRepository.save(review);
 
         //load
         Optional<Reply> loadedReplyOpt = replyRepository.findById(reply.getId());

@@ -22,7 +22,7 @@ public class TestEmployee {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    Employee employee = new Employee();
+    private Employee employee;
 
 
     @AfterEach
@@ -32,10 +32,7 @@ public class TestEmployee {
 
     @BeforeEach
     public void setUp() {
-        employee = new Employee();
-        employee.setActive(true);
-        employee.setPassword("Unsafe Password");
-        employee.setUsername("Bob joe");
+        employee = new Employee("Bob joe", "Unsafe Password", true);
     }
     /**
      * Author : Tarek Namani

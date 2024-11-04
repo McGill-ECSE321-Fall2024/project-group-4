@@ -20,9 +20,11 @@ public class GameRequest {
         this.status = status;
         this.requestor = requestor;
         this.game = game;
+
+        requestor.getGameRequests().add(this);
     }
 
-    public GameRequest() {
+    protected GameRequest() {
 
     }
 
@@ -34,8 +36,11 @@ public class GameRequest {
         return requestor;
     }
 
-    public void setRequestor(Employee requestor) {
+    public boolean setRequestor(Employee requestor) {
+        this.requestor.removeGameRequest(this);
         this.requestor = requestor;
+        return requestor.getGameRequests().add(this);
+
     }
 
     public Game getGame() {

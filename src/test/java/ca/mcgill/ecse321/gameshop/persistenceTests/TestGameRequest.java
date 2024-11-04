@@ -44,11 +44,7 @@ public class TestGameRequest {
 
     @BeforeEach
     public void setup() {
-        gameRequest = new GameRequest();
-        gameRequest.setGame(game);
-        gameRequest.setRequestor(employee);
-        gameRequest.setExternalReview(review);
-        gameRequest.setStatus(RequestStatus.PENDING);
+        gameRequest = new GameRequest("test external review text", RequestStatus.PENDING, employee, game);
     }
 
 
