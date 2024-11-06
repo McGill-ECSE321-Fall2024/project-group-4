@@ -86,8 +86,12 @@ public class Customer extends Account {
         return new HashSet<>(purchases);
     }
 
-    protected Set<CreditCard> getCreditCards() {
-        return creditCards;
+    public Set<CreditCard> getCopyofCreditCards() {
+        return new HashSet<>(creditCards);
+    }
+
+    public boolean removeCreditCartFromWallet(CreditCard creditCard) {
+        return creditCards.remove(creditCard);
     }
 
     protected Set<Address> getAddresses() {
@@ -108,6 +112,11 @@ public class Customer extends Account {
     public boolean removeGameFromWishlist(Game game){
         game.getWishlistedBy().remove(this);
         return wishlist.remove(game);
+    }
+
+    public boolean addCreditCardToWallet(CreditCard creditCard){
+        creditCard.setCustomer(this);
+        return creditCards.add(creditCard);
     }
 
     public boolean containsGameInWishlist(Game game){
