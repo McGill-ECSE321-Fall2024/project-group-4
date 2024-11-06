@@ -4,11 +4,8 @@ import ca.mcgill.ecse321.gameshop.DAO.CustomerRepository;
 import ca.mcgill.ecse321.gameshop.DAO.PurchaseRepository;
 import ca.mcgill.ecse321.gameshop.DAO.ReplyRepository;
 import ca.mcgill.ecse321.gameshop.DAO.ReviewRepository;
-import ca.mcgill.ecse321.gameshop.model.Customer;
-import ca.mcgill.ecse321.gameshop.model.Purchase;
-import ca.mcgill.ecse321.gameshop.model.Reply;
-import ca.mcgill.ecse321.gameshop.model.Review;
-import ca.mcgill.ecse321.gameshop.serviceClasses.ReviewService;
+import ca.mcgill.ecse321.gameshop.model.*;
+import ca.mcgill.ecse321.gameshop.serviceClasses.PurchaseManagementService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,10 +20,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class testReviewService {
+public class testPurchaseManagementService {
 
     @InjectMocks
-    ReviewService reviewService;
+    PurchaseManagementService reviewService;
 
     @Mock
     ReviewRepository reviewRepository;
@@ -40,7 +37,7 @@ public class testReviewService {
     Customer customer = new Customer("customer", "password", "customer@email.com", "0123456789");
     int rating = 3;
     String reviewText = "Average game, money well spent";
-    Purchase purchase = new Purchase();
+    Purchase purchase = new Purchase(null,15,null,customer,null,null);
     Review referenceReview = new Review(rating, reviewText, purchase);
 
 
@@ -80,8 +77,8 @@ public class testReviewService {
         //compare
         assertTrue(loadedReviewOpt.isPresent());
         Review loadedReview = loadedReviewOpt.get();
-        assertFalse(loadedReview.getLikedBy().isEmpty());
-        List<Customer> likedByCustomersFromDb = new ArrayList<>(loadedReview.getLikedBy());
+        assertFalse(loadedReview.getCopyLikedBy().isEmpty());
+        List<Customer> likedByCustomersFromDb = new ArrayList<>(loadedReview.getCopyLikedBy());
         assertEquals(customer.getUsername(), likedByCustomersFromDb.get(0).getUsername());
 
     }

@@ -9,12 +9,10 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
-public class ReviewService {
+public class PurchaseManagementService {
 
     @Autowired
     private CustomerRepository customerRepository;
@@ -68,28 +66,11 @@ public class ReviewService {
         Customer customer = findCustomerByEmail(customerEmail);
         Review review = findReviewById(reviewId);
 
-        Set<Customer> likedBy;
-        if (review.getLikedBy() == null) {
-            likedBy = new HashSet<>();
-        } else {
-           likedBy = review.getLikedBy();
-        }
-        likedBy.add(customer);
-        review.setLikedBy(likedBy);
 
-        Set<Review> likes;
-        if (customer.getLikedReviews() == null) {
-            likes = new HashSet<>();
-        } else {
-            likes = customer.getLikedReviews();
-        }
-        likes.add(review);
-        customer.setLikedReviews(likes);
-
+        review.addLikedBy( customer );
+        customer.addLikedReview( review );
         customerRepository.save(customer);
         reviewRepository.save(review);
-
-
 
     }
 
