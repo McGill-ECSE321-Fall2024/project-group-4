@@ -71,7 +71,7 @@ public class TestCustomer {
         customerRepository.save(customer);
 
         // Read
-        Customer customerFromDb = customerRepository.findByEmail(email);
+        Customer customerFromDb = customerRepository.findByEmail(email).orElse(null);
 
         // Assert
         assertNotNull(customerFromDb);
@@ -119,7 +119,7 @@ public class TestCustomer {
         customerRepository.save(customer);
 
         // Read
-        Customer customerFromDb = customerRepository.findByEmail(email);
+        Customer customerFromDb = customerRepository.findByEmail(email).orElse(null);
         List<Game> wishlistFromDb = new ArrayList<>(customerFromDb.getCopyWishlist()); //make a list to access the game in wishlist
 
         //Assert
@@ -150,7 +150,7 @@ public class TestCustomer {
         customerRepository.save(customer);
 
         // Read
-        Customer customerFromDb = customerRepository.findByEmail(email);
+        Customer customerFromDb = customerRepository.findByEmail(email).orElse(null);
         List<Game> cartFromDb = new ArrayList<>(customerFromDb.getCopyCart()); //make a list to access the game in cart
 
         //Assert
