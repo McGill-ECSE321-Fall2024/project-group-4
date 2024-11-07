@@ -27,7 +27,7 @@ The main goal of this deliverable was to start the project's software design pro
 - **Project Report:** A README file should also be made to introduce the team, the main scope of the project, and individual efforts (in hours). The project wiki should also be visible.
 - **Project Management:** Creation of communication channels (Discord, Instagram). Each issue needs an assignee to trace responsibilities within the team.
 
-### Deliverable 1
+### Deliverable 2
 - **Implementation of Backend Services:** Cover use-cases and create/update/delete/get methods via RESTful API.
 - **Software quality plan:** Define test coverage, challenges, and other quality assurance (code reviews, coding conventions, static analysis tools).
 - **Unit testing of backend services:** Develop a test suite for the use cases using the JUnit framework.
