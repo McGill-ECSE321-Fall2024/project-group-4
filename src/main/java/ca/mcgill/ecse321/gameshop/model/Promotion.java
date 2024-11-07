@@ -48,12 +48,12 @@ public class Promotion {
         return games;
     }
     public boolean addGame(Game game){
-        game.getPromotions().add(this);
+        game.getCopyPromotions().add(this);
         return games.add(game);
     }
 
     public boolean removeGame(Game game){
-        game.getPromotions().remove(this);
+        game.getCopyPromotions().remove(this);
         return games.remove(game);
     }
 

@@ -51,14 +51,17 @@ public class testPurchaseManagementService {
 
     @BeforeEach
     public void setUp() {
+        purchase.setPurchasePrice(30);
         when(reviewRepository.save(any(Review.class))).thenReturn(referenceReview);
+
         when(purchaseRepository.findById(anyInt())).thenReturn(Optional.of(purchase));
+
         when(customerRepository.save(any(Customer.class))).thenReturn(customer);
         when(customerRepository.findByEmail(customer.getEmail())).thenReturn(Optional.of(customer));
-        when(reviewRepository.findById(referenceReview.getId())).thenReturn(Optional.of(referenceReview));
 
         when(reviewRepository.findById(referenceReview.getId())).thenReturn(Optional.of(referenceReview));
-        purchase.setPurchasePrice(30);
+        when(reviewRepository.findById(referenceReview.getId())).thenReturn(Optional.of(referenceReview));
+
     }
 
 

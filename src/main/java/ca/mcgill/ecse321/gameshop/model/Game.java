@@ -105,26 +105,24 @@ public class Game {
         return new HashSet<>(categories);
     }
 
-    protected Set<Promotion> getPromotions() {
-        return promotions;
+    public Set<Promotion> getCopyPromotions() {
+        return new HashSet<>(promotions);
     }
-    public boolean addLikedBy(Promotion promotion){
+
+    public boolean addPromotion(Promotion promotion){
         promotion.getGames().add(this);
         return promotions.add(promotion);
     }
 
-    public boolean removeLikedBy(Promotion promotion){
+    public boolean removePromotion(Promotion promotion){
         promotion.getGames().remove(this);
         return promotions.remove(promotion);
     }
 
-    public boolean containsLikedBy(Promotion promotion){
+    public boolean containsPromotion(Promotion promotion){
         return promotions.contains(promotion);
     }
 
-    public Set<Promotion> getCopyLikedBy(){
-        return new HashSet<>(promotions);
-    }
 
     public int getId() {
         return id;
