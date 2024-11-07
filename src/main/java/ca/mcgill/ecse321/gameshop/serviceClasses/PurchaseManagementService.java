@@ -8,8 +8,10 @@ import org.springframework.boot.web.servlet.filter.OrderedHiddenHttpMethodFilter
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.chrono.ChronoLocalDate;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class PurchaseManagementService {
@@ -37,6 +39,7 @@ public class PurchaseManagementService {
         }
         throw new IllegalArgumentException("No Review found with id " + id);
     }
+
     @Transactional
     public Customer findCustomerByEmail(String email) {
         Optional<Customer> optCustomer = customerRepository.findByEmail(email);
@@ -46,6 +49,7 @@ public class PurchaseManagementService {
         throw new IllegalArgumentException("No Customer found with email " + email);
 
     }
+
     @Transactional
     public Purchase findPurchaseById(int id) {
         Optional<Purchase> optPurchase = purchaseRepository.findById(id);
@@ -83,8 +87,6 @@ public class PurchaseManagementService {
         return review;
 
     }
-
-
 
     @Transactional
     public CreditCard createCreditCard(int cardNumber, int cvv, LocalDate expiryDate, String customerEmail, int addressId) {
@@ -142,16 +144,25 @@ public class PurchaseManagementService {
     }
 
     @Transactional
-    public void checkout(String customerEmail) {
+    public void checkout(String customerEmail, int addressId, int creditCardId, LocalDate dateOfPurchase) {
         Customer customer = findCustomerByEmail(customerEmail);
+        Address address = findAddressById(addressId);
+        CreditCard creditCard = findByCreditCardId(creditCardId);
+
+        if (!creditCard.getCustomer().equals(customer)) {
+            throw new IllegalArgumentException("Credit card does not belong to this customer");
+        }
 
         Set<Game> gamesInCart = customer.getCopyCart();
         if (gamesInCart.isEmpty()) throw new IllegalArgumentException("Cannot checkout an empty cart!");
-        customer.getCopyCart().forEach(game -> {
+
+        gamesInCart.forEach(game -> {
             customer.removeGameFromCart(game);
             game.removeInCartOf(customer);
             gameRepository.save(game);
-        });
+        }); //remove the games from the customers cart
+
+        gamesInCart.stream().map(game -> new Purchase(dateOfPurchase,applyPromotion(game,dateOfPurchase) ,game,customer,address,creditCard )).collect(Collectors.toSet()).forEach(purchaseRepository::save);
         customerRepository.save(customer);
     }
 
@@ -162,6 +173,24 @@ public class PurchaseManagementService {
         return (float) price;
     }
 
+    @Transactional
+    public float applyPromotion (Game game, LocalDate currentDate) {
+
+        if (game == null) throw new IllegalArgumentException("Game is null!");
+        if (currentDate==null) throw new IllegalArgumentException("Date is null!");
+        if (game.getCopyPromotions().isEmpty()) return game.getPrice(); //if there are no promotions
+
+
+        float originalPrice = game.getPrice();
+        double discount = game.getCopyPromotions().stream().filter(promotion ->
+                        (currentDate.isAfter(promotion.getStartDate().toLocalDate()) && currentDate.isBefore(promotion.getEndDate()
+                                .toLocalDate()))).mapToDouble(activePromotions -> Double.parseDouble(activePromotions.getDiscount())).sum(); //sum up the active discounts on the game
+
+        if (discount >= 1) discount = 1; //discount cannot exceed 100%
+        discount = 1-discount; //convert to a 0 to 1 range
+
+        return (float) (discount * originalPrice);
+    }
 
     @Transactional
     public Set<CreditCard> viewCustomerCreditCards(String email) {
@@ -169,6 +198,7 @@ public class PurchaseManagementService {
         return customer.getCopyofCreditCards();
     }
 
+    @Transactional
     public void addCreditCardToCustomerWallet(String customerEmail, int creditCardId) {
         Customer customer = findCustomerByEmail(customerEmail);
         CreditCard creditCard = findByCreditCardId(creditCardId);
