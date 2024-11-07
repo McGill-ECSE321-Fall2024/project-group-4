@@ -27,6 +27,10 @@ The main goal of this deliverable was to start the project's software design pro
 - **Project Report:** A README file should also be made to introduce the team, the main scope of the project, and individual efforts (in hours). The project wiki should also be visible.
 - **Project Management:** Creation of communication channels (Discord, Instagram). Each issue needs an assignee to trace responsibilities within the team.
 
+### Deliverable 1
+- **Implementation of Backend Services:** Cover use-cases and create/update/delete/get methods via RESTful API.
+- **Software quality plan:** Define test coverage, 
+
 ## Team Members
 | Name | GitHub Username | Deliverable 1 | Deliverable 2 | Deliverable 3 | Total Hours |
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
