@@ -29,7 +29,7 @@ public class TestPromotion {
 
     @BeforeEach
     public void setUp() {
-        promotion = new Promotion("20%");
+        promotion = new Promotion(20);
         Date startDate = new Date(2024, 10, 1);
         promotion.setStartDate(startDate);
         Date endDate = new Date(2024, 10, 31);
@@ -69,7 +69,7 @@ public class TestPromotion {
      */
     public void testUpdatePromotion() {
         //update
-        promotion.setDiscount("50%");
+        promotion.setDiscount(50);
         promotionRepository.save(promotion);
 
         //load

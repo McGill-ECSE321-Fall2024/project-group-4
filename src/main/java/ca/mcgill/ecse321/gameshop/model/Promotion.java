@@ -12,7 +12,7 @@ public class Promotion {
     @Id
     private int id;
     @Column(nullable = false)
-    private String discount;
+    private int discount;
 
     @Column
     private Date startDate;
@@ -28,7 +28,7 @@ public class Promotion {
     )
     private Set<Game> games = new HashSet<>();
 
-    public Promotion(String discount) {
+    public Promotion(int discount) {
         this.discount = discount;
     }
 
@@ -40,7 +40,7 @@ public class Promotion {
         return id;
     }
 
-    public String getDiscount() {
+    public int getDiscount() {
         return discount;
     }
 
@@ -64,7 +64,7 @@ public class Promotion {
     public Set<Game> getCopyGames(){
         return new HashSet<>(games);
     }
-    public void setDiscount(String discount) {
+    public void setDiscount(int discount) {
         this.discount = discount;
     }
 
@@ -72,7 +72,7 @@ public class Promotion {
 
     public Date getStartDate() {return startDate;}
 
-    public void setEndDate(Date sndDate) {this.endDate = endDate;}
+    public void setEndDate(Date endDate) {this.endDate = endDate;}
 
     public Date getEndDate() {return endDate;}
 }
