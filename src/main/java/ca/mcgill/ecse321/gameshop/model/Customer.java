@@ -101,6 +101,12 @@ public class Customer extends Account {
         return new HashSet<>(addresses);
     }
 
+    public boolean addAddress(Address address) {return addresses.add(address);}
+
+    public boolean removeAddress(Address address) {return addresses.remove(address);}
+
+    public boolean containsAddress(Address address) {return addresses.contains(address);}
+
     protected Set<Game> getWishlist() {
         return wishlist;
     }

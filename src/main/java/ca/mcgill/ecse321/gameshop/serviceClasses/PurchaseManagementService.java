@@ -4,11 +4,9 @@ import ca.mcgill.ecse321.gameshop.DAO.*;
 import ca.mcgill.ecse321.gameshop.model.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.chrono.ChronoLocalDate;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,6 +40,8 @@ public class PurchaseManagementService {
 
     @Transactional
     public Customer findCustomerByEmail(String email) {
+        if (email == null) throw new IllegalArgumentException("Email is null!");
+
         Optional<Customer> optCustomer = customerRepository.findByEmail(email);
         if (optCustomer.isPresent()) {
             return optCustomer.get();
@@ -60,7 +60,7 @@ public class PurchaseManagementService {
     }
 
     @Transactional
-    public CreditCard findByCreditCardId(int creditCardId) {
+    public CreditCard findCreditCardById(int creditCardId) {
         Optional<CreditCard> optionalCreditCard = creditCardRepository.findById(creditCardId);
         if (optionalCreditCard.isPresent()) {
             return optionalCreditCard.get();
@@ -77,19 +77,11 @@ public class PurchaseManagementService {
         throw new IllegalArgumentException("No Address found with id " + addressId);
     }
 
-    @Transactional
-    public Review createReview(int rating, String text, int purchaseId) {
 
-        Purchase purchase = findPurchaseById(purchaseId);
-        Review review = new Review(rating, text, purchase);
-        reviewRepository.save(review);
-
-        return review;
-
-    }
 
     @Transactional
     public CreditCard createCreditCard(int cardNumber, int cvv, LocalDate expiryDate, String customerEmail, int addressId) {
+
         Customer customer = findCustomerByEmail(customerEmail);
         Address billingAddress = findAddressById(addressId);
 
@@ -101,14 +93,14 @@ public class PurchaseManagementService {
     }
 
     @Transactional
-    public void likeReview(String customerEmail, int reviewId ) {
+    public void likeReview(String customerEmail, int reviewId) {
 
         Customer customer = findCustomerByEmail(customerEmail);
         Review review = findReviewById(reviewId);
 
 
-        review.addLikedBy( customer );
-        customer.addLikedReview( review );
+        review.addLikedBy(customer);
+        customer.addLikedReview(review);
         customerRepository.save(customer);
         reviewRepository.save(review);
 
@@ -122,8 +114,8 @@ public class PurchaseManagementService {
         if (rating > 5 || rating < 0) {
             throw new IllegalArgumentException("Review rating is out of range");
         }
-        Purchase purchase = findPurchaseById(purchaseId);
-        Review review = createReview(rating, text, purchaseId);
+        Purchase purchase = findPurchaseById(purchaseId); //will call an exception if the purchase does not exist
+        Review review = new Review(rating, text, purchase);
         reviewRepository.save(review);
         return review;
     }
@@ -134,7 +126,7 @@ public class PurchaseManagementService {
         if (replyText == null) throw new IllegalArgumentException("reply text is null");
 
         Review review = findReviewById(reviewId);
-        Reply reply = new Reply(replyText,review);
+        Reply reply = new Reply(replyText, review);
         review.setReply(reply);
 
         replyRepository.save(reply);
@@ -147,49 +139,58 @@ public class PurchaseManagementService {
     public void checkout(String customerEmail, int addressId, int creditCardId, LocalDate dateOfPurchase) {
         Customer customer = findCustomerByEmail(customerEmail);
         Address address = findAddressById(addressId);
-        CreditCard creditCard = findByCreditCardId(creditCardId);
+        CreditCard creditCard = findCreditCardById(creditCardId);
+
+        if (dateOfPurchase == null) throw new IllegalArgumentException("Purchase date is null");
 
         if (!creditCard.getCustomer().equals(customer)) {
             throw new IllegalArgumentException("Credit card does not belong to this customer");
         }
 
+        if (creditCard.getExpiryDate().isBefore(dateOfPurchase)) {
+            throw new IllegalArgumentException("Credit card is expired");
+        }
+
         Set<Game> gamesInCart = customer.getCopyCart();
-        if (gamesInCart.isEmpty()) throw new IllegalArgumentException("Cannot checkout an empty cart!");
+        if (gamesInCart.isEmpty()) {
+            throw new IllegalArgumentException("Cannot checkout an empty cart!");
+        }
 
         gamesInCart.forEach(game -> {
             customer.removeGameFromCart(game);
             game.removeInCartOf(customer);
+            if (!game.isActive()) throw new IllegalArgumentException("Cannot checkout an inactive game");
+            if (game.getStock() == 0) throw new IllegalArgumentException("Game is out of stock");
+            game.setStock(game.getStock() - 1);
             gameRepository.save(game);
         }); //remove the games from the customers cart
 
-        gamesInCart.stream().map(game -> new Purchase(dateOfPurchase,applyPromotion(game,dateOfPurchase) ,game,customer,address,creditCard )).collect(Collectors.toSet()).forEach(purchaseRepository::save);
+        gamesInCart.stream().map(game -> new Purchase(dateOfPurchase, applyPromotion(game, dateOfPurchase), game, customer, address, creditCard)).collect(Collectors.toSet()).forEach(purchaseRepository::save);
         customerRepository.save(customer);
     }
 
     @Transactional
-    public float getCartPrice(String customerEmail) {
+    public float getCartPrice(String customerEmail, LocalDate currentDate) {
         Customer customer = findCustomerByEmail(customerEmail);
-        long price = customer.getCopyCart().stream().mapToLong(game -> (long) game.getPrice()).sum();
+        long price = customer.getCopyCart().stream().mapToLong(game -> (long) applyPromotion(game, currentDate)).sum();
         return (float) price;
     }
 
     @Transactional
-    public float applyPromotion (Game game, LocalDate currentDate) {
+    public float applyPromotion(Game game, LocalDate currentDate) {
 
         if (game == null) throw new IllegalArgumentException("Game is null!");
-        if (currentDate==null) throw new IllegalArgumentException("Date is null!");
+        if (currentDate == null) throw new IllegalArgumentException("Date is null!");
         if (game.getCopyPromotions().isEmpty()) return game.getPrice(); //if there are no promotions
 
 
         float originalPrice = game.getPrice();
-        double discount = game.getCopyPromotions().stream().filter(promotion ->
-                        (currentDate.isAfter(promotion.getStartDate().toLocalDate()) && currentDate.isBefore(promotion.getEndDate()
-                                .toLocalDate()))).mapToDouble(activePromotions -> Double.parseDouble(activePromotions.getDiscount())).sum(); //sum up the active discounts on the game
+        int discount = game.getCopyPromotions().stream().filter(promotion ->
+                (currentDate.isAfter(promotion.getStartDate().toLocalDate()) && currentDate.isBefore(promotion.getEndDate()
+                        .toLocalDate()))).mapToInt(activePromotions -> activePromotions.getDiscount()).sum(); //sum up the active discounts on the game
 
-        if (discount >= 1) discount = 1; //discount cannot exceed 100%
-        discount = 1-discount; //convert to a 0 to 1 range
-
-        return (float) (discount * originalPrice);
+        if (discount >= 100) return 0; //discount cannot exceed 100%
+        return originalPrice * ((float) discount/100);
     }
 
     @Transactional
@@ -201,7 +202,7 @@ public class PurchaseManagementService {
     @Transactional
     public void addCreditCardToCustomerWallet(String customerEmail, int creditCardId) {
         Customer customer = findCustomerByEmail(customerEmail);
-        CreditCard creditCard = findByCreditCardId(creditCardId);
+        CreditCard creditCard = findCreditCardById(creditCardId);
 
         creditCard.setCustomer(customer);
         customer.addCreditCardToWallet(creditCard);
@@ -213,7 +214,7 @@ public class PurchaseManagementService {
     @Transactional
     public void removeCreditCardFromWallet(String customerEmail, int creditCardId) {
         Customer customer = findCustomerByEmail(customerEmail);
-        CreditCard creditCard = findByCreditCardId(creditCardId);
+        CreditCard creditCard = findCreditCardById(creditCardId);
 
 
         if (customer.getCopyofCreditCards().isEmpty()) {
@@ -221,14 +222,15 @@ public class PurchaseManagementService {
         }
 
         if (customer.getCopyofCreditCards().contains(creditCard) && creditCard.getCustomer() == customer) {
-            customer.getCopyofCreditCards().remove(creditCard);
+            customer.removeCreditCartFromWallet(creditCard);
             creditCard.setCustomer(null);
             creditCardRepository.save(creditCard);
             customerRepository.save(customer);
+            return;
         }
 
         if (!customer.getCopyofCreditCards().contains(creditCard)) {
-            throw new IllegalArgumentException("Customer does now own credit card : " + creditCard.getCardNumber());
+            throw new IllegalArgumentException("Customer does not own credit card : " + creditCard.getCardNumber());
         }
 
         throw new IllegalArgumentException("Credit card is not associated to customer : " + customer.getUsername());
