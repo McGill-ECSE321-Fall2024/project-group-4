@@ -321,6 +321,9 @@ public class PurchaseManagementService {
         if (refund.getReviewer() != null) {
             throw new IllegalArgumentException("Refund already has reviewer!");
         }
+        if (!reviewer.isActive()) {
+            throw new IllegalArgumentException("Cannot assign an inactive employee");
+        }
 
         refund.setReviewer(reviewer);
         refundRepository.save(refund);
