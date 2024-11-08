@@ -28,6 +28,20 @@ public class PurchaseManagementService {
     private CreditCardRepository creditCardRepository;
     @Autowired
     private AddressRepository addressRepository;
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
+
+    @Transactional
+    public Employee findEmployeeByEmail(String email) {
+        if (email == null) throw new IllegalArgumentException("Employee email is null!");
+
+        Optional<Employee> optEmployee = employeeRepository.findByEmail(email);
+        if (optEmployee.isPresent()) {
+            return optEmployee.get();
+        }
+        throw new IllegalArgumentException("No Employee found with email " + email);
+    }
 
     @Transactional
     public Review findReviewById(int id) {
@@ -236,6 +250,21 @@ public class PurchaseManagementService {
         throw new IllegalArgumentException("Credit card is not associated to customer : " + customer.getUsername());
 
 
+    }
+
+    @Transactional
+    public Set<Purchase> viewCustomerPurchaseHistory(String email) {
+        Customer customer = findCustomerByEmail(email);
+        return customer.getPurchases();
+    }
+
+    @Transactional
+    public Set<Purchase> requestCustomersPurchaseHistory(String customerEmail, String requestingEmployeeEmail) {
+        // Ensuring requestor is actually an employee by fetching them
+        // The resulting value is unused, but just makes sure to throw an error if there's a problem
+        findEmployeeByEmail(requestingEmployeeEmail);
+
+        return viewCustomerPurchaseHistory(customerEmail);
     }
 
 
