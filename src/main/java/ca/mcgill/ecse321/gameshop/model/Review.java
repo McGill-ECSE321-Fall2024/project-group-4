@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.gameshop.model;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -12,25 +13,27 @@ public class Review {
     private int rating;
     @Column(nullable = false)
     private String text;
-    @OneToOne(mappedBy = "review")
+    @OneToOne(mappedBy = "review", orphanRemoval = true, cascade = CascadeType.REMOVE)
     private Reply reply;
     @OneToOne(optional = false)
     private Purchase purchase;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "like_map",
             joinColumns = @JoinColumn(name = "review_id"),
             inverseJoinColumns = @JoinColumn(name = "customer_id")
     )
-    private Set<Customer> likedBy;
+    private Set<Customer> likedBy = new HashSet<>();
 
     public Review(int rating, String text, Purchase purchase) {
         this.rating = rating;
         this.text = text;
         this.purchase = purchase;
+
+        purchase.setReview(this);
     }
 
-    public Review() {
+    protected Review() {
 
     }
 
@@ -38,12 +41,26 @@ public class Review {
         return id;
     }
 
-    public Set<Customer> getLikedBy() {
+    protected Set<Customer> getLikedBy() {
         return likedBy;
     }
 
-    public void setLikedBy(Set<Customer> likedBy) {
-        this.likedBy = likedBy;
+    public boolean addLikedBy(Customer customer){
+        customer.getLikedReviews().add(this);
+        return likedBy.add(customer);
+    }
+
+    public boolean removeLikedBy(Customer customer){
+        customer.getLikedReviews().remove(this);
+        return likedBy.remove(customer);
+    }
+
+    public boolean containsLikedBy(Customer customer){
+        return likedBy.contains(customer);
+    }
+
+    public Set<Customer> getCopyLikedBy(){
+        return new HashSet<>(likedBy);
     }
 
     public int getRating() {
@@ -68,6 +85,9 @@ public class Review {
 
     public void setReply(Reply reply) {
         this.reply = reply;
+        if(reply != null && reply.getReview().getId() != getId()){
+            reply.setReview(this);
+        }
     }
 
     public Purchase getPurchase() {
@@ -75,6 +95,8 @@ public class Review {
     }
 
     public void setPurchase(Purchase purchase) {
+        this.purchase.setReview(null);
         this.purchase = purchase;
+        purchase.setReview(this);
     }
 }

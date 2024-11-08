@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.gameshop.model;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -14,22 +15,22 @@ public class Customer extends Account {
             joinColumns = @JoinColumn(name = "customer_id"),
             inverseJoinColumns = @JoinColumn(name = "game_id")
     )
-    private Set<Game> wishlist;
+    private Set<Game> wishlist = new HashSet<>();
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "cart_map",
             joinColumns = @JoinColumn(name = "customer_id"),
             inverseJoinColumns = @JoinColumn(name = "game_id")
     )
-    private Set<Game> cart;
-    @OneToMany(mappedBy = "customer")
-    private Set<Address> addresses;
-    @OneToMany(mappedBy = "customer")
-    private Set<CreditCard> creditCards;
+    private Set<Game> cart = new HashSet<>();
+    @OneToMany(mappedBy = "customer", orphanRemoval = true, cascade = CascadeType.REMOVE)
+    private Set<Address> addresses = new HashSet<>();
+    @OneToMany(mappedBy = "customer", orphanRemoval = true, cascade = CascadeType.REMOVE)
+    private Set<CreditCard> creditCards = new HashSet<>();
     @ManyToMany(mappedBy = "likedBy")
-    private Set<Review> likedReviews;
-    @OneToMany(mappedBy = "customer")
-    private Set<Purchase> purchases;
+    private Set<Review> likedReviews = new HashSet<>();
+    @OneToMany(mappedBy = "customer", orphanRemoval = true, cascade = CascadeType.REMOVE)
+    private Set<Purchase> purchases = new HashSet<>();
 
 
 
@@ -39,32 +40,121 @@ public class Customer extends Account {
         this.phoneNumber = phoneNumber;
     }
 
-    public Customer() {
+    protected Customer() {
 
     }
 
-    public Set<CreditCard> getCreditCards() {
-        return creditCards;
+    protected Set<Review> getLikedReviews() {
+        return likedReviews;
     }
 
-    public Set<Address> getAddresses() {
+    public boolean addLikedReview(Review review){
+        review.getLikedBy().add(this);
+        return likedReviews.add(review);
+    }
+
+    public boolean removeLikedReview(Review review){
+        review.getLikedBy().remove(this);
+        return likedReviews.remove(review);
+    }
+
+    public boolean containsLikedReview(Review review){
+        return likedReviews.contains(review);
+    }
+
+    public Set<Review> getCopyLikedReviews(){
+        return new HashSet<>(likedReviews);
+    }
+
+    public Set<Purchase> getPurchases() {
+        return purchases;
+    }
+
+    public boolean addPurchases(Purchase purchase){
+        return purchase.setCustomer(this);
+    }
+
+    public boolean removePurchases(Purchase purchase){
+        return purchases.remove(purchase);
+    }
+
+    public boolean containsPurchases(Purchase purchase){
+        return purchases.contains(purchase);
+    }
+
+    public Set<Purchase> getCopyPurchasess(){
+        return new HashSet<>(purchases);
+    }
+
+    public Set<CreditCard> getCopyofCreditCards() {
+        return new HashSet<>(creditCards);
+    }
+
+    public boolean removeCreditCartFromWallet(CreditCard creditCard) {
+        return creditCards.remove(creditCard);
+    }
+
+    protected Set<Address> getAddresses() {
         return addresses;
     }
+    public Set<Address> getCopyAddresses() {
+        return new HashSet<>(addresses);
+    }
 
-    public Set<Game> getWishlist() {
+    public boolean addAddress(Address address) {return addresses.add(address);}
+
+    public boolean removeAddress(Address address) {return addresses.remove(address);}
+
+    public boolean containsAddress(Address address) {return addresses.contains(address);}
+
+    protected Set<Game> getWishlist() {
         return wishlist;
     }
-
-    public void setWishlist(Set<Game> wishlist) {
-        this.wishlist = wishlist;
+    public boolean addGameToWishlist(Game game){
+        game.getWishlistedBy().add(this);
+        return wishlist.add(game);
     }
 
-    public Set<Game> getCart() {
+    public boolean removeGameFromWishlist(Game game){
+        game.getWishlistedBy().remove(this);
+        return wishlist.remove(game);
+    }
+
+    public boolean addCreditCardToWallet(CreditCard creditCard){
+        creditCard.setCustomer(this);
+        return creditCards.add(creditCard);
+    }
+
+    public boolean containsGameInWishlist(Game game){
+        return wishlist.contains(game);
+    }
+
+    public Set<Game> getCopyWishlist(){
+        return new HashSet<>(wishlist);
+    }
+
+    protected Set<Game> getCart() {
         return cart;
     }
 
-    public void setCart(Set<Game> cart) {this.cart = cart;}
+    public boolean addGameToCart(Game game){
+        game.getInCartOf().add(this);
+        return cart.add(game);
+    }
 
+    public boolean removeGameFromCart(Game game){
+        game.getInCartOf().remove(this);
+        return cart.remove(game);
+    }
+
+    public boolean containsGameInCart(Game game){
+        return cart.contains(game);
+    }
+
+    public Set<Game> getCopyCart(){
+        return new HashSet<>(cart);
+    }
+    
     public String getEmail() {
         return email;
     }

@@ -16,7 +16,7 @@ public abstract class Account {
         this.password = password;
     }
 
-    public Account() {
+    protected Account() {
 
     }
 

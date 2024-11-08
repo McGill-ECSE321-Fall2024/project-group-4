@@ -4,8 +4,8 @@ import ca.mcgill.ecse321.gameshop.DAO.CustomerRepository;
 import ca.mcgill.ecse321.gameshop.DAO.GameRepository;
 import ca.mcgill.ecse321.gameshop.model.Customer;
 import ca.mcgill.ecse321.gameshop.model.Game;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,9 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Author: Clara Mickail
@@ -73,7 +71,7 @@ public class TestCustomer {
         customerRepository.save(customer);
 
         // Read
-        Customer customerFromDb = customerRepository.findByEmail(email);
+        Customer customerFromDb = customerRepository.findByEmail(email).orElse(null);
 
         // Assert
         assertNotNull(customerFromDb);
@@ -107,39 +105,30 @@ public class TestCustomer {
      */
     public void testGetWishlishFromDb() {
 
-        Game game = new Game();
-        game.setName("testgame");
-        game.setDescription("testDescription");
-        game.setCoverPicture("testCover");
-        game.setPrice(50.00F);
-        game.setStock(100);
-        game.setActive(true);
+        Game game = new Game("testgame", "testDescription", "testCover", 50.00f, true, 100);
 
         String username = "testUser3";
         String password = "testPass3";
         String email = "testEmail3@gmail.com";
         String phoneNumber = "5143333333";
         Customer customer = new Customer(username, password, email, phoneNumber);
-        Set<Game> wishList = new HashSet<>();
-        wishList.add(game);
-        customer.setWishlist(wishList);
+        customer.addGameToWishlist(game);
 
         // Save
         gameRepository.save(game);
         customerRepository.save(customer);
 
         // Read
-        Customer customerFromDb = customerRepository.findByEmail(email);
-
-
+        Customer customerFromDb = customerRepository.findByEmail(email).orElse(null);
+        List<Game> wishlistFromDb = new ArrayList<>(customerFromDb.getCopyWishlist()); //make a list to access the game in wishlist
 
         //Assert
-        assertFalse(customerFromDb.getWishlist().isEmpty());
-        List<Game> wishlistFromDb = new ArrayList<>(customerFromDb.getWishlist()); //make a list to access the game in wishlist
+        assertFalse(wishlistFromDb.isEmpty());
         assertEquals(game.getName(), wishlistFromDb.get(0).getName());
 
     }
 
+    @Transactional
     @Test
     /**
      * Author : Tarek Namani
@@ -147,35 +136,25 @@ public class TestCustomer {
      */
     public void testGetCartFromDb() {
 
-        Game game = new Game();
-        game.setName("testgame");
-        game.setDescription("testDescription");
-        game.setCoverPicture("testCover");
-        game.setPrice(50.00F);
-        game.setStock(100);
-        game.setActive(true);
+        Game game = new Game("testgame", "testDescription", "testCover", 50.00f, true, 100);
 
         String username = "testUser3";
         String password = "testPass3";
         String email = "testEmail3@gmail.com";
         String phoneNumber = "5143333333";
         Customer customer = new Customer(username, password, email, phoneNumber);
-        Set<Game> cart = new HashSet<>();
-        cart.add(game);
-        customer.setCart(cart);
+        customer.addGameToCart(game);
 
         // Save
         gameRepository.save(game);
         customerRepository.save(customer);
 
         // Read
-        Customer customerFromDb = customerRepository.findByEmail(email);
+        Customer customerFromDb = customerRepository.findByEmail(email).orElse(null);
+        List<Game> cartFromDb = new ArrayList<>(customerFromDb.getCopyCart()); //make a list to access the game in cart
 
         //Assert
-        assertFalse(customerFromDb.getCart().isEmpty());
-        List<Game> cartFromDb = new ArrayList<>(customerFromDb.getCart()); //make a list to access the game in cart
+        assertFalse(cartFromDb.isEmpty());
         assertEquals(game.getName(), cartFromDb.get(0).getName());
-
-
     }
 }

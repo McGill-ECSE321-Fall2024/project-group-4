@@ -4,6 +4,7 @@ import ca.mcgill.ecse321.gameshop.DAO.GameRepository;
 import ca.mcgill.ecse321.gameshop.DAO.PromotionRepository;
 import ca.mcgill.ecse321.gameshop.model.Game;
 import ca.mcgill.ecse321.gameshop.model.Promotion;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,8 +29,7 @@ public class TestPromotion {
 
     @BeforeEach
     public void setUp() {
-        promotion = new Promotion();
-        promotion.setDiscount("20%");
+        promotion = new Promotion(20);
         Date startDate = new Date(2024, 10, 1);
         promotion.setStartDate(startDate);
         Date endDate = new Date(2024, 10, 31);
@@ -69,7 +69,7 @@ public class TestPromotion {
      */
     public void testUpdatePromotion() {
         //update
-        promotion.setDiscount("50%");
+        promotion.setDiscount(50);
         promotionRepository.save(promotion);
 
         //load
@@ -95,24 +95,15 @@ public class TestPromotion {
         assertEquals(0, promotionRepository.count());
     }
 
-    @Test
+    @Test @Transactional//test should be transational to properly initialze many to many associations
     /**
      * Author : Tarek Namani
      * Description : Tests saving and loading the games in promotion from databases
      */
     public void testAddGamesToPromotion() {
         //add game to promotion
-        Game game = new Game();
-        game.setName("testgame");
-        game.setDescription("testDescription");
-        game.setCoverPicture("testCover");
-        game.setPrice(50.00F);
-        game.setStock(100);
-        game.setActive(true);
-
-        Set<Game> gamesInPromotion = new HashSet<>();
-        gamesInPromotion.add(game);
-        promotion.setGames(gamesInPromotion);
+        Game game = new Game("testgame", "testDescription", "testCover", 50.00f, true, 100);
+        promotion.addGame(game);
 
         //save
         gameRepository.save(game);
@@ -122,8 +113,8 @@ public class TestPromotion {
         Promotion promotionFromDb = promotionRepository.findById(promotion.getId()).get();
 
         //Assert
-        assertFalse(promotionFromDb.getGames().isEmpty());
-        List<Game> gamesInPromotionFromDb = new ArrayList<>(promotionFromDb.getGames());
+        assertFalse(promotionFromDb.getCopyGames().isEmpty());
+        List<Game> gamesInPromotionFromDb = new ArrayList<>(promotionFromDb.getCopyGames());
         assertEquals(game.getName(),gamesInPromotionFromDb.get(0).getName());
 
 

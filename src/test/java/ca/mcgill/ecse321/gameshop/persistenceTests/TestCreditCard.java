@@ -40,11 +40,7 @@ public class TestCreditCard {
     @Transactional
     public void testPersistAndLoadCreditCard() {
         // Create object
-        Customer customer = new Customer();
-        customer.setUsername("JohnDoey");
-        customer.setEmail("johndoey@gmail.com");
-        customer.setPhoneNumber("5144444444");
-        customer.setPassword("password123");
+        Customer customer = new Customer("JohnDoey", "password123", "johndoey@gmail.com", "5144444444");
 
         // save 
         customer = customerRepository.save(customer); 
