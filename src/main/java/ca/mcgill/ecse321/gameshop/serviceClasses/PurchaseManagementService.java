@@ -320,4 +320,24 @@ public class PurchaseManagementService {
         reviewer.addRefundRequest(refund);
         employeeRepository.save(reviewer);
     }
+
+    @Transactional
+    public void removeReviewerFromRefundRequest(long refundId, String reviewerEmail) {
+        Employee reviewer = findEmployeeByEmail(reviewerEmail);
+        RefundRequest refund = findRefundById(refundId);
+
+        if (refund.getReviewer() != reviewer) {
+            throw new IllegalArgumentException("Employee is not the reviewer of this refund request.");
+        }
+
+        if (!reviewer.getRefundRequests().contains(refund)) {
+            throw new IllegalArgumentException("This employee is not assigned to review this refund request.");
+        }
+
+        refund.setReviewer(null);
+        refundRepository.save(refund);
+
+        reviewer.removeRefundRequest(refund);
+        employeeRepository.save(reviewer);
+    }
 }
