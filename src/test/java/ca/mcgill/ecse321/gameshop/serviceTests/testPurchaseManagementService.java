@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -224,6 +225,60 @@ public class testPurchaseManagementService {
 
         //Assert
         assertEquals("Purchase already has a refund request", exception.getMessage());
+    }
+
+    @Test
+    public void testApproveRefund() {
+        //Act
+        purchaseManagementService.approveRefund(referenceRequest.getId());
+
+        //Assert
+        assertEquals(RequestStatus.APPROVED, referenceRequest.getStatus());
+    }
+
+    @Test
+    public void testApproveInvalidRefund() {
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.approveRefund(approvedRequest.getId()));
+
+        //Assert
+        assertEquals("Only pending requests can be approved.", exception.getMessage());
+    }
+
+    @Test
+    public void testApproveInvalidRefund2() {
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.approveRefund(deniedRequest.getId()));
+
+        //Assert
+        assertEquals("Only pending requests can be approved.", exception.getMessage());
+    }
+
+    @Test
+    public void testDenyRefund() {
+        //Act
+        purchaseManagementService.approveRefund(referenceRequest.getId());
+
+        //Assert
+        assertEquals(RequestStatus.DENIED, referenceRequest.getStatus());
+    }
+
+    @Test
+    public void testDenyInvalidRefund() {
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.approveRefund(approvedRequest.getId()));
+
+        //Assert
+        assertEquals("Only pending requests can be denied.", exception.getMessage());
+    }
+
+    @Test
+    public void testDenyInvalidRefund2() {
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.approveRefund(deniedRequest.getId()));
+
+        //Assert
+        assertEquals("Only pending requests can be denied.", exception.getMessage());
     }
 
 
