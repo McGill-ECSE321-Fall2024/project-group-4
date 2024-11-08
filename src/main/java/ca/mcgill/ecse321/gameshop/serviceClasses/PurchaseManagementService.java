@@ -30,6 +30,8 @@ public class PurchaseManagementService {
     private AddressRepository addressRepository;
     @Autowired
     private EmployeeRepository employeeRepository;
+    @Autowired
+    private RefundRequestRepository refundRepository;
 
 
     @Transactional
@@ -265,6 +267,17 @@ public class PurchaseManagementService {
         findEmployeeByEmail(requestingEmployeeEmail);
 
         return viewCustomerPurchaseHistory(customerEmail);
+    }
+
+    @Transactional
+    public void requestRefund(int purchaseId, String reason) {
+        Purchase purchase = findPurchaseById(purchaseId);
+
+        if (reason == null || reason.isEmpty()) {
+            throw new IllegalArgumentException("No reason given for refund.");
+        }
+        RefundRequest request = new RefundRequest(purchase, RequestStatus.PENDING, reason, null);
+        refundRepository.save(request);
     }
 
 
