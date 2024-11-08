@@ -285,6 +285,10 @@ public class PurchaseManagementService {
         if (reason == null || reason.isEmpty()) {
             throw new IllegalArgumentException("No reason given for refund.");
         }
+        if (purchase.getRefundRequest() != null) {
+            throw new IllegalArgumentException("Purchase already has a refund request");
+        }
+        
         RefundRequest request = new RefundRequest(purchase, RequestStatus.PENDING, reason, null);
         refundRepository.save(request);
     }
