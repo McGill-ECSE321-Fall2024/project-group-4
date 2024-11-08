@@ -296,4 +296,12 @@ public class PurchaseManagementService {
         refund.setStatus(RequestStatus.APPROVED);
         refundRepository.save(refund);
     }
+
+    @Transactional
+    public void denyRefund(long refundId) {
+        RefundRequest refund = findRefundById(refundId);
+
+        refund.setStatus(RequestStatus.DENIED);
+        refundRepository.save(refund);
+    }
 }
