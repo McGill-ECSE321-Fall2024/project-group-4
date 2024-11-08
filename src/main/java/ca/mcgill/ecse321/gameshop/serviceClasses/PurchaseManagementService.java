@@ -310,6 +310,10 @@ public class PurchaseManagementService {
         Employee reviewer = findEmployeeByEmail(reviewerEmail);
         RefundRequest refund = findRefundById(refundId);
 
+        if (refund.getReviewer() != null) {
+            throw new IllegalArgumentException("Refund already has reviewer!");
+        }
+
         refund.setReviewer(reviewer);
         refundRepository.save(refund);
 
