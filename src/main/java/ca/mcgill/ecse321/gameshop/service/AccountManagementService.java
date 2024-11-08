@@ -21,6 +21,7 @@ import ca.mcgill.ecse321.gameshop.DAO.EmployeeRepository;
  * 
  * @author Ana Gordon, 
  */
+@Service
 public class AccountManagementService {
     @Autowired
     private AccountRepository accountRepository;
