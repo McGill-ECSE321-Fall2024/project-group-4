@@ -34,6 +34,15 @@ public class PurchaseManagementService {
     private RefundRequestRepository refundRepository;
 
 
+    @Transactional 
+    public RefundRequest findRefundById(long id) {
+        Optional<RefundRequest> optRefund = refundRepository.findById(id);
+
+        if (optRefund.isPresent()) {
+            return optRefund.get();
+        }
+        throw new IllegalArgumentException("No Refund Request found with id " + id);
+    }
     @Transactional
     public Employee findEmployeeByEmail(String email) {
         if (email == null) throw new IllegalArgumentException("Employee email is null!");
@@ -280,5 +289,11 @@ public class PurchaseManagementService {
         refundRepository.save(request);
     }
 
+    @Transactional
+    public void approveRefund(long refundId) {
+        RefundRequest refund = findRefundById(refundId);
 
+        refund.setStatus(RequestStatus.APPROVED);
+        refundRepository.save(refund);
+    }
 }
