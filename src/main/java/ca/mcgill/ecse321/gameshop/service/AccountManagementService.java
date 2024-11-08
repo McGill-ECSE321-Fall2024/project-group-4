@@ -1,4 +1,4 @@
-package ca.mcgill.ecse321.gameshop.service;
+package main.java.ca.mcgill.ecse321.gameshop.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -329,38 +329,6 @@ public class AccountManagementService {
     }
 
     /**
-     * Update customer email
-     * 
-     * @param newEmail
-     * @param username
-     * @return Customer
-     * 
-     * @Author Ana Gordon
-     */
-    @Transactional
-    public Customer updateEmail(String newEmail, String username) {
-        if (newEmail == null || newEmail.trim().length() == 0 || newEmail.contains(" ")) {
-            throw new IllegalArgumentException("New email cannot be empty, null or contain spaces.");
-        }
-        if (username == null || username.trim().length() == 0 || username.contains(" ")) {
-            throw new IllegalArgumentException("Username cannot be empty, null or contain spaces.");
-        }
-
-        Account account = accountRepository.findByUsername(username);
-        if (account == null) {
-            throw new IllegalArgumentException("Account does not exist.");
-        }
-
-        Customer customer = customerRepository.findByAccount(account);
-        if (customer == null) {
-            throw new IllegalArgumentException("Customer account does not exist.");
-        }
-        customer.setEmail(newEmail);
-        customerRepository.save(customer);
-        return customer;
-    }
-
-    /**
      * Update customer phone number
      * 
      * @param newPhoneNumber
@@ -391,6 +359,5 @@ public class AccountManagementService {
         customerRepository.save(customer);
         return customer;
     }
-
     
 }
