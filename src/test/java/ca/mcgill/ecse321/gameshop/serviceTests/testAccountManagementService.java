@@ -2,7 +2,7 @@ package test.serviceTests;
 
 import ca.mcgill.ecse321.gameshop.DAO.*;
 import ca.mcgill.ecse321.gameshop.model.*;
-import ca.mcgill.ecse321.gameshop.serviceClasses.AccountManagementService;
+import ca.mcgill.ecse321.gameshop.service.AccountManagementService;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
