@@ -35,7 +35,7 @@ public class PurchaseManagementService {
 
 
     @Transactional 
-    public RefundRequest findRefundById(long id) {
+    public RefundRequest findRefundById(int id) {
         Optional<RefundRequest> optRefund = refundRepository.findById(id);
 
         if (optRefund.isPresent()) {
@@ -288,13 +288,13 @@ public class PurchaseManagementService {
         if (purchase.getRefundRequest() != null) {
             throw new IllegalArgumentException("Purchase already has a refund request");
         }
-        
+
         RefundRequest request = new RefundRequest(purchase, RequestStatus.PENDING, reason, null);
         refundRepository.save(request);
     }
 
     @Transactional
-    public void approveRefund(long refundId) {
+    public void approveRefund(int refundId) {
         RefundRequest refund = findRefundById(refundId);
 
         if (refund.getStatus() != RequestStatus.PENDING) {
@@ -306,7 +306,7 @@ public class PurchaseManagementService {
     }
 
     @Transactional
-    public void denyRefund(long refundId) {
+    public void denyRefund(int refundId) {
         RefundRequest refund = findRefundById(refundId);
 
         if (refund.getStatus() != RequestStatus.PENDING) {
@@ -318,7 +318,7 @@ public class PurchaseManagementService {
     }
 
     @Transactional
-    public void addReviewerToRefundRequest(long refundId, String reviewerUsername) {
+    public void addReviewerToRefundRequest(int refundId, String reviewerUsername) {
         Employee reviewer = findEmployeeByUsername(reviewerUsername);
         RefundRequest refund = findRefundById(refundId);
 
@@ -337,7 +337,7 @@ public class PurchaseManagementService {
     }
 
     @Transactional
-    public void removeReviewerFromRefundRequest(long refundId, String reviewerUsername) {
+    public void removeReviewerFromRefundRequest(int refundId, String reviewerUsername) {
         Employee reviewer = findEmployeeByUsername(reviewerUsername);
         RefundRequest refund = findRefundById(refundId);
 
