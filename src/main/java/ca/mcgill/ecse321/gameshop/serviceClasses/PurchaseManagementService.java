@@ -279,7 +279,7 @@ public class PurchaseManagementService {
     }
 
     @Transactional
-    public void requestRefund(int purchaseId, String reason) {
+    public RefundRequest requestRefund(int purchaseId, String reason) {
         Purchase purchase = findPurchaseById(purchaseId);
 
         if (reason == null || reason.isEmpty()) {
@@ -291,6 +291,7 @@ public class PurchaseManagementService {
 
         RefundRequest request = new RefundRequest(purchase, RequestStatus.PENDING, reason, null);
         refundRepository.save(request);
+        return request;
     }
 
     @Transactional

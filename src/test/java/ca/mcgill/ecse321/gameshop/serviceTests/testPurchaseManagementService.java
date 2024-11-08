@@ -160,6 +160,7 @@ public class testPurchaseManagementService {
         verify(employeeRepository, times(1)).findByUsername("asdf");
     }
 
+    @Test
     public void testFindInvalidEmployeeByUsername2() {
         //Act
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.findEmployeeByUsername(null));
@@ -169,6 +170,7 @@ public class testPurchaseManagementService {
         verify(employeeRepository, times(1)).findByUsername(null);
     }
 
+    @Test
     public void testFindRefundById() {
         //Act
         RefundRequest refund = purchaseManagementService.findRefundById(referenceRequest.getId());
@@ -182,6 +184,7 @@ public class testPurchaseManagementService {
         verify(refundRepository, times(1)).findById(referenceRequest.getId());
     }
 
+    @Test
     public void testFindInvalidRefundById() {
         //Act
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.findRefundById(-1));
@@ -190,6 +193,39 @@ public class testPurchaseManagementService {
         assertEquals("No Refund Request found with id -1", exception.getMessage());
         verify(refundRepository, times(1)).findById(null);
     }
+
+    @Test
+    public void testRequestRefund() {
+        //Act
+        RefundRequest request = purchaseManagementService.requestRefund(purchase2.getId(), refundText);
+
+        //Assert
+        assertNotNull(request);
+        assertEquals(purchase2, request.getPurchase());
+        assertEquals(refundText, request.getReason());
+        assertNull(request.getReviewer());
+        assertEquals(RequestStatus.PENDING, request.getStatus());
+        verify(refundRepository, times(1)).save(request);
+    }
+
+    @Test
+    public void testRequestInvalidRefund() {
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.requestRefund(purchase.getId(), ""));
+
+        //Assert
+        assertEquals("No reason given for refund.", exception.getMessage());
+    }
+
+    @Test
+    public void testRequestInvalidRefund2() {
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.requestRefund(purchase.getId(), "asdf"));
+
+        //Assert
+        assertEquals("Purchase already has a refund request", exception.getMessage());
+    }
+
 
     @Test
     public void testFindCustomerByEmail() {
