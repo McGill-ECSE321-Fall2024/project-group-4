@@ -271,8 +271,8 @@ public class PurchaseManagementService {
 
     @Transactional
     public Set<Purchase> requestCustomersPurchaseHistory(String customerEmail, String requestingEmployeeEmail) {
-        // Ensuring requestor is actually an employee by fetching them
-        // The resulting value is unused, but just makes sure to throw an error if there's a problem
+        // Ensures requestor is actually an employee by fetching them
+        // The resulting value is unused, but just makes sure to throw an error if requestor is unauthorized
         findEmployeeByEmail(requestingEmployeeEmail);
 
         return viewCustomerPurchaseHistory(customerEmail);
@@ -293,6 +293,10 @@ public class PurchaseManagementService {
     public void approveRefund(long refundId) {
         RefundRequest refund = findRefundById(refundId);
 
+        if (refund.getStatus() != RequestStatus.PENDING) {
+            throw new IllegalArgumentException("Only pending requests can be approved.");
+        }
+
         refund.setStatus(RequestStatus.APPROVED);
         refundRepository.save(refund);
     }
@@ -300,6 +304,10 @@ public class PurchaseManagementService {
     @Transactional
     public void denyRefund(long refundId) {
         RefundRequest refund = findRefundById(refundId);
+
+        if (refund.getStatus() != RequestStatus.PENDING) {
+            throw new IllegalArgumentException("Only pending requests can be denied.");
+        }
 
         refund.setStatus(RequestStatus.DENIED);
         refundRepository.save(refund);
