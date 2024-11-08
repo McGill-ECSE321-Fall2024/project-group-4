@@ -304,4 +304,16 @@ public class PurchaseManagementService {
         refund.setStatus(RequestStatus.DENIED);
         refundRepository.save(refund);
     }
+
+    @Transactional
+    public void addReviewerToRefundRequest(long refundId, String reviewerEmail) {
+        Employee reviewer = findEmployeeByEmail(reviewerEmail);
+        RefundRequest refund = findRefundById(refundId);
+
+        refund.setReviewer(reviewer);
+        refundRepository.save(refund);
+
+        reviewer.addRefundRequest(refund);
+        employeeRepository.save(reviewer);
+    }
 }
