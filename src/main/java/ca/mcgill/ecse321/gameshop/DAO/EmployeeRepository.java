@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EmployeeRepository extends CrudRepository<Employee, Integer> {
-    Optional<Employee> findByEmail(String email);
+    Optional<Employee> findByUsername(String email);
 }

@@ -44,14 +44,14 @@ public class PurchaseManagementService {
         throw new IllegalArgumentException("No Refund Request found with id " + id);
     }
     @Transactional
-    public Employee findEmployeeByEmail(String email) {
-        if (email == null) throw new IllegalArgumentException("Employee email is null!");
+    public Employee findEmployeeByUsername(String username) {
+        if (username == null) throw new IllegalArgumentException("Employee username is null!");
 
-        Optional<Employee> optEmployee = employeeRepository.findByEmail(email);
+        Optional<Employee> optEmployee = employeeRepository.findByUsername(username);
         if (optEmployee.isPresent()) {
             return optEmployee.get();
         }
-        throw new IllegalArgumentException("No Employee found with email " + email);
+        throw new IllegalArgumentException("No Employee found with username " + username);
     }
 
     @Transactional
@@ -270,10 +270,10 @@ public class PurchaseManagementService {
     }
 
     @Transactional
-    public Set<Purchase> requestCustomersPurchaseHistory(String customerEmail, String requestingEmployeeEmail) {
+    public Set<Purchase> requestCustomersPurchaseHistory(String customerEmail, String requestingEmployee) {
         // Ensures requestor is actually an employee by fetching them
         // The resulting value is unused, but just makes sure to throw an error if requestor is unauthorized
-        findEmployeeByEmail(requestingEmployeeEmail);
+        findEmployeeByUsername(requestingEmployee);
 
         return viewCustomerPurchaseHistory(customerEmail);
     }
@@ -314,8 +314,8 @@ public class PurchaseManagementService {
     }
 
     @Transactional
-    public void addReviewerToRefundRequest(long refundId, String reviewerEmail) {
-        Employee reviewer = findEmployeeByEmail(reviewerEmail);
+    public void addReviewerToRefundRequest(long refundId, String reviewerUsername) {
+        Employee reviewer = findEmployeeByUsername(reviewerUsername);
         RefundRequest refund = findRefundById(refundId);
 
         if (refund.getReviewer() != null) {
@@ -330,8 +330,8 @@ public class PurchaseManagementService {
     }
 
     @Transactional
-    public void removeReviewerFromRefundRequest(long refundId, String reviewerEmail) {
-        Employee reviewer = findEmployeeByEmail(reviewerEmail);
+    public void removeReviewerFromRefundRequest(long refundId, String reviewerUsername) {
+        Employee reviewer = findEmployeeByUsername(reviewerUsername);
         RefundRequest refund = findRefundById(refundId);
 
         if (refund.getReviewer() != reviewer) {
