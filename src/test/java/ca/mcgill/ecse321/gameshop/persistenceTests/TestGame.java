@@ -25,13 +25,7 @@ public class TestGame {
 
     @BeforeEach
     public void setUp() {
-        game = new Game();
-        game.setName("testame");
-        game.setDescription("testDescription");
-        game.setCoverPicture("testCover");
-        game.setPrice(50.00F);
-        game.setStock(100);
-        game.setActive(true);
+        game = new Game("testgame", "testDescription", "testCover", 50.00f, true, 100);
     }
 
     @AfterEach

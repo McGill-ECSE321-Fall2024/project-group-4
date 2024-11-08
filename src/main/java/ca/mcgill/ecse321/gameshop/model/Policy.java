@@ -14,7 +14,7 @@ public class Policy {
         this.description = description;
     }
 
-    public Policy() {
+    protected Policy() {
 
     }
 

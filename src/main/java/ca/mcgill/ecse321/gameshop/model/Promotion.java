@@ -3,6 +3,7 @@ package ca.mcgill.ecse321.gameshop.model;
 import jakarta.persistence.*;
 
 import java.sql.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -11,7 +12,7 @@ public class Promotion {
     @Id
     private int id;
     @Column(nullable = false)
-    private String discount;
+    private int discount;
 
     @Column
     private Date startDate;
@@ -19,19 +20,19 @@ public class Promotion {
     @Column
     private Date endDate;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "promotion_map",
             joinColumns = @JoinColumn(name = "promotion_id"),
             inverseJoinColumns = @JoinColumn(name = "game_id")
     )
-    private Set<Game> games;
+    private Set<Game> games = new HashSet<>();
 
-    public Promotion(String discount) {
+    public Promotion(int discount) {
         this.discount = discount;
     }
 
-    public Promotion() {
+    protected Promotion() {
 
     }
 
@@ -39,17 +40,31 @@ public class Promotion {
         return id;
     }
 
-    public String getDiscount() {
+    public int getDiscount() {
         return discount;
     }
 
-    public Set<Game> getGames() {
+    protected Set<Game> getGames() {
         return games;
     }
+    public boolean addGame(Game game){
+        game.getCopyPromotions().add(this);
+        return games.add(game);
+    }
 
-    public void setGames(Set<Game> games) {this.games = games;}
+    public boolean removeGame(Game game){
+        game.getCopyPromotions().remove(this);
+        return games.remove(game);
+    }
 
-    public void setDiscount(String discount) {
+    public boolean containsGame(Game game){
+        return games.contains(game);
+    }
+
+    public Set<Game> getCopyGames(){
+        return new HashSet<>(games);
+    }
+    public void setDiscount(int discount) {
         this.discount = discount;
     }
 
@@ -57,7 +72,7 @@ public class Promotion {
 
     public Date getStartDate() {return startDate;}
 
-    public void setEndDate(Date sndDate) {this.endDate = endDate;}
+    public void setEndDate(Date endDate) {this.endDate = endDate;}
 
     public Date getEndDate() {return endDate;}
 }

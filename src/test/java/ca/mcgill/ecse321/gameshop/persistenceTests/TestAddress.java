@@ -4,10 +4,12 @@ import ca.mcgill.ecse321.gameshop.DAO.AddressRepository;
 import ca.mcgill.ecse321.gameshop.DAO.CustomerRepository;
 import ca.mcgill.ecse321.gameshop.model.Address;
 import ca.mcgill.ecse321.gameshop.model.Customer;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import java.util.Set;
 
 import java.lang.reflect.Field;
 
@@ -32,6 +34,7 @@ public class TestAddress {
     }
 
     @Test
+    @Transactional
     public void testPersistAndLoadAddress() throws NoSuchFieldException, IllegalAccessException {
         // Create a Customer
         String customerUsername = "testUser";
@@ -61,13 +64,13 @@ public class TestAddress {
         assertEquals(province, addressFromDb.getProvince());
         assertEquals(country, addressFromDb.getCountry());
         assertEquals(postalCode, addressFromDb.getPostalCode());
-
+        assertEquals(customer.getId(), addressFromDb.getCustomer().getId());
         // read customer
-        Field customerField = Address.class.getDeclaredField("customer");
-        customerField.setAccessible(true);
-        Customer customerFromDb = (Customer) customerField.get(addressFromDb);
-
+        Customer customerFromDb = customerRepository.findById(customer.getId()).orElseThrow();
+        Set<Address> addressFromCustomerFromDb = customerFromDb.getCopyAddresses();
         // Assert customer
         assertEquals(customer.getId(), customerFromDb.getId());
+        assertEquals(1, addressFromCustomerFromDb.size());
+        assertEquals(address.getId(), addressFromCustomerFromDb.toArray(new Address[0])[0].getId());
     }
 }

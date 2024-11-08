@@ -20,9 +20,9 @@ public class Purchase {
     private Address deliveryAddress;
     @ManyToOne(optional = false)
     private CreditCard paymentMethod;
-    @OneToOne(mappedBy = "purchase")
+    @OneToOne(mappedBy = "purchase", orphanRemoval = true, cascade = CascadeType.REMOVE)
     private Review review;
-    @OneToOne(mappedBy = "purchase")
+    @OneToOne(mappedBy = "purchase", orphanRemoval = true, cascade = CascadeType.REMOVE)
     private RefundRequest refundRequest;
 
     @PrePersist
@@ -37,8 +37,10 @@ public class Purchase {
         this.customer = customer;
         this.deliveryAddress = deliveryAddress;
         this.paymentMethod = paymentMethod;
+
+        customer.getPurchases().add(this);
     }
-    public Purchase() {
+    protected Purchase() {
 
     }
 
@@ -82,8 +84,10 @@ public class Purchase {
         return customer;
     }
 
-    public void setCustomer(Customer customer) {
+    public boolean setCustomer(Customer customer) {
+        this.customer.getPurchases().remove(this);
         this.customer = customer;
+        return customer.getPurchases().add(this);
     }
 
     public Address getDeliveryAddress() {
@@ -108,5 +112,8 @@ public class Purchase {
 
     public void setReview(Review review) {
         this.review = review;
+        if(review != null && review.getPurchase().getId() != getId()){
+            review.setPurchase(this);
+        }
     }
 }
