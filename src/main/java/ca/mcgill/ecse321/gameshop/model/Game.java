@@ -172,7 +172,25 @@ public class Game {
         return stock;
     }
 
+
+    private boolean isAvailable;
+
+    // Update stock when new games are added or purchased
+    public void updateStock(int quantityChange) {
+        this.stock += quantityChange;
+        this.isAvailable = this.stock > 0;
+    }
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(boolean available) {
+        isAvailable = available;
+    }
+
     public void setStock(int stock) {
         this.stock = stock;
+        this.isAvailable = stock > 0;
     }
 }

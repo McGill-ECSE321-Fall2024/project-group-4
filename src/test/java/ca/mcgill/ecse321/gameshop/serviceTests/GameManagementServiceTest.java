@@ -11,16 +11,22 @@ import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -167,11 +173,78 @@ public class GameManagementServiceTest {
         assertThrows(EntityNotFoundException.class, ()-> gameManagementService.removeGameFromCart(-1, referenceGame2.getId()));
     }
 
+    @Test
+    public void testViewInventory() {
+        MockitoAnnotations.openMocks(this);
+        // Arrange
+        List<Game> games = List.of(new Game("Game1", "Description1", "Cover1", 50.0f, true, 10));
+        when(gameRepo.findAll()).thenReturn(games);
 
+        // Act
+        Set<Game> inventory = gameManagementService.viewInventory();
 
+        // Assert
+        assertNotNull(inventory);
+        assertEquals(1, inventory.size());
+    }
 
+    @Test
+    public void testUpdateInventoryAfterPurchase() {
+        MockitoAnnotations.openMocks(this);
 
+        // Arrange
+        when(gameRepo.findById(referenceGame1.getId())).thenReturn(Optional.of(referenceGame1));
 
+        // Act
+        gameManagementService.updateInventoryAfterPurchase(referenceGame1.getId(), 5);
+
+        // Assert
+        assertEquals(35, referenceGame1.getStock(), "Stock should decrease by the purchased amount");
+        verify(gameRepo, times(1)).save(referenceGame1);
+    }
+
+    @Test
+    public void testUpdateInventoryAfterPurchaseWithInsufficientStock() {
+        MockitoAnnotations.openMocks(this);
+
+        // Arrange
+        when(gameRepo.findById(referenceGame1.getId())).thenReturn(Optional.of(referenceGame1));
+
+        // Act & Assert
+        assertThrows(IllegalStateException.class, 
+                    () -> gameManagementService.updateInventoryAfterPurchase(referenceGame1.getId(), 50),
+                    "Should throw exception when stock is insufficient");
+        verify(gameRepo, times(0)).save(referenceGame1);
+    } 
+    
+    @Test
+    public void testUpdateStockManually() {
+        MockitoAnnotations.openMocks(this);
+
+        // Arrange
+        when(gameRepo.findById(referenceGame1.getId())).thenReturn(Optional.of(referenceGame1));
+
+        // Act
+        gameManagementService.updateStock(referenceGame1.getId(), 10);
+
+        // Assert
+        assertEquals(50, referenceGame1.getStock(), "Stock should increase by the given amount");
+        verify(gameRepo, times(1)).save(referenceGame1);
+    }
+
+    @Test
+    public void testUpdateStockManuallyWithInvalidGame() {
+        MockitoAnnotations.openMocks(this);
+
+        // Arrange
+        when(gameRepo.findById(-1)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, 
+                    () -> gameManagementService.updateStock(-1, 10),
+                    "Should throw exception when the game ID is invalid");
+        verify(gameRepo, times(0)).save(any(Game.class));
+    }
 
 
 }

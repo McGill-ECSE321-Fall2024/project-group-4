@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Service
@@ -65,4 +66,59 @@ public class GameManagementService {
         return category.getCopyInCategory();
 
     }
+
+    public Set<Game> viewInventory() {
+        // Convert Iterable<Game> to HashSet<Game>
+        Iterable<Game> games = gameRepository.findAll();
+        Set<Game> gameSet = new HashSet<>();
+        games.forEach(gameSet::add);
+        return gameSet;
+    }
+
+    @Transactional
+    public Game addNewGame(String name, String description, String cover, float price, boolean isActive, int stock, String categoryName) {
+        var category = categoryRepo.findByName(categoryName).orElseThrow(() -> new EntityNotFoundException("Category not found"));
+
+        Game newGame = new Game(name, description, cover, price, isActive, stock);
+        gameRepository.save(newGame);
+
+        category.addInCategory(newGame);
+        categoryRepo.save(category);
+
+        return newGame;
+    }
+
+    @Transactional
+    public void removeGame(int gameId) {
+        Game game = gameRepository.findById(gameId).orElseThrow(() -> new EntityNotFoundException("Game not found"));
+        game.setAvailable(false);
+        gameRepository.save(game);
+    }
+
+    @Transactional
+    public void updateInventoryAfterPurchase(int gameId, int quantityPurchased) {
+        Game game = gameRepository.findById(gameId).orElseThrow(() -> new EntityNotFoundException("Game not found"));
+        if (game.getStock() < quantityPurchased) {
+            throw new IllegalStateException("Insufficient stock for the game");
+        }
+        game.updateStock(-quantityPurchased);
+        gameRepository.save(game);
+    }
+
+    /**
+     * Allows staff to manually update inventory
+     * @param gameId
+     * @param stockChange
+     */
+    @Transactional
+    public void updateStock(int gameId, int stockChange) {
+        Game game = gameRepository.findById(gameId).orElseThrow(() -> new EntityNotFoundException("Game not found"));
+        game.updateStock(stockChange);
+        gameRepository.save(game);
+    }
+
+    
+
+
 }
+    
