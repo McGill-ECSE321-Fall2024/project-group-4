@@ -103,7 +103,7 @@ public class testAccountManagementService {
         // Act
         Customer customer = null;
         try {
-            customer = accountManagementService.createCustomer(customer1.getEmail(), customer1.getPassword(), customer1.getUsername(), customer1.getPhoneNumber());
+            customer = accountManagementService.createCustomer("customer1", "password1", "customer1@email.com", "0123456789");
         } catch (IllegalArgumentException e) {
             fail(e.getMessage());
         }
