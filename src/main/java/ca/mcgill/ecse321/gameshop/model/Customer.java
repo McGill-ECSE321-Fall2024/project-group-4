@@ -33,7 +33,6 @@ public class Customer extends Account {
     private Set<Purchase> purchases = new HashSet<>();
 
 
-
     public Customer(String username, String password, String email, String phoneNumber) {
         super(username, password);
         this.email = email;
@@ -170,4 +169,16 @@ public class Customer extends Account {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
+    
+    private Account account;
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
+
+    public Account getAccount() {
+        return account;
+    }
+
 }

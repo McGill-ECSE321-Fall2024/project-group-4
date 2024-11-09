@@ -1,4 +1,4 @@
-package ca.mcgill.ecse321.gameshop.service;
+package ca.mcgill.ecse321.gameshop.serviceClasses;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,42 +32,43 @@ public class AccountManagementService {
     @Autowired
     private ManagerRepository managerRepository;
 
-    /**
-     * Create a new account
-     * 
-     * @param username
-     * @param password
-     * @return Account
-     * 
-     * @author Ana Gordon
-     */
-    @Transactional
-    public Account createAccount(String username, String password) {
-        if (username == null || username.trim().length() == 0) {
-            throw new IllegalArgumentException("Username cannot be empty or null.");
-        }
-        if (password == null || password.trim().length() == 0) {
-            throw new IllegalArgumentException("Password cannot be empty or null.");
-        }
-        // if (accountRepository.findByUsername(username) != null) {
-        //     throw new IllegalArgumentException("Email already in use.");
-        // }
-        if (username.contains(" ")) {
-            throw new IllegalArgumentException("Username cannot contain spaces.");
-        }
-        if (password.contains(" ")) {
-            throw new IllegalArgumentException("Password cannot contain spaces.");
-        }
-        if (accountRepository.findbyUsername(username) != null) {
-            throw new IllegalArgumentException("Username already in use.");
-        }
+    // general account not needed (only customer, employee, manager)
+    // /**
+    //  * Create a new account
+    //  * 
+    //  * @param username
+    //  * @param password
+    //  * @return Account
+    //  * 
+    //  * @author Ana Gordon
+    //  */
+    // @Transactional
+    // public Account createAccount(String username, String password) {
+    //     if (username == null || username.trim().length() == 0) {
+    //         throw new IllegalArgumentException("Username cannot be empty or null.");
+    //     }
+    //     if (password == null || password.trim().length() == 0) {
+    //         throw new IllegalArgumentException("Password cannot be empty or null.");
+    //     }
+    //     // if (accountRepository.findByUsername(username) != null) {
+    //     //     throw new IllegalArgumentException("Email already in use.");
+    //     // }
+    //     if (username.contains(" ")) {
+    //         throw new IllegalArgumentException("Username cannot contain spaces.");
+    //     }
+    //     if (password.contains(" ")) {
+    //         throw new IllegalArgumentException("Password cannot contain spaces.");
+    //     }
+    //     if (accountRepository.findByUsername(username) != null) {
+    //         throw new IllegalArgumentException("Username already in use.");
+    //     }
 
-        Account account = new Account();
-        account.setUsername(username);
-        account.setPassword(password);
-        accountRepository.save(account);
-        return account;
-    }
+    //     Account account = new Account(); // Replace AccountImpl with the actual concrete class
+    //     account.setUsername(username);
+    //     account.setPassword(password);
+    //     accountRepository.save(account);
+    //     return account;
+    // }
 
     /**
      * Create a customer from username
@@ -154,8 +155,6 @@ public class AccountManagementService {
             return managerRepository.findByAccount(account);
         }
         //manager account has all permissions of an employee and a customer
-        account = new Account("manager", "manager");
-        accountRepository.save(account);
 
         Customer customer = new Customer(account);
         customerRepository.save(customer);

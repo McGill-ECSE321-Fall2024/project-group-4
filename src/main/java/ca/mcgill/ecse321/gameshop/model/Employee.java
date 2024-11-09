@@ -9,6 +9,7 @@ import java.util.Set;
 
 @Entity
 public class Employee extends Account {
+    private Account account;
     private boolean isActive;
     @OneToMany(mappedBy = "requestor", orphanRemoval = true, cascade = CascadeType.REMOVE)
     private Set<GameRequest> gameRequests = new HashSet<>();
@@ -70,5 +71,18 @@ public class Employee extends Account {
 
     public void setActive(boolean active) {
         this.isActive = active;
+    }
+
+    public void setAccount(Account account) {
+
+        this.account = account;
+
+    }
+
+
+    public Account getAccount() {
+
+        return account;
+
     }
 }

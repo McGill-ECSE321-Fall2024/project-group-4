@@ -2,7 +2,7 @@ package test.serviceTests;
 
 import ca.mcgill.ecse321.gameshop.DAO.*;
 import ca.mcgill.ecse321.gameshop.model.*;
-import ca.mcgill.ecse321.gameshop.service.AccountManagementService;
+import ca.mcgill.ecse321.gameshop.serviceClasses.AccountManagementService;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,11 +53,6 @@ public class testAccountManagementService {
     Employee employee1;
     Employee employee2;
     Manager manager;
-
-    // Account keys
-    private static final int CustomerAccountKey = 1;
-    private static final int EmployeeAccountKey = 2;
-    private static final int ManagerAccountKey = 3;
 
     @AfterEach
     public void tearDown() {
