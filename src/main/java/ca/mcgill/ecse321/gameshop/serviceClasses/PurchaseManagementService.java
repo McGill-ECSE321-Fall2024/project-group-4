@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -106,12 +108,26 @@ public class PurchaseManagementService {
 
 
     @Transactional
-    public CreditCard createCreditCard(int cardNumber, int cvv, LocalDate expiryDate, String customerEmail, int addressId) {
+    public CreditCard createCreditCard(int cardNumber, String cvv, String expiryDate, String customerEmail, int addressId) {
+
+        Matcher cvvMatcher = Pattern.compile("^\\d{3}$").matcher(cvv); //create a Regex to identify and match valid CVV patterns
+        if (!cvvMatcher.matches()) {
+            throw new IllegalArgumentException("Invalid cvv number, enter a 3 digit CVV");
+        }
+
+        Matcher expiryDateMatcher = Pattern.compile("^(0[1-9]|1[0-2])/(\\d{2})$").matcher(expiryDate); //create a Regex to identify and match a valid Expiration date format
+        if (!expiryDateMatcher.matches()) {
+            throw new IllegalArgumentException("Invalid expiry date, format is MM/YY");
+        }
+
+
+
+        LocalDate date = LocalDate.of(2000 + Integer.parseInt(expiryDateMatcher.group(2)), Integer.parseInt(expiryDateMatcher.group(1)),1); //use the matchers to get positional arguments for month and date
 
         Customer customer = findCustomerByEmail(customerEmail);
         Address billingAddress = findAddressById(addressId);
 
-        CreditCard creditCard = new CreditCard(cardNumber, cvv, expiryDate, customer, billingAddress);
+        CreditCard creditCard = new CreditCard(cardNumber, cvv, date, customer, billingAddress);
 
         creditCardRepository.save(creditCard);
 
@@ -162,12 +178,12 @@ public class PurchaseManagementService {
     }
 
     @Transactional
-    public void checkout(String customerEmail, int addressId, int creditCardId, LocalDate dateOfPurchase) {
+    public void checkout(String customerEmail, int addressId, int creditCardId) {
         Customer customer = findCustomerByEmail(customerEmail);
         Address address = findAddressById(addressId);
         CreditCard creditCard = findCreditCardById(creditCardId);
 
-        if (dateOfPurchase == null) throw new IllegalArgumentException("Purchase date is null");
+        LocalDate dateOfPurchase = LocalDate.now();
 
         if (!creditCard.getCustomer().equals(customer)) {
             throw new IllegalArgumentException("Credit card does not belong to this customer");
@@ -191,22 +207,22 @@ public class PurchaseManagementService {
             gameRepository.save(game);
         }); //remove the games from the customers cart
 
-        gamesInCart.stream().map(game -> new Purchase(dateOfPurchase, applyPromotion(game, dateOfPurchase), game, customer, address, creditCard)).collect(Collectors.toSet()).forEach(purchaseRepository::save);
+        gamesInCart.stream().map(game -> new Purchase(dateOfPurchase, applyPromotion(game), game, customer, address, creditCard)).collect(Collectors.toSet()).forEach(purchaseRepository::save);
         customerRepository.save(customer);
     }
 
     @Transactional
-    public float getCartPrice(String customerEmail, LocalDate currentDate) {
+    public float getCartPrice(String customerEmail) {
         Customer customer = findCustomerByEmail(customerEmail);
-        long price = customer.getCopyCart().stream().mapToLong(game -> (long) applyPromotion(game, currentDate)).sum();
+        long price = customer.getCopyCart().stream().mapToLong(game -> (long) applyPromotion(game)).sum();
         return (float) price;
     }
 
     @Transactional
-    public float applyPromotion(Game game, LocalDate currentDate) {
+    public float applyPromotion(Game game) {
 
         if (game == null) throw new IllegalArgumentException("Game is null!");
-        if (currentDate == null) throw new IllegalArgumentException("Date is null!");
+        LocalDate currentDate = LocalDate.now();
         if (game.getCopyPromotions().isEmpty()) return game.getPrice(); //if there are no promotions
 
 

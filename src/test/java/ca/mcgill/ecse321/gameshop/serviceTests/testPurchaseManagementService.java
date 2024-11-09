@@ -83,8 +83,8 @@ public class testPurchaseManagementService {
         customer = new Customer("customer", "password", "customer@email.com", "0123456789");
         customer2 = new Customer("customer2", "password", "secondCustomer@email.com", "0123456789");
         cusomterAddress = new Address("Rue University","Montreal", "Quebec","Canada", "123 4h4", customer);
-        creditCard = new CreditCard(123123, 123, LocalDate.of(2025, 10,25),customer, cusomterAddress);
-        creditCard2 = new CreditCard(12312233, 12233, LocalDate.of(2025, 10,25),customer2, cusomterAddress);
+        creditCard = new CreditCard(123123, "123", LocalDate.of(2025, 10,1),customer, cusomterAddress);
+        creditCard2 = new CreditCard(12312233, "124", LocalDate.of(2025, 10,1),customer2, cusomterAddress);
         game = new Game("testGame", "An average game", "example.url",15,true, 5);
         game2 = new Game("testGame2", "A good game", "example.url",30,true, 1);
         purchase = new Purchase(date,15,game,customer,cusomterAddress,creditCard);
@@ -495,7 +495,7 @@ public class testPurchaseManagementService {
     @Test
     public void testCreateCreditCard() {
         //Act
-        CreditCard createdCreditCard = purchaseManagementService.createCreditCard(creditCard.getCardNumber(), creditCard.getCvv(), creditCard.getExpiryDate(), creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId());
+        CreditCard createdCreditCard = purchaseManagementService.createCreditCard(creditCard.getCardNumber(), creditCard.getCvv(), "10/25", creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId());
 
         //Assert
         assertNotNull(createdCreditCard);
@@ -505,6 +505,60 @@ public class testPurchaseManagementService {
         assertEquals(creditCard.getBillingAddress().getId(), createdCreditCard.getBillingAddress().getId());
         verify(creditCardRepository, times(1)).save(createdCreditCard);
 
+    }
+
+    @Test
+    public void createCreditCardWithInvalidDate1() {
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->purchaseManagementService.createCreditCard(creditCard.getCardNumber(), creditCard.getCvv(), "10/a", creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId()));
+
+        //Assert
+        assertEquals("Invalid expiry date, format is MM/YY", exception.getMessage());
+    }
+
+    @Test
+    public void createCreditCardWithInvalidDate2() {
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->purchaseManagementService.createCreditCard(creditCard.getCardNumber(), creditCard.getCvv(), "a/10", creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId()));
+
+        //Assert
+        assertEquals("Invalid expiry date, format is MM/YY", exception.getMessage());
+    }
+
+    @Test
+    public void createCreditCardWithInvalidDate3() {
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->purchaseManagementService.createCreditCard(creditCard.getCardNumber(), creditCard.getCvv(), "10123", creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId()));
+
+        //Assert
+        assertEquals("Invalid expiry date, format is MM/YY", exception.getMessage());
+    }
+
+    @Test
+    public void createCreditCardWithInvalidDate4() {
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->purchaseManagementService.createCreditCard(creditCard.getCardNumber(), creditCard.getCvv(), "0/0", creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId()));
+
+        //Assert
+        assertEquals("Invalid expiry date, format is MM/YY", exception.getMessage());
+    }
+
+    @Test
+    public void createCreditCardWithInvalidCVV1() {
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->purchaseManagementService.createCreditCard(creditCard.getCardNumber(), "Invalid CVV", "10/2", creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId()));
+
+        //Assert
+        assertEquals("Invalid cvv number, enter a 3 digit CVV", exception.getMessage());
+    }
+
+    @Test
+    public void createCreditCardWithInvalidCVV2() {
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->purchaseManagementService.createCreditCard(creditCard.getCardNumber(), "1234", "10/2", creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId()));
+
+        //Assert
+        assertEquals("Invalid cvv number, enter a 3 digit CVV", exception.getMessage());
     }
 
     @Test
@@ -702,6 +756,8 @@ public class testPurchaseManagementService {
 
     @Test
     public void testApplyPromotion() {
+
+
         //Arrange
         Promotion promotion = new Promotion(50);
         promotion.setStartDate(Date.valueOf(LocalDate.of(2004,12,2)));
@@ -710,7 +766,7 @@ public class testPurchaseManagementService {
         game.addPromotion(promotion);
 
         //Act
-        float discountedPrice = purchaseManagementService.applyPromotion(game, LocalDate.of(2024,10,10));
+        float discountedPrice = purchaseManagementService.applyPromotion(game);
 
         //Assert
         assertEquals(game.getPrice()/2, discountedPrice); //asssert that the cost is reduced by half
@@ -721,12 +777,12 @@ public class testPurchaseManagementService {
         //Arrange
         Promotion promotion = new Promotion(110);
         promotion.setStartDate(Date.valueOf(LocalDate.of(2004,12,2)));
-        promotion.setEndDate(Date.valueOf(LocalDate.of(2040,12,2)));//apply a 110% promotion to the game
+        promotion.setEndDate(Date.valueOf(LocalDate.of(2040,12,2)));//try to apply a 110% promotion to the game
         promotion.addGame(game);
         game.addPromotion(promotion);
 
         //Act
-        float discountedPrice = purchaseManagementService.applyPromotion(game, LocalDate.of(2024,10,10));
+        float discountedPrice = purchaseManagementService.applyPromotion(game);
 
         //Assert
         assertEquals(0f, discountedPrice); //assert that the game is free (only 100% was applied)
@@ -738,10 +794,10 @@ public class testPurchaseManagementService {
         Promotion promotion = new Promotion(50);
         promotion.addGame(game);
         promotion.setStartDate(Date.valueOf(LocalDate.of(2004,1,2)));
-        promotion.setEndDate(Date.valueOf(LocalDate.of(2040,1,2)));//apply a 50% promotion to the game
+        promotion.setEndDate(Date.valueOf(LocalDate.of(2005,1,2)));//apply a 50% promotion to the game
 
         //Act
-        float discountedPrice = purchaseManagementService.applyPromotion(game, LocalDate.of(2044,10,10));
+        float discountedPrice = purchaseManagementService.applyPromotion(game);
 
         //Assert
         assertEquals(game.getPrice(), discountedPrice); //asssert that the cost did not change
@@ -750,7 +806,7 @@ public class testPurchaseManagementService {
     @Test
     public void testApplyPromotionWithNoPromotion() {
         //Act
-        float discountedPrice = purchaseManagementService.applyPromotion(game, LocalDate.of(2044,10,10));
+        float discountedPrice = purchaseManagementService.applyPromotion(game);
 
         //Assert
         assertEquals(game.getPrice(), discountedPrice); //asssert that the cost did not change
@@ -761,7 +817,7 @@ public class testPurchaseManagementService {
 
 
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purchaseManagementService.applyPromotion(null, LocalDate.of(2024,10,10)));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purchaseManagementService.applyPromotion(null));
 
         //Assert
         assertEquals("Game is null!",exception.getMessage());
@@ -771,7 +827,7 @@ public class testPurchaseManagementService {
     public void testApplyPromotionWithInvalidDate() {
 
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purchaseManagementService.applyPromotion(game, null));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purchaseManagementService.applyPromotion(game));
 
         //Assert
         assertEquals("Date is null!",exception.getMessage());
@@ -781,7 +837,7 @@ public class testPurchaseManagementService {
     public void testCheckoutWithWrongCreditCard() {
 
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purchaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), 1, LocalDate.of(2004,10,20)));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purchaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), 1));
 
         //Assert
         assertEquals("Credit card does not belong to this customer", exception.getMessage());
@@ -792,7 +848,7 @@ public class testPurchaseManagementService {
     public void testCheckoutWithExpiredCreditCard() {
 
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purchaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), creditCard.getId(), LocalDate.of(2050,10,20)));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purchaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), creditCard.getId()));
 
         //Assert
         assertEquals("Credit card is expired", exception.getMessage());
@@ -803,7 +859,7 @@ public class testPurchaseManagementService {
     public void testCheckoutWithNullDate() {
 
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purchaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), creditCard.getId(), null));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purchaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), creditCard.getId()));
 
         //Assert
         assertEquals("Purchase date is null", exception.getMessage());
@@ -814,7 +870,7 @@ public class testPurchaseManagementService {
     public void testCheckoutEmptyCart() {
 
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purchaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), creditCard.getId(),LocalDate.of(2024,10,10)));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purchaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), creditCard.getId()));
 
         //Assert
         assertEquals("Cannot checkout an empty cart!", exception.getMessage());
@@ -828,7 +884,7 @@ public class testPurchaseManagementService {
         customer.addGameToCart(game);
 
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purchaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), creditCard.getId(),LocalDate.of(2024,10,10)));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purchaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), creditCard.getId()));
 
         //Assert
         assertEquals("Cannot checkout an inactive game", exception.getMessage());
@@ -842,7 +898,7 @@ public class testPurchaseManagementService {
         game.setStock(0);
 
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purchaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), creditCard.getId(),LocalDate.of(2024,10,10)));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purchaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), creditCard.getId()));
 
         //Assert
         assertEquals("Game is out of stock", exception.getMessage());
@@ -858,7 +914,7 @@ public class testPurchaseManagementService {
         customer.addGameToCart(game2);
 
         //Act
-        purchaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), creditCard.getId(), LocalDate.of(2024,10,10));
+        purchaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), creditCard.getId());
 
         //Arrange
         assertEquals(initialStockGame1 - 1, game.getStock());
@@ -882,7 +938,7 @@ public class testPurchaseManagementService {
         //Arrange
         customer.addGameToCart(game2);
 
-        float cartPrice = purchaseManagementService.getCartPrice(customer.getEmail(), LocalDate.of(2024,10,10));
+        float cartPrice = purchaseManagementService.getCartPrice(customer.getEmail());
 
         assertEquals( game2.getPrice() , cartPrice);
     }
