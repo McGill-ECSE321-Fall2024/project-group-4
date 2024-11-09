@@ -35,6 +35,8 @@ public class PurchaseManagementService {
     private EmployeeRepository employeeRepository;
     @Autowired
     private RefundRequestRepository refundRepository;
+    @Autowired
+    private ManagerRepository managerRepository;
 
 
     @Transactional 
@@ -58,6 +60,15 @@ public class PurchaseManagementService {
     }
 
     @Transactional
+    public Game findGameById(int gameId) {
+        Optional<Game> optGame = gameRepository.findById(gameId);
+        if (optGame.isPresent()) {
+            return optGame.get();
+        }
+        throw new EntityNotFoundException("No Game found with id " + gameId);
+    }
+
+    @Transactional
     public Review findReviewById(int id) {
         Optional<Review> optReview = reviewRepository.findById(id);
         if (optReview.isPresent()) {
@@ -75,6 +86,16 @@ public class PurchaseManagementService {
             return optCustomer.get();
         }
         throw new EntityNotFoundException("No Customer found with email " + email);
+
+    }
+
+    @Transactional
+    public Manager findManagerById(int id) {
+        Optional<Manager> optManager = managerRepository.findById(id);
+        if (optManager.isPresent()) {
+            return optManager.get();
+        }
+        throw new EntityNotFoundException("No manager found with id " + id);
 
     }
 
@@ -149,24 +170,39 @@ public class PurchaseManagementService {
     }
 
     @Transactional
-    public Review postReview(int rating, String text, int purchaseId) {
+    public Review postReview(String reivewerEmail, int rating, String text, int purchaseId) {
         if (text == null) {
             throw new IllegalArgumentException("Review text is null");
         }
         if (rating > 5 || rating < 0) {
             throw new IllegalArgumentException("Review rating is out of range");
         }
+        Customer customer = findCustomerByEmail(reivewerEmail);
         Purchase purchase = findPurchaseById(purchaseId); //will call an exception if the purchase does not exist
+        if (!purchase.getCustomer().equals(customer))
+        {
+            throw new IllegalArgumentException("Customer "+customer.getUsername()+ " does not own the game they want to review");
+        }
+
+
         Review review = new Review(rating, text, purchase);
+
+
         reviewRepository.save(review);
         return review;
     }
 
     @Transactional
-    public void replyToReview(int reviewId, String replyText) {
+    public void replyToReview(int reviewId, String replyText, int managerId) {
 
-        if (replyText == null) throw new IllegalArgumentException("reply text is null");
+        if (replyText == null) throw new IllegalArgumentException("Reply text is null !");
 
+        Manager manager;
+        try {
+            manager = findManagerById(managerId);
+        } catch (EntityNotFoundException e) {
+            throw new IllegalArgumentException("Only manager can reply to reviews !");
+        }
         Review review = findReviewById(reviewId);
         Reply reply = new Reply(replyText, review);
         review.setReply(reply);
@@ -207,21 +243,22 @@ public class PurchaseManagementService {
             gameRepository.save(game);
         }); //remove the games from the customers cart
 
-        gamesInCart.stream().map(game -> new Purchase(dateOfPurchase, applyPromotion(game), game, customer, address, creditCard)).collect(Collectors.toSet()).forEach(purchaseRepository::save);
+        gamesInCart.stream().map(game -> new Purchase(dateOfPurchase, getPromotionalPrice(game.getId()), game, customer, address, creditCard)).collect(Collectors.toSet()).forEach(purchaseRepository::save);
         customerRepository.save(customer);
     }
 
     @Transactional
     public float getCartPrice(String customerEmail) {
         Customer customer = findCustomerByEmail(customerEmail);
-        long price = customer.getCopyCart().stream().mapToLong(game -> (long) applyPromotion(game)).sum();
+        long price = customer.getCopyCart().stream().mapToLong(game -> (long) getPromotionalPrice(game.getId())).sum();
         return (float) price;
     }
 
     @Transactional
-    public float applyPromotion(Game game) {
+    public float getPromotionalPrice(int gameId) {
 
-        if (game == null) throw new IllegalArgumentException("Game is null!");
+        Game game = findGameById(gameId);
+
         LocalDate currentDate = LocalDate.now();
         if (game.getCopyPromotions().isEmpty()) return game.getPrice(); //if there are no promotions
 
@@ -229,11 +266,13 @@ public class PurchaseManagementService {
         float originalPrice = game.getPrice();
         int discount = game.getCopyPromotions().stream().filter(promotion ->
                 (currentDate.isAfter(promotion.getStartDate().toLocalDate()) && currentDate.isBefore(promotion.getEndDate()
-                        .toLocalDate()))).mapToInt(activePromotions -> activePromotions.getDiscount()).sum(); //sum up the active discounts on the game
+                        .toLocalDate()))).mapToInt(Promotion::getDiscount).sum(); //sum up the active discounts on the game
 
         if (discount >= 100) return 0; //discount cannot exceed 100%
         return originalPrice * ((float) discount/100);
     }
+
+
 
     @Transactional
     public Set<CreditCard> viewCustomerCreditCards(String email) {
@@ -283,7 +322,7 @@ public class PurchaseManagementService {
     @Transactional
     public Set<Purchase> viewCustomerPurchaseHistory(String email) {
         Customer customer = findCustomerByEmail(email);
-        return customer.getPurchases();
+        return customer.getCopyPurchasess();
     }
 
     @Transactional
