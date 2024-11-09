@@ -60,18 +60,18 @@ public class GameManagementController {
     }
 
     @PostMapping("/games")
-    public GameDTO addGame(@RequestBody GameDTO gameDTO) {
-        var newGame = gameManagementService.addNewGame(
-                gameDTO.name(),
-                gameDTO.description(),
-                gameDTO.coverPicture(),
-                gameDTO.price(),
-                gameDTO.isActive(),
-                gameDTO.stock(),
-                gameDTO.categories().stream().findFirst().map(CategoryDTO::name).orElse(null)
-        );
+    public GameDTO addGame(
+            @RequestParam String name,
+            @RequestParam String description,
+            @RequestParam String cover,
+            @RequestParam float price,
+            @RequestParam boolean isActive,
+            @RequestParam int stock,
+            @RequestParam List<String> categories) {
+        Game newGame = gameManagementService.addNewGame(name, description, cover, price, isActive, stock, categories);
         return new GameDTO(newGame);
     }
+
 
     @DeleteMapping("/games/{gameId}")
     public void removeGame(@PathVariable int gameId) {

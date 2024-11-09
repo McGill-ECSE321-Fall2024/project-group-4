@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -76,17 +77,22 @@ public class GameManagementService {
     }
 
     @Transactional
-    public Game addNewGame(String name, String description, String cover, float price, boolean isActive, int stock, String categoryName) {
-        var category = categoryRepo.findByName(categoryName).orElseThrow(() -> new EntityNotFoundException("Category not found"));
-
+    public Game addNewGame(String name, String description, String cover, float price, boolean isActive, int stock, List<String> categoryNames) {
+        // Create a new game
         Game newGame = new Game(name, description, cover, price, isActive, stock);
         gameRepository.save(newGame);
 
-        category.addInCategory(newGame);
-        categoryRepo.save(category);
+        // Find each category and associate it with the new game
+        for (String categoryName : categoryNames) {
+            var category = categoryRepo.findByName(categoryName)
+                                    .orElseThrow(() -> new EntityNotFoundException("Category not found: " + categoryName));
+            category.addInCategory(newGame);
+            categoryRepo.save(category);
+        }
 
         return newGame;
     }
+
 
     @Transactional
     public void removeGame(int gameId) {
