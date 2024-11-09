@@ -43,7 +43,6 @@ public class GameManagementServiceTest {
 
     private Category referenceCategory = new Category("test category");
     private Game referenceGame1 = new Game("name1","test desc1","test cover1", 23.33f, true, 40);
-    private Game referenceGame2 = new Game("name2","test desc2","test cover2", 54.50f, true, 320);
     private Customer referenceCustomer = new Customer("John Doe","password","john@doe.com","315-444-2222");
     private Category mostRecentSavedCategory;
     private Category mostRecentDeletedCategory;
@@ -66,7 +65,6 @@ public class GameManagementServiceTest {
         }).when(categoryRepo).delete(any(Category.class));
 
         when(gameRepo.findById(referenceGame1.getId())).thenReturn(Optional.of(referenceGame1));
-        when(gameRepo.findById(referenceGame2.getId())).thenReturn(Optional.of(referenceGame2));
 
         when(customerRepo.findById(referenceCustomer.getId())).thenReturn(Optional.of(referenceCustomer));
 
@@ -164,13 +162,13 @@ public class GameManagementServiceTest {
     public void testRemoveValidGameNotInValidCart(){
         referenceCustomer.addGameToCart(referenceGame1);
 
-        assertThrows(EntityNotFoundException.class, ()-> gameManagementService.removeGameFromCart(referenceCustomer.getId(), referenceGame2.getId()));
+        assertThrows(EntityNotFoundException.class, ()-> gameManagementService.removeGameFromCart(referenceCustomer.getId(), referenceGame1.getId()+1));
         assertEquals(1, referenceCustomer.getCopyCart().size());
     }
 
     @Test
     public void testRemoveValidGameInInvalidCart(){
-        assertThrows(EntityNotFoundException.class, ()-> gameManagementService.removeGameFromCart(-1, referenceGame2.getId()));
+        assertThrows(EntityNotFoundException.class, ()-> gameManagementService.removeGameFromCart(-1, referenceGame1.getId()+1));
     }
 
     @Test
