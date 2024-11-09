@@ -129,7 +129,7 @@ public class PurchaseManagementService {
 
 
     @Transactional
-    public CreditCard createCreditCard(int cardNumber, String cvv, String expiryDate, String customerEmail, int addressId) {
+    public CreditCard addCreditCardToCustomerWallet(int cardNumber, String cvv, String expiryDate, String customerEmail, int addressId) {
 
         Matcher cvvMatcher = Pattern.compile("^\\d{3}$").matcher(cvv); //create a Regex to identify and match valid CVV patterns
         if (!cvvMatcher.matches()) {
@@ -280,17 +280,7 @@ public class PurchaseManagementService {
         return customer.getCopyofCreditCards();
     }
 
-    @Transactional
-    public void addCreditCardToCustomerWallet(String customerEmail, int creditCardId) {
-        Customer customer = findCustomerByEmail(customerEmail);
-        CreditCard creditCard = findCreditCardById(creditCardId);
 
-        creditCard.setCustomer(customer);
-        customer.addCreditCardToWallet(creditCard);
-
-        creditCardRepository.save(creditCard);
-        customerRepository.save(customer);
-    }
 
     @Transactional
     public void removeCreditCardFromWallet(String customerEmail, int creditCardId) {

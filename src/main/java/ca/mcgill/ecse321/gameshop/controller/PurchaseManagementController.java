@@ -7,7 +7,6 @@ import ca.mcgill.ecse321.gameshop.serviceClasses.PurchaseManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -48,13 +47,13 @@ public class PurchaseManagementController {
         return new AddressDTO(purchaseManagementService.findAddressById(addressId));
     }
 
-    @PostMapping("{customerEmail}/creditCards")
-    public CreditCardDTO createCreditCard(@RequestBody int cardNumber,
-                                          @RequestBody String cvv,
-                                          @PathVariable String customerEmail,
-                                          @RequestBody String expiryDate,
-                                          @RequestBody int addressId) {
-        return new CreditCardDTO(purchaseManagementService.createCreditCard(cardNumber,cvv,expiryDate,customerEmail,addressId));
+    @PutMapping("{customerEmail}/creditCards/{cardNumber}")
+    public CreditCardDTO addCreditCardToCustomerWallet(@PathVariable int cardNumber,
+                                                       @RequestBody String cvv,
+                                                       @PathVariable String customerEmail,
+                                                       @RequestBody String expiryDate,
+                                                       @RequestBody int addressId) {
+        return new CreditCardDTO(purchaseManagementService.addCreditCardToCustomerWallet(cardNumber,cvv,expiryDate,customerEmail,addressId));
 
     }
 
@@ -92,11 +91,6 @@ public class PurchaseManagementController {
     public Set<CreditCardDTO> getCreditCards(@PathVariable String customerEmail) {
      Set<CreditCard> wallet = purchaseManagementService.viewCustomerCreditCards(customerEmail);
      return wallet.stream().map(CreditCardDTO::new).collect(Collectors.toSet());
-    }
-
-    @PutMapping("{customerEmail}/creditCards/{creditCardId}")
-    public void addCreditCardToWallet(@PathVariable String customerEmail, @PathVariable int creditCardId) {
-        purchaseManagementService.addCreditCardToCustomerWallet(customerEmail, creditCardId);
     }
 
     @DeleteMapping("{customerEmail}/creditCards/{creditCardId}")
