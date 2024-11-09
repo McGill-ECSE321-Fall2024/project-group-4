@@ -95,7 +95,7 @@ public class testPurchaseManagementService {
         inactiveEmployee = new Employee("inactive", "password", false);
         referenceRequest = new RefundRequest(purchase, RequestStatus.PENDING, refundText, null);
         approvedRequest = new RefundRequest(purchase, RequestStatus.APPROVED, refundText, null);
-        deniedRequest = new RefundRequest(purchase, RequestStatus.DENIED, refundText, null);
+        deniedRequest = new RefundRequest(purchase, RequestStatus.DENIED, refundText, validEmployee);
 
         customer.addAddress(cusomterAddress);
         customer.addCreditCardToWallet(creditCard);
@@ -281,6 +281,33 @@ public class testPurchaseManagementService {
         assertEquals("Only pending requests can be denied.", exception.getMessage());
     }
 
+    @Test
+    public void testAddReviewerToRefund() {
+        //Act
+        purchaseManagementService.addReviewerToRefundRequest(referenceRequest.getId(), validEmployee.getUsername());
+
+        //Assert
+        assertEquals(validEmployee, referenceRequest.getReviewer());
+        assertTrue(validEmployee.getRefundRequests().contains(referenceRequest));
+    }
+
+    @Test
+    public void testAddInvalidReviewerToRefund() {
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.addReviewerToRefundRequest(deniedRequest.getId(), validEmployee.getUsername()));
+
+        //Assert
+        assertEquals("Refund already has reviewer!", exception.getMessage());
+    }
+
+    @Test
+    public void testAddInvalidReviewerToRefund2() {
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.addReviewerToRefundRequest(referenceRequest.getId(), inactiveEmployee.getUsername()));
+
+        //Assert
+        assertEquals("Cannot assign an inactive employee", exception.getMessage());
+    }
 
     @Test
     public void testFindCustomerByEmail() {
