@@ -347,7 +347,7 @@ public class PurchaseManagementService {
         }
 
         if (!reviewer.getRefundRequests().contains(refund)) {
-            throw new IllegalArgumentException("This employee is not assigned to review this refund request.");
+            throw new IllegalArgumentException("Refund request is not assigned to this employee.");
         }
 
         refund.setReviewer(null);

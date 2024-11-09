@@ -94,8 +94,10 @@ public class testPurchaseManagementService {
         validEmployee = new Employee("employee", "password", true);
         inactiveEmployee = new Employee("inactive", "password", false);
         referenceRequest = new RefundRequest(purchase, RequestStatus.PENDING, refundText, null);
-        approvedRequest = new RefundRequest(purchase, RequestStatus.APPROVED, refundText, null);
+        approvedRequest = new RefundRequest(purchase, RequestStatus.APPROVED, refundText, validEmployee);
         deniedRequest = new RefundRequest(purchase, RequestStatus.DENIED, refundText, validEmployee);
+
+        validEmployee.addRefundRequest(approvedRequest);
 
         customer.addAddress(cusomterAddress);
         customer.addCreditCardToWallet(creditCard);
@@ -307,6 +309,34 @@ public class testPurchaseManagementService {
 
         //Assert
         assertEquals("Cannot assign an inactive employee", exception.getMessage());
+    }
+
+    @Test
+    public void testRemoveReviewerFromRefund() {
+        //Act
+        purchaseManagementService.removeReviewerFromRefundRequest(approvedRequest.getId(), validEmployee.getUsername());
+
+        //Assert
+        assertNull(approvedRequest.getReviewer());
+        assertEquals(0, validEmployee.getRefundRequests().size());
+    }
+
+    @Test
+    public void testRemoveInvalidReviewerFromRefund()  {
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.removeReviewerFromRefundRequest(referenceRequest.getId(), validEmployee.getUsername()));
+
+        //Assert
+        assertEquals("Employee is not the reviewer of this refund request.", exception.getMessage());
+    }
+
+    @Test 
+    public void testRemoveInvalidReviewerFromRefund2() {
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.removeReviewerFromRefundRequest(deniedRequest.getId(), validEmployee.getUsername()));
+
+        //Assert
+        assertEquals("Refund request is not assigned to this employee.", exception.getMessage());
     }
 
     @Test
