@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.gameshop.serviceClasses;
 
 import ca.mcgill.ecse321.gameshop.DAO.*;
 import ca.mcgill.ecse321.gameshop.model.*;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,17 +42,17 @@ public class PurchaseManagementService {
         if (optRefund.isPresent()) {
             return optRefund.get();
         }
-        throw new IllegalArgumentException("No Refund Request found with id " + id);
+        throw new EntityNotFoundException("No Refund Request found with id " + id);
     }
     @Transactional
     public Employee findEmployeeByUsername(String username) {
-        if (username == null) throw new IllegalArgumentException("Employee username is null!");
+        if (username == null) throw new EntityNotFoundException("Employee username is null!");
 
         Optional<Employee> optEmployee = employeeRepository.findByUsername(username);
         if (optEmployee.isPresent()) {
             return optEmployee.get();
         }
-        throw new IllegalArgumentException("No Employee found with username " + username);
+        throw new EntityNotFoundException("No Employee found with username " + username);
     }
 
     @Transactional
@@ -60,7 +61,7 @@ public class PurchaseManagementService {
         if (optReview.isPresent()) {
             return optReview.get();
         }
-        throw new IllegalArgumentException("No Review found with id " + id);
+        throw new EntityNotFoundException("No Review found with id " + id);
     }
 
     @Transactional
@@ -71,7 +72,7 @@ public class PurchaseManagementService {
         if (optCustomer.isPresent()) {
             return optCustomer.get();
         }
-        throw new IllegalArgumentException("No Customer found with email " + email);
+        throw new EntityNotFoundException("No Customer found with email " + email);
 
     }
 
@@ -81,7 +82,7 @@ public class PurchaseManagementService {
         if (optPurchase.isPresent()) {
             return optPurchase.get();
         }
-        throw new IllegalArgumentException("No Purchase found with id " + id);
+        throw new EntityNotFoundException("No Purchase found with id " + id);
     }
 
     @Transactional
@@ -90,7 +91,7 @@ public class PurchaseManagementService {
         if (optionalCreditCard.isPresent()) {
             return optionalCreditCard.get();
         }
-        throw new IllegalArgumentException("No Credit Card found with id " + creditCardId);
+        throw new EntityNotFoundException("No Credit Card found with id " + creditCardId);
     }
 
     @Transactional
@@ -99,7 +100,7 @@ public class PurchaseManagementService {
         if (optAdress.isPresent()) {
             return optAdress.get();
         }
-        throw new IllegalArgumentException("No Address found with id " + addressId);
+        throw new EntityNotFoundException("No Address found with id " + addressId);
     }
 
 

@@ -3,14 +3,13 @@ package ca.mcgill.ecse321.gameshop.serviceTests;
 import ca.mcgill.ecse321.gameshop.DAO.*;
 import ca.mcgill.ecse321.gameshop.model.*;
 import ca.mcgill.ecse321.gameshop.serviceClasses.PurchaseManagementService;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -156,7 +155,7 @@ public class testPurchaseManagementService {
     @Test
     public void testFindInvalidEmployeeByUsername() {
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.findEmployeeByUsername("asdf"));
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> purchaseManagementService.findEmployeeByUsername("asdf"));
 
         //Assert
         assertEquals("No Employee found with username asdf", exception.getMessage());
@@ -166,7 +165,7 @@ public class testPurchaseManagementService {
     @Test
     public void testFindInvalidEmployeeByUsername2() {
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.findEmployeeByUsername(null));
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> purchaseManagementService.findEmployeeByUsername(null));
 
         //Assert
         assertEquals("Employee username is null!", exception.getMessage());
@@ -190,7 +189,7 @@ public class testPurchaseManagementService {
     @Test
     public void testFindInvalidRefundById() {
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.findRefundById(-1));
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> purchaseManagementService.findRefundById(-1));
 
         //Assert
         assertEquals("No Refund Request found with id -1", exception.getMessage());
@@ -359,7 +358,7 @@ public class testPurchaseManagementService {
     @Test
     public void testFindInvalidCustomerByEmail() {
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.findCustomerByEmail("invalidEmail"));
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> purchaseManagementService.findCustomerByEmail("invalidEmail"));
 
         //Assert
         assertEquals("No Customer found with email invalidEmail", exception.getMessage());
@@ -399,7 +398,7 @@ public class testPurchaseManagementService {
     @Test
     public void testFindInvalidPurchaseById() {
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.findPurchaseById(-5));
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> purchaseManagementService.findPurchaseById(-5));
 
         //Assert
         assertEquals("No Purchase found with id -5", exception.getMessage());
@@ -428,7 +427,7 @@ public class testPurchaseManagementService {
     @Test
     public void testFindInvalidReviewByID() {
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.findReviewById(-5));
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> purchaseManagementService.findReviewById(-5));
 
         //Assert
         assertEquals("No Review found with id -5", exception.getMessage());
@@ -456,7 +455,7 @@ public class testPurchaseManagementService {
     @Test
     public void testFindInvalidAddressById() {
         //Act
-        IllegalArgumentException exception = assertThrows( IllegalArgumentException.class ,()->purchaseManagementService.findAddressById(-5));
+        EntityNotFoundException exception = assertThrows( EntityNotFoundException.class ,()->purchaseManagementService.findAddressById(-5));
 
         //Assert
         assertEquals("No Address found with id -5", exception.getMessage());
@@ -484,7 +483,7 @@ public class testPurchaseManagementService {
     @Test
     public void testFindInvalidCreditCardById() {
         //Act
-        IllegalArgumentException exception = assertThrows( IllegalArgumentException.class ,()->purchaseManagementService.findCreditCardById(-5));
+        EntityNotFoundException exception = assertThrows( EntityNotFoundException.class ,()->purchaseManagementService.findCreditCardById(-5));
 
         //Assert
         assertEquals("No Credit Card found with id -5", exception.getMessage());
@@ -869,7 +868,7 @@ public class testPurchaseManagementService {
         assertTrue(game2.getCopyInCartOf().isEmpty());
         assertTrue(customer.getCopyCart().isEmpty());
 
-        assertEquals(3, customer.getPurchases().size()); //note that we already have a purchase in customer from initialization
+        assertEquals(4, customer.getPurchases().size()); //note that we already have two purchases in customer from initialization
 
         verify(customerRepository, times(1)).save(customer);
         verify(gameRepository, times(1)).save(game);
