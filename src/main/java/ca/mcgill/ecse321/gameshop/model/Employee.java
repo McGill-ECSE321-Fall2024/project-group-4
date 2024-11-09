@@ -74,15 +74,11 @@ public class Employee extends Account {
     }
 
     public void setAccount(Account account) {
-
         this.account = account;
-
     }
 
 
     public Account getAccount() {
-
         return account;
-
     }
 }

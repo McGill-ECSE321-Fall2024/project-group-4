@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ManagerRepository extends CrudRepository<Manager, Integer> {
     Manager findByAccount(Account account);
+    Manager findByManagerID(int managerID);
 }

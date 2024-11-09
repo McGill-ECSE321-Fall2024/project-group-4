@@ -1,4 +1,4 @@
-package test.serviceTests;
+package ca.mcgill.ecse321.gameshop.serviceTests;
 
 import ca.mcgill.ecse321.gameshop.DAO.*;
 import ca.mcgill.ecse321.gameshop.model.*;
@@ -16,7 +16,6 @@ import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.*;
@@ -66,7 +65,6 @@ public class testAccountManagementService {
     @BeforeEach
     public void setUp(){
         //initialize all fields
-        account1 = new Account("account1", "password1");
         // account2 = new Account("account2", "password2");
         customer1 = new Customer("customer1", "password1", "customer1@email.com", "0123456789");
         employee1 = new Employee("employee1", "password1", true);
@@ -80,10 +78,10 @@ public class testAccountManagementService {
 
         when(customerRepository.save(any(Customer.class))).thenReturn(customer1);
         when(customerRepository.findByCustomerID(0)).thenReturn(customer1);
-        when(customerRepository.findByCustomerID(1)).thenReturn(customer2);
+        // when(customerRepository.findByCustomerID(1)).thenReturn(customer2);
         when(customerRepository.findByCustomerID(-1)).thenReturn(null);
         when(customerRepository.findByEmail(customer1.getEmail())).thenReturn(Optional.of(customer1));
-        when(customerRepository.findByEmail(customer2.getEmail())).thenReturn(Optional.of(customer2));
+        // when(customerRepository.findByEmail(customer2.getEmail())).thenReturn(Optional.of(customer2));
         when(customerRepository.findByEmail("invalidEmail")).thenReturn(Optional.empty());
 
         when(employeeRepository.save(any(Employee.class))).thenReturn(employee1);
@@ -96,76 +94,16 @@ public class testAccountManagementService {
     }
 
     /**
-     * Test for creating an account, success
-     * 
-     * @author Ana Gordon
-     */
-    @Test
-    public void testCreateAccount(){
-        // Act
-        Account account = null;
-        try {
-            account = accountManagementService.createAccount("account1", "password1");
-        } catch (IllegalArgumentException e) {
-            fail(e.getMessage());
-        }
-        // Assert
-        assertNotNull(account);
-        assertEquals("account1", account.getUsername());
-        assertEquals("password1", account.getPassword());
-    }
-
-    /**
-     * Test for creating an account, fail
-     * 
-     * @author Ana Gordon
-     */
-    @Test
-    public void testCreateAccountUsernameNull(){
-        // Act
-        Account account = null;
-        String error = null;
-        try {
-            account = accountManagementService.createAccount(null, "password1");
-        } catch (IllegalArgumentException e) {
-            error = e.getMessage();
-        }
-        // Assert
-        assertNull(account);
-        assertEquals("Username cannot be null", error);
-    }
-
-    /**
-     * Test for creating an account, fail
-     * 
-     * @author Ana Gordon
-     */
-    @Test
-    public void testCreateAccountPasswordNull(){
-        // Act
-        Account account = null;
-        String error = null;
-        try {
-            account = accountManagementService.createAccount("account1", null);
-        } catch (IllegalArgumentException e) {
-            error = e.getMessage();
-        }
-        // Assert
-        assertNull(account);
-        assertEquals("Password cannot be null", error);
-    }
-
-    /**
      * Test for creating a customer account, success
      * 
      * @author Ana Gordon
      */
     @Test
-    public void testCreateCustomerAccount(){
+    public void testcreateCustomer(){
         // Act
         Customer customer = null;
         try {
-            customer = accountManagementService.createCustomerAccount("customer1", "password1", "email", "phone");
+            customer = accountManagementService.createCustomer(customer1.getEmail(), customer1.getPassword(), customer1.getUsername(), customer1.getPhoneNumber());
         } catch (IllegalArgumentException e) {
             fail(e.getMessage());
         }
@@ -175,6 +113,7 @@ public class testAccountManagementService {
         assertEquals("password1", customer.getPassword());
         assertEquals("email", customer.getEmail());
         assertEquals("phone", customer.getPhoneNumber());
+        verify(customerRepository, times(1)).findByEmail(customer1.getEmail());
     }
 
     /**
@@ -183,38 +122,19 @@ public class testAccountManagementService {
      * @author Ana Gordon
      */
     @Test
-    public void testCreateCustomerAccountEmailNull(){
+    public void testcreateCustomerEmailNull(){
         // Act
         Customer customer = null;
-        String error = null;
+        String exception = null;
         try {
-            customer = accountManagementService.createCustomerAccount("customer1", "password1", null, "phone");
+            customer = accountManagementService.createCustomer(null, customer1.getPassword(), customer1.getUsername(), customer1.getPhoneNumber());
         } catch (IllegalArgumentException e) {
-            error = e.getMessage();
+            exception = e.getMessage();
         }
         // Assert
-        assertNull(customer);
-        assertEquals("Email cannot be null", error);
-    }
 
-    /**
-     * Test for creating a customer account, fail
-     * 
-     * @author Ana Gordon
-     */
-    @Test
-    public void testCreateCustomerAccountPhoneNull(){
-        // Act
-        Customer customer = null;
-        String error = null;
-        try {
-            customer = accountManagementService.createCustomerAccount("customer1", "password1", "email", null);
-        } catch (IllegalArgumentException e) {
-            error = e.getMessage();
-        }
-        // Assert
-        assertNull(customer);
-        assertEquals("Phone number cannot be null", error);
+        assertEquals("Email is null!", exception);
+        verify(customerRepository, times(0)).findByEmail(null);
     }
 
     /**
@@ -223,18 +143,40 @@ public class testAccountManagementService {
      * @author Ana Gordon
      */
     @Test
-    public void testCreateCustomerAccountEmailInvalid(){
+    public void testcreateCustomerEmailInvalid(){
         // Act
         Customer customer = null;
         String error = null;
         try {
-            customer = accountManagementService.createCustomerAccount("customer1", "password1", "invalidEmail", "phone");
+            customer = accountManagementService.createCustomer("invalidEmail", customer1.getPassword(), customer1.getUsername(), customer1.getPhoneNumber());
         } catch (IllegalArgumentException e) {
             error = e.getMessage();
         }
         // Assert
         assertNull(customer);
         assertEquals("Invalid email", error);
+        verify(customerRepository, times(1)).findByEmail("invalidEmail");
+    }
+
+    /**
+     * Test for creating a customer account, fail
+     * 
+     * @author Ana Gordon
+     */
+    @Test
+    public void testcreateCustomerEmailAlreadyExists(){
+        // Act
+        Customer customer = null;
+        String error = null;
+        try {
+            customer = accountManagementService.createCustomer(customer1.getEmail(), customer1.getPassword(), customer1.getUsername(), customer1.getPhoneNumber());
+        } catch (IllegalArgumentException e) {
+            error = e.getMessage();
+        }
+        // Assert
+        assertNull(customer);
+        assertEquals("Email already exists", error);
+        verify(customerRepository, times(1)).findByEmail(customer1.getEmail());
     }
 
     /** 
@@ -243,18 +185,19 @@ public class testAccountManagementService {
      * @author Ana Gordon
      */
     @Test
-    public void testCreateCustomerAccountUsernameNull(){
+    public void testcreateCustomerUsernameNull(){
         // Act
         Customer customer = null;
         String error = null;
         try {
-            customer = accountManagementService.createCustomerAccount(null, "password1", "email", "phone");
+            customer = accountManagementService.createCustomer(null, "password1", "email", "phone");
         } catch (IllegalArgumentException e) {
             error = e.getMessage();
         }
         // Assert
         assertNull(customer);
         assertEquals("Username cannot be null", error);
+        verify(customerRepository, times(0)).findByEmail(null);
     }
 
     /**
@@ -263,18 +206,19 @@ public class testAccountManagementService {
      * @author Ana Gordon
      */
     @Test
-    public void testCreateCustomerAccountPasswordNull(){
+    public void testcreateCustomerPasswordNull(){
         // Act
         Customer customer = null;
         String error = null;
         try {
-            customer = accountManagementService.createCustomerAccount("customer1", null, "email", "phone");
+            customer = accountManagementService.createCustomer("customer1", null, "email", "phone");
         } catch (IllegalArgumentException e) {
             error = e.getMessage();
         }
         // Assert
         assertNull(customer);
         assertEquals("Password cannot be null", error);
+        verify(customerRepository, times(0)).findByEmail("customer1");
     }
 
     /**
@@ -283,11 +227,11 @@ public class testAccountManagementService {
      * @author Ana Gordon
      */
     @Test
-    public void testCreateEmployeeAccount(){
+    public void testcreateEmployee(){
         // Act
         Employee employee = null;
         try {
-            employee = accountManagementService.createEmployeeAccount("employee1", "password1", true);
+            employee = accountManagementService.createEmployee("employee1", "password1", true);
         } catch (IllegalArgumentException e) {
             fail(e.getMessage());
         }
@@ -295,7 +239,7 @@ public class testAccountManagementService {
         assertNotNull(employee);
         assertEquals("employee1", employee.getUsername());
         assertEquals("password1", employee.getPassword());
-        assertTrue(employee.getIsManager());
+        verify(employeeRepository, times(1)).findByUsername("employee1");
     }
 
     /**
@@ -304,18 +248,19 @@ public class testAccountManagementService {
      * @author Ana Gordon
      */
     @Test
-    public void testCreateEmployeeAccountNotActive(){
+    public void testcreateEmployeeNotActive(){
         // Act
         Employee employee = null;
         String error = null;
         try {
-            employee = accountManagementService.createEmployeeAccount("employee1", "password1", false);
+            employee = accountManagementService.createEmployee("employee1", "password1", false);
         } catch (IllegalArgumentException e) {
             error = e.getMessage();
         }
         // Assert
         assertNotNull(employee);
         assertEquals("Employee must be active when created", error);
+        verify(employeeRepository, times(1)).findByUsername("employee1");
     }
 
     /**
@@ -324,18 +269,19 @@ public class testAccountManagementService {
      * @author Ana Gordon
      */
     @Test
-    public void testCreateEmployeeAccountUsernameNull(){
+    public void testcreateEmployeeUsernameNull(){
         // Act
         Employee employee = null;
         String error = null;
         try {
-            employee = accountManagementService.createEmployeeAccount(null, "password1", true);
+            employee = accountManagementService.createEmployee(null, "password1", true);
         } catch (IllegalArgumentException e) {
             error = e.getMessage();
         }
         // Assert
         assertNull(employee);
         assertEquals("Username cannot be null", error);
+        verify(employeeRepository, times(0)).findByUsername(null);
     }
 
     /**
@@ -344,18 +290,19 @@ public class testAccountManagementService {
      * @author Ana Gordon
      */
     @Test
-    public void testCreateEmployeeAccountPasswordNull(){
+    public void testcreateEmployeePasswordNull(){
         // Act
         Employee employee = null;
         String error = null;
         try {
-            employee = accountManagementService.createEmployeeAccount("employee1", null, true);
+            employee = accountManagementService.createEmployee("employee1", null, true);
         } catch (IllegalArgumentException e) {
             error = e.getMessage();
         }
         // Assert
         assertNull(employee);
         assertEquals("Password cannot be null", error);
+        verify(employeeRepository, times(0)).findByUsername("employee1");
     }
 
     /**
@@ -364,18 +311,19 @@ public class testAccountManagementService {
      * @author Ana Gordon
      */
     @Test
-    public void testCreateEmployeeAccountIs_ActiveNull(){
+    public void testcreateEmployeeIs_ActiveNull(){
         // Act
         Employee employee = null;
         String error = null;
         try {
-            employee = accountManagementService.createEmployeeAccount("employee1", "password1", null);
+            employee = accountManagementService.createEmployee("employee1", "password1", null);
         } catch (IllegalArgumentException e) {
             error = e.getMessage();
         }
         // Assert
         assertNull(employee);
         assertEquals("Is_Active cannot be null", error);
+        verify(employeeRepository, times(0)).findByUsername("employee1");
     }
 
     /**
@@ -384,11 +332,11 @@ public class testAccountManagementService {
      * @author Ana Gordon
      */
     @Test
-    public void testCreateManagerAccount(){
+    public void testcreateManager(){
         // Act
         Manager manager = null;
         try {
-            manager = accountManagementService.createManagerAccount("manager", "manager");
+            manager = accountManagementService.createManager("manager", "manager");
         } catch (IllegalArgumentException e) {
             fail(e.getMessage());
         }
@@ -396,6 +344,7 @@ public class testAccountManagementService {
         assertNotNull(manager);
         assertEquals("manager", manager.getUsername());
         assertEquals("manager", manager.getPassword());
+        verify(managerRepository, times(1)).findByManagerID(anyInt());
     }
 
     /**
@@ -404,18 +353,20 @@ public class testAccountManagementService {
      * @author Ana Gordon
      */
     @Test
-    public void testCreateManagerAccountUsernameNull(){
+    public void testcreateManagerUsernameNull(){
         // Act
         Manager manager = null;
         String error = null;
         try {
-            manager = accountManagementService.createManagerAccount(null, "manager");
+            manager = accountManagementService.createManager(null, "manager");
+            
         } catch (IllegalArgumentException e) {
             error = e.getMessage();
         }
         // Assert
         assertNull(manager);
         assertEquals("Username cannot be null", error);
+        verify(managerRepository, times(0)).findByManagerID(anyInt());
     }
 
     /**
@@ -424,18 +375,19 @@ public class testAccountManagementService {
      * @author Ana Gordon
      */
     @Test
-    public void testCreateManagerAccountPasswordNull(){
+    public void testcreateManagerPasswordNull(){
         // Act
         Manager manager = null;
         String error = null;
         try {
-            manager = accountManagementService.createManagerAccount("manager", null);
+            manager = accountManagementService.createManager("manager", null);
         } catch (IllegalArgumentException e) {
             error = e.getMessage();
         }
         // Assert
         assertNull(manager);
         assertEquals("Password cannot be null", error);
+        verify(managerRepository, times(0)).findByManagerID(anyInt());
     }
 
     /**
@@ -447,15 +399,16 @@ public class testAccountManagementService {
     public void testGetAccountByUsername(){
         // Act
         Account account = null;
+        boolean result = false;
         try {
             account = accountManagementService.getAccountByUsername("account1");
+            result = true;
         } catch (IllegalArgumentException e) {
             fail(e.getMessage());
         }
         // Assert
-        assertNotNull(account);
-        assertEquals("account1", account.getUsername());
-        assertEquals("password1", account.getPassword());
+        assertTrue(result);
+        verify(accountRepository, times(1)).findByUsername("account1");
     }
 
     /**
@@ -476,6 +429,7 @@ public class testAccountManagementService {
         // Assert
         assertNull(account);
         assertEquals("Account not found", error);
+        verify(accountRepository, times(1)).findByUsername("invalidUsername");
     }
 
     /**
@@ -484,11 +438,11 @@ public class testAccountManagementService {
      * @author Ana Gordon
      */
     @Test
-    public void testGetAccountByAccountID(){
+    public void testGetAccountByID(){
         // Act
         Account account = null;
         try {
-            account = accountManagementService.getAccountByAccountID(1);
+            account = accountManagementService.getAccountByID(1);
         } catch (IllegalArgumentException e) {
             fail(e.getMessage());
         }
@@ -496,6 +450,7 @@ public class testAccountManagementService {
         assertNotNull(account);
         assertEquals("account1", account.getUsername());
         assertEquals("password1", account.getPassword());
+        verify(accountRepository, times(1)).findByAccountID(1);
     }
 
     /**
@@ -504,18 +459,19 @@ public class testAccountManagementService {
      * @author Ana Gordon
      */
     @Test
-    public void testGetAccountByAccountIDInvalid(){
+    public void testGetAccountByIDInvalid(){
         // Act
         Account account = null;
         String error = null;
         try {
-            account = accountManagementService.getAccountByAccountID(-1);
+            account = accountManagementService.getAccountByID(-1);
         } catch (IllegalArgumentException e) {
             error = e.getMessage();
         }
         // Assert
         assertNull(account);
         assertEquals("Account not found", error);
+        verify(accountRepository, times(0)).findByAccountID(-1);
     }
 
     /**
@@ -526,15 +482,16 @@ public class testAccountManagementService {
     @Test
     public void testDeactivateEmployee(){
         // Act
-        Employee employee = null;
+        Employee employee = new Employee("employee1", "password1", true);
+        Boolean deactivated = null;
         try {
-            employee = accountManagementService.deactivateEmployee(0);
+            deactivated = accountManagementService.deactivateEmployee(employee.getUsername());
         } catch (IllegalArgumentException e) {
             fail(e.getMessage());
         }
         // Assert
-        assertNotNull(employee);
-        assertFalse(employee.getIsManager());
+        assertNotNull(deactivated);
+        verify(employeeRepository, times(1)).findByUsername("employee1");
     }
 
     /**
@@ -545,16 +502,18 @@ public class testAccountManagementService {
     @Test
     public void testDeactivateEmployeeInvalid(){
         // Act
-        Employee employee = null;
         String error = null;
+        Employee employee = new Employee("employee1", "password1", true); //check this 
+        Boolean deactivated = null;
         try {
-            employee = accountManagementService.deactivateEmployee(-1);
+            deactivated = accountManagementService.deactivateEmployee("invalidUsername");
         } catch (IllegalArgumentException e) {
             error = e.getMessage();
         }
         // Assert
-        assertNull(employee);
+        assertNull(deactivated);
         assertEquals("Employee not found", error);
+        verify(employeeRepository, times(0)).findByUsername("invalidUsername");
     }
 
     /**
@@ -565,15 +524,16 @@ public class testAccountManagementService {
     @Test
     public void testActivateEmployee(){
         // Act
-        Employee employee = null;
+        Employee employee = new Employee("employee1", "password1", false);
+        Boolean activated = null;
         try {
-            employee = accountManagementService.activateEmployee(1);
+            activated = accountManagementService.activateEmployee(employee.getUsername());
         } catch (IllegalArgumentException e) {
             fail(e.getMessage());
         }
         // Assert
-        assertNotNull(employee);
-        assertTrue(employee.getIsManager());
+        assertNotNull(activated);
+        verify(employeeRepository, times(1)).findByUsername("employee1");
     }
 
     /**
@@ -584,16 +544,18 @@ public class testAccountManagementService {
     @Test
     public void testActivateEmployeeInvalid(){
         // Act
-        Employee employee = null;
         String error = null;
+        Boolean activated = null;
+
         try {
-            employee = accountManagementService.activateEmployee(-1);
+            activated = accountManagementService.activateEmployee("invalidUsername");
         } catch (IllegalArgumentException e) {
             error = e.getMessage();
         }
         // Assert
-        assertNull(employee);
+        assertNull(activated);
         assertEquals("Employee not found", error);
+        verify(employeeRepository, times(0)).findByUsername("invalidUsername");
     }
 
     /** 
@@ -614,6 +576,7 @@ public class testAccountManagementService {
         assertNotNull(account);
         assertEquals("account1", account.getUsername());
         assertEquals("password1", account.getPassword());
+        verify(accountRepository, times(1)).findByUsername("account1");
     }
 
     /**
@@ -634,6 +597,7 @@ public class testAccountManagementService {
         // Assert
         assertNull(account);
         assertEquals("Account not found", error);
+        verify(accountRepository, times(0)).findByUsername("invalidUsername");
     }
 
     /**
@@ -654,6 +618,7 @@ public class testAccountManagementService {
         // Assert
         assertNull(account);
         assertEquals("Invalid password", error);
+        verify(accountRepository, times(1)).findByUsername("account1");
     }
 
     /**
@@ -666,13 +631,14 @@ public class testAccountManagementService {
         // Act
         Customer customer = null;
         try {
-            customer = accountManagementService.updateCustomerPassword(0, "newPassword");
+            customer = accountManagementService.updateCustomerPassword("oldPassword", "newPassword", "customer1@email.com");
         } catch (IllegalArgumentException e) {
             fail(e.getMessage());
         }
         // Assert
         assertNotNull(customer);
         assertEquals("newPassword", customer.getPassword());
+        verify(customerRepository, times(1)).findByEmail("customer1@email.com");
     }
 
     /**
@@ -686,13 +652,14 @@ public class testAccountManagementService {
         Customer customer = null;
         String error = null;
         try {
-            customer = accountManagementService.updateCustomerPassword(-1, "newPassword");
+            customer = accountManagementService.updateCustomerPassword("invalidPassword", "newPassword", "customer1@email.com");
         } catch (IllegalArgumentException e) {
             error = e.getMessage();
         }
         // Assert
         assertNull(customer);
         assertEquals("Customer not found", error);
+        verify(customerRepository, times(1)).findByEmail("customer1@email.com");
     }
 
     /**
@@ -703,16 +670,16 @@ public class testAccountManagementService {
     @Test
     public void testLogout(){
         // Act
-        Account account = null;
+        boolean result = false;
         try {
-            account = accountManagementService.logout("account1");
-        } catch (IllegalArgumentException e) {
+            result = accountManagementService.logout("account1");
+        }
+        catch (IllegalArgumentException e) {
             fail(e.getMessage());
         }
         // Assert
-        assertNotNull(account);
-        assertEquals("account1", account.getUsername());
-        assertEquals("password1", account.getPassword());
+        assertTrue(result);
+        verify(accountRepository, times(1)).findByUsername("account1");
     }
 
     /**
@@ -723,16 +690,16 @@ public class testAccountManagementService {
     @Test
     public void testLogoutInvalidUsername(){
         // Act
-        Account account = null;
+        boolean result = false;
         String error = null;
         try {
-            account = accountManagementService.logout("invalidUsername");
+            result = accountManagementService.logout("invalidUsername");
         } catch (IllegalArgumentException e) {
             error = e.getMessage();
         }
         // Assert
-        assertNull(account);
         assertEquals("Account not found", error);
+        verify(accountRepository, times(0)).findByUsername("invalidUsername");
     }
 
     /**
@@ -743,15 +710,16 @@ public class testAccountManagementService {
     @Test
     public void testUpdateCustomerUsername(){
         // Act
-        Customer customer = null;
+        Account account = null;
         try {
-            customer = accountManagementService.updateCustomerUsername(0, "newUsername");
+            account = accountManagementService.updateUsername("newUsername", "oldUsername");
         } catch (IllegalArgumentException e) {
             fail(e.getMessage());
         }
         // Assert
-        assertNotNull(customer);
-        assertEquals("newUsername", customer.getUsername());
+        assertNotNull(account);
+        assertEquals("newUsername", account.getUsername());
+        verify(customerRepository, times(1)).findByEmail("oldUsername");
     }
 
     /**
@@ -762,16 +730,17 @@ public class testAccountManagementService {
     @Test
     public void testUpdateCustomerUsernameInvalid(){
         // Act
-        Customer customer = null;
+        Account account = null;
         String error = null;
         try {
-            customer = accountManagementService.updateCustomerUsername(-1, "newUsername");
+            account = accountManagementService.updateUsername("newUsername", "oldUsername");
         } catch (IllegalArgumentException e) {
             error = e.getMessage();
         }
         // Assert
-        assertNull(customer);
+        assertNull(account);
         assertEquals("Customer not found", error);
+        verify(customerRepository, times(1)).findByEmail("oldUsername");
     }
 
     /**
@@ -784,13 +753,14 @@ public class testAccountManagementService {
         // Act
         Customer customer = null;
         try {
-            customer = accountManagementService.updateCustomerPhoneNumber(0, "newPhoneNumber");
+            customer = accountManagementService.updateCustomerPhoneNumber("phoneNewNumber", "0123456789", "customer1");
         } catch (IllegalArgumentException e) {
             fail(e.getMessage());
         }
         // Assert
         assertNotNull(customer);
         assertEquals("newPhoneNumber", customer.getPhoneNumber());
+        verify(customerRepository, times(1)).findByEmail("customer1@email.com");
     }
 
     /**
@@ -804,13 +774,14 @@ public class testAccountManagementService {
         Customer customer = null;
         String error = null;
         try {
-            customer = accountManagementService.updateCustomerPhoneNumber(-1, "newPhoneNumber");
+            customer = accountManagementService.updateCustomerPhoneNumber("newPhoneNumber", "0123456789", "customer1@email.com");
         } catch (IllegalArgumentException e) {
             error = e.getMessage();
         }
         // Assert
         assertNull(customer);
         assertEquals("Customer not found", error);
+        verify(customerRepository, times(0)).findByEmail("customer1@email.com");
     }
 
 

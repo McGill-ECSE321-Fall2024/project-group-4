@@ -22,7 +22,7 @@ public class TestManager {
     @Autowired
     ManagerRepository managerRepository;
 
-    Manager manager = new Manager();
+    Manager manager = new Manager(null, null);
 
     @AfterEach
     public void tearDown() {
@@ -31,7 +31,7 @@ public class TestManager {
 
     @BeforeEach
     public void setUp() {
-        manager = new Manager();
+        manager = new Manager(null, null);
         manager.setPassword("safePassword");
         manager.setUsername("Bob");
     }

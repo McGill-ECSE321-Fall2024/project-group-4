@@ -1,5 +1,6 @@
 package ca.mcgill.ecse321.gameshop.DAO;
 
+import ca.mcgill.ecse321.gameshop.model.Account;
 import ca.mcgill.ecse321.gameshop.model.Customer;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -10,4 +11,7 @@ import java.util.Optional;
 public interface CustomerRepository extends CrudRepository<Customer, Integer> {
     Optional<Customer> findByEmail(String email);
     List<Customer> findByPhoneNumber(String phoneNumber);
+    Customer findByAccount(Account account);
+    Customer findByCustomerID(int customerID);
+
 }
