@@ -38,7 +38,7 @@ public class Purchase {
         this.deliveryAddress = deliveryAddress;
         this.paymentMethod = paymentMethod;
 
-        customer.getPurchases().add(this);
+        customer.getCopyPurchasess().add(this);
     }
     protected Purchase() {
 
@@ -85,9 +85,9 @@ public class Purchase {
     }
 
     public boolean setCustomer(Customer customer) {
-        this.customer.getPurchases().remove(this);
+        this.customer.getCopyPurchasess().remove(this);
         this.customer = customer;
-        return customer.getPurchases().add(this);
+        return customer.getCopyPurchasess().add(this);
     }
 
     public Address getDeliveryAddress() {
