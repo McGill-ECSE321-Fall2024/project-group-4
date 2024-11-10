@@ -5,6 +5,7 @@ import ca.mcgill.ecse321.gameshop.dto.*;
 import ca.mcgill.ecse321.gameshop.model.CreditCard;
 import ca.mcgill.ecse321.gameshop.serviceClasses.PurchaseManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -18,56 +19,67 @@ public class PurchaseManagementController {
 
 
     @GetMapping("games/{gameId}")
+    @ResponseStatus(HttpStatus.FOUND)
     public GameDTO getGameById(@PathVariable int gameId) {
         return new GameDTO(purchaseManagementService.findGameById(gameId));
     }
 
     @GetMapping("games/promotions/{gameId}")
+    @ResponseStatus(HttpStatus.FOUND)
     public float getPromotionalPrice(@PathVariable int gameId) {
         return purchaseManagementService.getPromotionalPrice(gameId);
     }
 
     @GetMapping("reviews/{reviewId}")
+    @ResponseStatus(HttpStatus.FOUND)
     public ReviewDTO getReviewById(@PathVariable int reviewId) {
         return new ReviewDTO(purchaseManagementService.findReviewById(reviewId));
     }
 
     @PutMapping("customers/{customerEmail}/reviews/{reviewId}/likes")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public void likeReview(@PathVariable int reviewId, @PathVariable String customerEmail) {
         purchaseManagementService.likeReview(customerEmail, reviewId);
     }
 
     @PostMapping("customers/{customerEmail}/reviews")
+    @ResponseStatus(HttpStatus.CREATED)
     public void postReview(@PathVariable String customerEmail, @RequestParam int purchaseId, @RequestParam int rating, @RequestBody String text) {
         purchaseManagementService.postReview(customerEmail,rating,text, purchaseId);
     }
 
     @PostMapping("reviews/{reviewId}/reply")
+    @ResponseStatus(HttpStatus.CREATED)
     public void replyToReview(@PathVariable int reviewId, @RequestParam int managerId, @RequestBody String replyText) {
         purchaseManagementService.replyToReview(reviewId, replyText,managerId);
     }
 
     @GetMapping("customers/{customerEmail}")
+    @ResponseStatus(HttpStatus.FOUND)
     public CustomerDTO getCustomerByEmail(@PathVariable String customerEmail) {
         return new CustomerDTO(purchaseManagementService.findCustomerByEmail(customerEmail));
     }
 
     @GetMapping("purchases/{purchaseId}")
+    @ResponseStatus(HttpStatus.FOUND)
     public PurchaseDTO getPurchaseById(@PathVariable int purchaseId) {
         return new PurchaseDTO(purchaseManagementService.findPurchaseById(purchaseId));
     }
 
     @GetMapping("addresses/{addressId}")
+    @ResponseStatus(HttpStatus.FOUND)
     public AddressDTO getAddressById(@PathVariable int addressId) {
         return new AddressDTO(purchaseManagementService.findAddressById(addressId));
     }
 
     @GetMapping("credit-cards/{creditCardId}")
+    @ResponseStatus(HttpStatus.FOUND)
     public CreditCardDTO getCreditCardById(@PathVariable int creditCardId) {
         return new CreditCardDTO(purchaseManagementService.findCreditCardById(creditCardId));
     }
 
     @PutMapping("customers/{customerEmail}/credit-cards")
+    @ResponseStatus(HttpStatus.CREATED)
     public CreditCardDTO addCreditCardToCustomerWallet(@RequestBody int cardNumber,
                                                        @RequestBody String cvv,
                                                        @PathVariable String customerEmail,
@@ -78,22 +90,26 @@ public class PurchaseManagementController {
     }
 
     @GetMapping("customers/{customerEmail}/credit-cards")
+    @ResponseStatus(HttpStatus.FOUND)
     public Set<CreditCardDTO> getCreditCardsByCustomer(@PathVariable String customerEmail) {
         Set<CreditCard> wallet = purchaseManagementService.viewCustomerCreditCards(customerEmail);
         return wallet.stream().map(CreditCardDTO::new).collect(Collectors.toSet());
     }
 
     @DeleteMapping("customers/{customerEmail}/credit-cards/{creditCardId}")
+    @ResponseStatus(HttpStatus.OK)
     public void removeCreditCardFromWallet(@PathVariable String customerEmail, @PathVariable int creditCardId) {
         purchaseManagementService.removeCreditCardFromWallet(customerEmail, creditCardId);
     }
 
     @PostMapping("customers/{customerEmail}/cart")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public void checkout(@PathVariable String customerEmail, @RequestBody int billingAddressId, @RequestBody int creditCardId) {
         purchaseManagementService.checkout(customerEmail, billingAddressId, creditCardId);
     }
 
     @GetMapping("customers/{customerEmail}/cart/price")
+    @ResponseStatus(HttpStatus.FOUND)
     public float getCartPrice(@PathVariable String customerEmail) {
         return purchaseManagementService.getCartPrice(customerEmail);
     }
