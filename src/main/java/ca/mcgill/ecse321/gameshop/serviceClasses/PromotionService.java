@@ -29,18 +29,12 @@ public class PromotionService {
     }
 
     @Transactional
-    public Game findGameById(int id) {
-        Optional<Game> game = gameRepository.findById(id);
-        if (game.isPresent()) {
-            return game.get();
-        }
-        throw new IllegalArgumentException("Game not found");
-    }
-
-    @Transactional
     public Promotion createPromotion(int discount, Date startDate, Date endDate) {
         Promotion promotion = new Promotion(discount);
 
+        if(discount < 0 || discount > 100) {
+            throw new IllegalArgumentException("Discount must be between 0 and 100");
+        }
         if(endDate.before(Date.valueOf(LocalDate.now()))) {
             throw new IllegalArgumentException("End date cannot be before current date");
         }
@@ -76,6 +70,9 @@ public class PromotionService {
     public Promotion updatePromotion(int id, int discount, Date startDate, Date endDate) {
         Promotion promotion = findPromotionById(id);
 
+        if(discount < 0 || discount > 100) {
+            throw new IllegalArgumentException("Discount must be between 0 and 100");
+        }
         promotion.setDiscount(discount);
         if(endDate.before(Date.valueOf(LocalDate.now()))) {
             throw new IllegalArgumentException("End date cannot be before current date");
