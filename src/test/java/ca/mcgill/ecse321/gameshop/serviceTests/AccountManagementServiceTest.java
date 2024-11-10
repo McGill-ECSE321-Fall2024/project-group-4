@@ -7,12 +7,16 @@ import java.util.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import org.springframework.boot.test.context.SpringBootTest;
+import jakarta.persistence.EntityNotFoundException;
+
+import org.springframework.web.server.ResponseStatusException;
 
 import ca.mcgill.ecse321.gameshop.DAO.*;
 import ca.mcgill.ecse321.gameshop.model.*;
@@ -426,9 +430,7 @@ public class AccountManagementServiceTest {
         //Arrange
         when(customerRepository.findAll()).thenReturn(null); //mock there being no customers in the system
 
-        //Act
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> accountManagementService.getSetOfCustomers());
-
         //Assert
 
         assertEquals("There are no customers in the system",exception.getMessage());
@@ -703,9 +705,8 @@ public class AccountManagementServiceTest {
         String email = "uniqueEmail";
         String password = "validPassword";
 
-
         //Act
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class ,()->accountManagementService.customerLogin(email, password));
+        EntityNotFoundException  exception = assertThrows(EntityNotFoundException .class ,()->accountManagementService.customerLogin(email, password));
 
         //Assert
         assertEquals(exception.getMessage(),"Customer does not exist");
@@ -807,7 +808,7 @@ public class AccountManagementServiceTest {
 
 
         //Act
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class ,()->accountManagementService.employeeLogin(username, password));
+        EntityNotFoundException  exception = assertThrows(EntityNotFoundException .class ,()->accountManagementService.employeeLogin(username, password));
 
         //Assert
         assertEquals(exception.getMessage(),"Employee does not exist");
@@ -926,7 +927,7 @@ public class AccountManagementServiceTest {
 
 
         //Act
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class ,()->accountManagementService.managerLogin(username, password));
+        EntityNotFoundException  exception = assertThrows(EntityNotFoundException .class ,()->accountManagementService.managerLogin(username, password));
 
         //Assert
         assertEquals(exception.getMessage(),"Manager does not exist");
@@ -1051,7 +1052,7 @@ public class AccountManagementServiceTest {
 
 
         // Act
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, ()->accountManagementService.updateCustomerPassword(oldPassword, newPassowrd, email));
+        EntityNotFoundException  exception = assertThrows(EntityNotFoundException .class, ()->accountManagementService.updateCustomerPassword(oldPassword, newPassowrd, email));
 
         //Assert
         assertEquals("Customer does not exist", exception.getMessage());
@@ -1408,7 +1409,7 @@ public class AccountManagementServiceTest {
         String email = "uniqueEmail";
 
         //Act
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, ()->accountManagementService.updateCustomerPhoneNumber(newPhoneNumber, email));
+        EntityNotFoundException  exception = assertThrows(EntityNotFoundException .class, ()->accountManagementService.updateCustomerPhoneNumber(newPhoneNumber, email));
 
         //Assert
         assertEquals("Customer does not exist", exception.getMessage());

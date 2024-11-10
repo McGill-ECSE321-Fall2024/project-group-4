@@ -2,11 +2,9 @@ package ca.mcgill.ecse321.gameshop.serviceClasses;
 
 import ca.mcgill.ecse321.gameshop.DAO.CustomerRepository;
 import ca.mcgill.ecse321.gameshop.DAO.GameRepository;
-import ca.mcgill.ecse321.gameshop.DAO.AccountRepository;
 import ca.mcgill.ecse321.gameshop.DAO.ManagerRepository;
 import ca.mcgill.ecse321.gameshop.DAO.EmployeeRepository;
 
-import ca.mcgill.ecse321.gameshop.model.Account;
 import ca.mcgill.ecse321.gameshop.model.Customer;
 import ca.mcgill.ecse321.gameshop.model.Manager;
 import ca.mcgill.ecse321.gameshop.model.Employee;
@@ -28,8 +26,6 @@ import java.util.stream.StreamSupport;
  */
 @Service
 public class AccountManagementService {
-    @Autowired
-    private AccountRepository accountRepository;
     
     @Autowired
     private EmployeeRepository employeeRepository;
