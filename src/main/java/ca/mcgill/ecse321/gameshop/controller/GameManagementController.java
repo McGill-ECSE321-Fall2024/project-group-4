@@ -17,17 +17,17 @@ public class GameManagementController {
     @Autowired
     private GameManagementService gameManagementService;
 
-    @GetMapping("customers/{customerId}/carts")
+    @GetMapping("customers/{customerId}/cart")
     public List<GameDTO> getGamesInCart(@PathVariable int customerId){
         Set<Game> gamesInCart = gameManagementService.viewGamesInCart(customerId);
         return gamesInCart.stream().map(GameDTO::new).collect(Collectors.toList());
     }
-    @PutMapping("customers/{customerId}/carts/{gameId}")
+    @PutMapping("customers/{customerId}/cart/{gameId}")
     public void addGameToCart(@PathVariable int customerId, @PathVariable int gameId){
         gameManagementService.addGameToCart(customerId, gameId);
     }
 
-    @DeleteMapping("customers/{customerId}/carts/{gameId}")
+    @DeleteMapping("customers/{customerId}/cart/{gameId}")
     public void deleteGameFromCart(@PathVariable int customerId, @PathVariable int gameId){
         gameManagementService.removeGameFromCart(customerId, gameId);
     }
