@@ -42,7 +42,7 @@ public class PurchaseManagementController {
         purchaseManagementService.postReview(customerEmail,rating,text, purchaseId);
     }
 
-    @PostMapping("reviews/{reviewId}/replies")
+    @PostMapping("reviews/{reviewId}/reply")
     public void replyToReview(@PathVariable int reviewId, @RequestParam int managerId, @RequestBody String replyText) {
         purchaseManagementService.replyToReview(reviewId, replyText,managerId);
     }
@@ -88,12 +88,12 @@ public class PurchaseManagementController {
         purchaseManagementService.removeCreditCardFromWallet(customerEmail, creditCardId);
     }
 
-    @PostMapping("customers/{customerEmail}/carts")
+    @PostMapping("customers/{customerEmail}/cart")
     public void checkout(@PathVariable String customerEmail, @RequestBody int billingAddressId, @RequestBody int creditCardId) {
         purchaseManagementService.checkout(customerEmail, billingAddressId, creditCardId);
     }
 
-    @GetMapping("customers/{customerEmail}/carts/price")
+    @GetMapping("customers/{customerEmail}/cart/price")
     public float getCartPrice(@PathVariable String customerEmail) {
         return purchaseManagementService.getCartPrice(customerEmail);
     }
