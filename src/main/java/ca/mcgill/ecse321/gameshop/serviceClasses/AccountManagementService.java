@@ -1,5 +1,6 @@
 package ca.mcgill.ecse321.gameshop.serviceClasses;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
@@ -42,23 +43,21 @@ public class AccountManagementService {
      */
     @Transactional
     public Customer createCustomer(String email, String password, String username, String phoneNumber) {
-        Account account = accountRepository.findByEmail(email);
+
 
         if (email == null || email.trim().length() == 0 || email.contains(" ")) {
             throw new IllegalArgumentException("Email cannot be empty, null, or contain spaces.");
         }
-        if (accountRepository.findByEmail(email) == null) {
-            throw new IllegalArgumentException("Account does not exist.");
-        }
-        if (account == null) {
-            throw new IllegalArgumentException("Account does not exist.");
-        }
+
         if (phoneNumber == null || phoneNumber.trim().length() == 0 || phoneNumber.contains(" ")) {
             throw new IllegalArgumentException("Phone number cannot be empty, null, or contain spaces.");
         }
 
+        if (customerRepository.findByEmail(email) != null) {
+            throw new IllegalArgumentException("Customer with this email already exists.");
+        }
+
         Customer customer = new Customer(username, password, email, phoneNumber);
-        customer.setAccount(account);
         customerRepository.save(customer);
         return customer;
     }
@@ -75,24 +74,15 @@ public class AccountManagementService {
      */
     @Transactional
     public Employee createEmployee(String username, String password, Boolean is_active) {
-        Account account = accountRepository.findByUsername(username);
 
         if (username == null || username.trim().length() == 0 || username.contains(" ")) {
             throw new IllegalArgumentException("Username cannot be empty, null, or contain spaces.");
         }
-        if (accountRepository.findByUsername(username) == null) {
-            throw new IllegalArgumentException("Account does not exist.");
-        }
-        if (account == null) {
-            throw new IllegalArgumentException("Account does not exist.");
-        }
-        
-        Employee employee = employeeRepository.findByAccount(account);
-        if (employee != null) {
+
+        if (!employeeRepository.findByUsername(username).isPresent()) {
             throw new IllegalArgumentException("Employee account already exists.");
         }
-        employee = new Employee(username, password, is_active);
-        employee.setAccount(account);
+        Employee employee = new Employee(username, password, is_active);
         employeeRepository.save(employee);
         return employee;
     }
@@ -121,20 +111,16 @@ public class AccountManagementService {
     /**
      * Activate an employee account by username
      * 
-     * @param username
+     * @param id
      * @return boolean
      * 
      * @Author Ana Gordon
      */
     @Transactional
-    public boolean activateEmployee(String username) {
-        Account account = accountRepository.findByUsername(username);
-        if (account == null) {
-            throw new IllegalArgumentException("Account does not exist.");
-        }
-        Employee employee = employeeRepository.findByAccount(account);
-        if (employee == null) {
-            throw new IllegalArgumentException("Employee does not exist.");
+    public boolean activateEmployee(int id) {
+        Employee employee = employeeRepository.findEmployeeById(id).orElseThrow(()-> new EntityNotFoundException("Employee does not exist"));
+        if (employee.isActive()) {
+            return false;
         }
         employee.setActive(true);
         employeeRepository.save(employee);
@@ -144,20 +130,16 @@ public class AccountManagementService {
     /**
      * Deactivate an employee account by username
      * 
-     * @param username
+     * @param id
      * @return boolean
      * 
      * @Author Ana Gordon
      */
     @Transactional
-    public boolean deactivateEmployee(String username) {
-        Account account = accountRepository.findByUsername(username);
-        if (account == null) {
-            throw new IllegalArgumentException("Account does not exist.");
-        }
-        Employee employee = employeeRepository.findByAccount(account);
-        if (employee == null) {
-            throw new IllegalArgumentException("Employee does not exist.");
+    public boolean deactivateEmployee(int id) {
+        Employee employee = employeeRepository.findEmployeeById(id).orElseThrow(()-> new EntityNotFoundException("Employee does not exist"));
+        if (!employee.isActive()) {
+            return false;
         }
         employee.setActive(false);
         employeeRepository.save(employee);
@@ -165,45 +147,88 @@ public class AccountManagementService {
     }
 
     /**
-     * Login to an account
+     * Login to a customer account
      * 
-     * @param username
+     * @param email
      * @param password
-     * @return Account
+     * @return Customer
      * 
      * @Author Ana Gordon
      */
     @Transactional
-    public Account login(String username, String password) {
-        if (username == null || username.trim().length() == 0 || username.contains(" ")) {
-            throw new IllegalArgumentException("Username cannot be empty, null or contain spaces.");
+    public Customer customerLogin(String email, String password) {
+
+        if (email == null || email.trim().isEmpty() || email.contains(" ")) {
+            throw new IllegalArgumentException("Email cannot be empty, null or contain spaces.");
         }
-        if (password == null || password.trim().length() == 0 || password.contains(" ")) {
+        if (password == null || password.trim().isEmpty() || password.contains(" ")) {
             throw new IllegalArgumentException("Password cannot be empty, null or contain spaces.");
         }
 
-        Account account = accountRepository.findByUsername(username);
-        if (account == null) {
-            throw new IllegalArgumentException("Account does not exist.");
-        }
-        if (!account.getPassword().equals(password)) {
-            throw new IllegalArgumentException("Incorrect password.");
+
+        Customer customer = customerRepository.findByEmail(email).orElseThrow(()-> new EntityNotFoundException("Customer does not exist"));
+        if (!customer.getPassword().equals(password)) {
+            throw new IllegalArgumentException("Wrong password!");
         }
 
-        //check if account is an employee
-        Employee employee = employeeRepository.findByAccount(account);
-        if (employee != null) {
-            if (!employee.isActive()) {
-                throw new IllegalArgumentException("Employee account is deactivated.");
-            }
+        return customer;
+    }
+
+    /**
+     * Login to an employee account
+     *
+     * @param username
+     * @param password
+     * @return Employee
+     *
+     * @Author Tarek Namani
+     */
+    @Transactional
+    public Employee employeeLogin(String username, String password) {
+
+        if (username == null || username.trim().isEmpty() || username.contains(" ")) {
+            throw new IllegalArgumentException("Username cannot be empty, null or contain spaces.");
+        }
+        if (password == null || password.trim().isEmpty() || password.contains(" ")) {
+            throw new IllegalArgumentException("Password cannot be empty, null or contain spaces.");
         }
 
-        //check if account is the manager
-        Manager manager = managerRepository.findByAccount(account);
-        if (manager == null) {
-            throw new IllegalArgumentException("Manager account does not exist.");
+
+        Employee employee = employeeRepository.findByUsername(username).orElseThrow(()-> new EntityNotFoundException("Employee does not exist"));
+        if (!employee.getPassword().equals(password)) {
+            throw new IllegalArgumentException("Wrong password!");
+        } else if (!employee.isActive()) {
+            throw new IllegalArgumentException("Account is deactivated!");
         }
-        return account;
+
+        return employee;
+    }
+
+    /**
+     * Login to an employee account
+     *
+     * @param username
+     * @param password
+     * @return Manager
+     *
+     * @Author Tarek Namani
+     */
+    @Transactional
+    public Manager managerLogin(String username, String password) {
+
+        if (username == null || username.trim().isEmpty() || username.contains(" ")) {
+            throw new IllegalArgumentException("Username cannot be empty, null or contain spaces.");
+        }
+        if (password == null || password.trim().isEmpty() || password.contains(" ")) {
+            throw new IllegalArgumentException("Password cannot be empty, null or contain spaces.");
+        }
+
+
+        Manager manager = managerRepository.findManagerByUsername(username).orElseThrow(()-> new EntityNotFoundException("Manager does not exist"));
+        if (!manager.getPassword().equals(password)) {
+            throw new IllegalArgumentException("Wrong password!");
+        }
+        return manager;
     }
 
     /**
@@ -249,34 +274,28 @@ public class AccountManagementService {
             throw new IllegalArgumentException("Username cannot be empty, null or contain spaces.");
         }
 
-        Customer account = customerRepository.findByEmail(email).orElse(null);
-        if (account == null) {
-            throw new IllegalArgumentException("Account does not exist.");
-        }
-        if (!account.getPassword().equals(oldPassword)) {
+        Customer customer = customerRepository.findByEmail(email).orElseThrow(()-> new EntityNotFoundException("Customer does not exist"));
+
+        if (!customer.getPassword().equals(oldPassword)) {
             throw new IllegalArgumentException("Incorrect password.");
         }
 
-        Employee employee = employeeRepository.findByAccount(account);
-        if (employee != null) {
-            throw new IllegalArgumentException("Employee accounts cannot change password.");
-        }
-        account.setPassword(newPassword);
-        accountRepository.save(account);
-        return account;
+        customer.setPassword(newPassword);
+        accountRepository.save(customer);
+        return customer;
     }
 
     /**
      * Update account username
-     * 
      * @param newUsername
      * @param oldUsername
+     * @oaram customerEmail
      * @return Account
      * 
      * @Author Ana Gordon
      */
     @Transactional
-    public Account updateUsername(String newUsername, String oldUsername) {
+    public Customer updateCustomerUsername(String newUsername, String oldUsername, String customerEmail) {
         if (newUsername == null || newUsername.trim().length() == 0 || newUsername.contains(" ")) {
             throw new IllegalArgumentException("New username cannot be empty, null or contain spaces.");
         }
@@ -284,21 +303,10 @@ public class AccountManagementService {
             throw new IllegalArgumentException("Old username cannot be empty, null or contain spaces.");
         }
 
-        Account account = accountRepository.findByUsername(oldUsername);
-        if (account == null) {
-            throw new IllegalArgumentException("Account does not exist.");
-        }
-        if (accountRepository.findByUsername(newUsername) != null) {
-            throw new IllegalArgumentException("Username already in use.");
-        }
-
-        Employee employee = employeeRepository.findByAccount(account);
-        if (employee != null) {
-            throw new IllegalArgumentException("Employee accounts cannot change username.");
-        }
-        account.setUsername(newUsername);
-        accountRepository.save(account);
-        return account;
+        Customer customer = customerRepository.findByEmail(customerEmail).orElseThrow(()-> new EntityNotFoundException("Customer does not exist"));
+        customer.setUsername(newUsername);
+        customerRepository.save(customer);
+        return customer;
     }
 
     /**
@@ -319,15 +327,8 @@ public class AccountManagementService {
             throw new IllegalArgumentException("Username cannot be empty, null or contain spaces.");
         }
 
-        Account account = accountRepository.findByUsername(username);
-        if (account == null) {
-            throw new IllegalArgumentException("Account does not exist.");
-        }
+        Customer customer = customerRepository.findByEmail(newEmail).orElseThrow(() -> new EntityNotFoundException("Customer does not exist"));
 
-        Customer customer = customerRepository.findByAccount(account);
-        if (customer == null) {
-            throw new IllegalArgumentException("Customer account does not exist.");
-        }
         customer.setEmail(newEmail);
         customerRepository.save(customer);
         return customer;
@@ -337,32 +338,21 @@ public class AccountManagementService {
      * Update customer phone number
      * 
      * @param newPhoneNumber
-     * @param username
-     * @return Customer
+     * @param customerEmail
      * 
      * @Author Ana Gordon
      */
     @Transactional
-    public Customer updatePhoneNumber(String newPhoneNumber, String username) {
+    public void updateCustomerPhoneNumber(String newPhoneNumber, String customerEmail) {
         if (newPhoneNumber == null || newPhoneNumber.trim().length() == 0 || newPhoneNumber.contains(" ")) {
             throw new IllegalArgumentException("New phone number cannot be empty, null or contain spaces.");
         }
-        if (username == null || username.trim().length() == 0 || username.contains(" ")) {
-            throw new IllegalArgumentException("Username cannot be empty, null or contain spaces.");
-        }
 
-        Account account = accountRepository.findByUsername(username);
-        if (account == null) {
-            throw new IllegalArgumentException("Account does not exist.");
-        }
+        Customer customer = customerRepository.findByEmail(customerEmail).orElseThrow(() -> new EntityNotFoundException("Customer does not exist"));
 
-        Customer customer = customerRepository.findByAccount(account);
-        if (customer == null) {
-            throw new IllegalArgumentException("Customer account does not exist.");
-        }
         customer.setPhoneNumber(newPhoneNumber);
         customerRepository.save(customer);
-        return customer;
+
     }
 
     /**
@@ -377,8 +367,8 @@ public class AccountManagementService {
         if (username == null || username.trim().length() == 0 || username.contains(" ")) {
             throw new IllegalArgumentException("Username cannot be empty, null or contain spaces.");
         }
-        Account name = accountRepository.findByUsername(username);
-        return name;
+        Account account = accountRepository.findByUsername(username);
+        return account;
     }
 
     /**
@@ -393,47 +383,10 @@ public class AccountManagementService {
         if (id < 0) {
             throw new IllegalArgumentException("ID cannot be negative.");
         }
-        Account account = accountRepository.findByAccountID(id);
+        Account account = accountRepository.findAccountById(id);
         return account;
     }
 
-    /**
-     * update Customer phone number
-     * 
-     * @param newPhoneNumber
-     * @param oldPhoneNumber
-     * @param username
-     * @return Customer
-     * 
-     * @Author Ana Gordon
-     */
-    @Transactional
-    public Customer updateCustomerPhoneNumber(String newPhoneNumber, String oldPhoneNumber, String username) {
-        if (newPhoneNumber == null || newPhoneNumber.trim().length() == 0 || newPhoneNumber.contains(" ")) {
-            throw new IllegalArgumentException("New phone number cannot be empty, null or contain spaces.");
-        }
-        if (oldPhoneNumber == null || oldPhoneNumber.trim().length() == 0 || oldPhoneNumber.contains(" ")) {
-            throw new IllegalArgumentException("Old phone number cannot be empty, null or contain spaces.");
-        }
-        if (username == null || username.trim().length() == 0 || username.contains(" ")) {
-            throw new IllegalArgumentException("Username cannot be empty, null or contain spaces.");
-        }
 
-        Account account = accountRepository.findByUsername(username);
-        if (account == null) {
-            throw new IllegalArgumentException("Account does not exist.");
-        }
-
-        Customer customer = customerRepository.findByAccount(account);
-        if (customer == null) {
-            throw new IllegalArgumentException("Customer account does not exist.");
-        }
-        if (!customer.getPhoneNumber().equals(oldPhoneNumber)) {
-            throw new IllegalArgumentException("Incorrect phone number.");
-        }
-        customer.setPhoneNumber(newPhoneNumber);
-        customerRepository.save(customer);
-        return customer;
-    }
     
 }

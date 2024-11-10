@@ -169,16 +169,5 @@ public class Customer extends Account {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
-    
-    private Account account;
-
-    public void setAccount(Account account) {
-        this.account = account;
-    }
-
-
-    public Account getAccount() {
-        return account;
-    }
 
 }

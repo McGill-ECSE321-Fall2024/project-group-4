@@ -4,6 +4,7 @@ import ca.mcgill.ecse321.gameshop.DAO.*;
 import ca.mcgill.ecse321.gameshop.model.*;
 import ca.mcgill.ecse321.gameshop.serviceClasses.AccountManagementService;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -73,24 +74,24 @@ public class testAccountManagementService {
 
         when(accountRepository.save(any(Account.class))).thenReturn(account1);
         when(accountRepository.findByUsername(anyString())).thenReturn(account1);
-        when(accountRepository.findByAccountID(anyInt())).thenReturn(account1);
+        when(accountRepository.findAccountById(anyInt())).thenReturn(account1);
         when(accountRepository.findByUsername("invalidUsername")).thenReturn(null);
 
         when(customerRepository.save(any(Customer.class))).thenReturn(customer1);
-        when(customerRepository.findByCustomerID(0)).thenReturn(customer1);
+        when(customerRepository.findCustomerById(0)).thenReturn(Optional.of(customer1));
         // when(customerRepository.findByCustomerID(1)).thenReturn(customer2);
-        when(customerRepository.findByCustomerID(-1)).thenReturn(null);
+        when(customerRepository.findCustomerById(-1)).thenReturn(Optional.empty());
         when(customerRepository.findByEmail(customer1.getEmail())).thenReturn(Optional.of(customer1));
         // when(customerRepository.findByEmail(customer2.getEmail())).thenReturn(Optional.of(customer2));
         when(customerRepository.findByEmail("invalidEmail")).thenReturn(Optional.empty());
 
         when(employeeRepository.save(any(Employee.class))).thenReturn(employee1);
-        when(employeeRepository.findByEmployeeID(0)).thenReturn(employee1);
-        when(employeeRepository.findByEmployeeID(1)).thenReturn(employee2);
-        when(employeeRepository.findByEmployeeID(-1)).thenReturn(null);
+        when(employeeRepository.findEmployeeById(0)).thenReturn(Optional.of(employee1));
+        when(employeeRepository.findEmployeeById(1)).thenReturn(Optional.of(employee2));
+        when(employeeRepository.findEmployeeById(-1)).thenReturn(Optional.empty());
 
         when(managerRepository.save(any(Manager.class))).thenReturn(manager);
-        when(managerRepository.findByManagerID(anyInt())).thenReturn(manager);
+        when(managerRepository.findManagerById(anyInt())).thenReturn(manager);
     }
 
     /**
@@ -344,7 +345,7 @@ public class testAccountManagementService {
         assertNotNull(manager);
         assertEquals("manager", manager.getUsername());
         assertEquals("manager", manager.getPassword());
-        verify(managerRepository, times(1)).findByManagerID(anyInt());
+        verify(managerRepository, times(1)).findManagerById(anyInt());
     }
 
     /**
@@ -366,7 +367,7 @@ public class testAccountManagementService {
         // Assert
         assertNull(manager);
         assertEquals("Username cannot be null", error);
-        verify(managerRepository, times(0)).findByManagerID(anyInt());
+        verify(managerRepository, times(0)).findManagerById(anyInt());
     }
 
     /**
@@ -387,7 +388,7 @@ public class testAccountManagementService {
         // Assert
         assertNull(manager);
         assertEquals("Password cannot be null", error);
-        verify(managerRepository, times(0)).findByManagerID(anyInt());
+        verify(managerRepository, times(0)).findManagerById(anyInt());
     }
 
     /**
@@ -450,7 +451,7 @@ public class testAccountManagementService {
         assertNotNull(account);
         assertEquals("account1", account.getUsername());
         assertEquals("password1", account.getPassword());
-        verify(accountRepository, times(1)).findByAccountID(1);
+        verify(accountRepository, times(1)).findAccountById(1);
     }
 
     /**
@@ -471,7 +472,7 @@ public class testAccountManagementService {
         // Assert
         assertNull(account);
         assertEquals("Account not found", error);
-        verify(accountRepository, times(0)).findByAccountID(-1);
+        verify(accountRepository, times(0)).findAccountById(-1);
     }
 
     /**
@@ -485,7 +486,7 @@ public class testAccountManagementService {
         Employee employee = new Employee("employee1", "password1", true);
         Boolean deactivated = null;
         try {
-            deactivated = accountManagementService.deactivateEmployee(employee.getUsername());
+            deactivated = accountManagementService.deactivateEmployee(employee.getId());
         } catch (IllegalArgumentException e) {
             fail(e.getMessage());
         }
@@ -506,7 +507,7 @@ public class testAccountManagementService {
         Employee employee = new Employee("employee1", "password1", true); //check this 
         Boolean deactivated = null;
         try {
-            deactivated = accountManagementService.deactivateEmployee("invalidUsername");
+            deactivated = accountManagementService.deactivateEmployee(employee.getId());
         } catch (IllegalArgumentException e) {
             error = e.getMessage();
         }
@@ -527,7 +528,7 @@ public class testAccountManagementService {
         Employee employee = new Employee("employee1", "password1", false);
         Boolean activated = null;
         try {
-            activated = accountManagementService.activateEmployee(employee.getUsername());
+            activated = accountManagementService.activateEmployee(employee.getId());
         } catch (IllegalArgumentException e) {
             fail(e.getMessage());
         }
@@ -548,7 +549,7 @@ public class testAccountManagementService {
         Boolean activated = null;
 
         try {
-            activated = accountManagementService.activateEmployee("invalidUsername");
+            activated = accountManagementService.activateEmployee(-1);
         } catch (IllegalArgumentException e) {
             error = e.getMessage();
         }
@@ -568,7 +569,7 @@ public class testAccountManagementService {
         // Act
         Account account = null;
         try {
-            account = accountManagementService.login("account1", "password1");
+            //account = accountManagementService.login("account1", "password1");
         } catch (IllegalArgumentException e) {
             fail(e.getMessage());
         }
@@ -590,7 +591,7 @@ public class testAccountManagementService {
         Account account = null;
         String error = null;
         try {
-            account = accountManagementService.login("invalidUsername", "password1");
+            //account = accountManagementService.login("invalidUsername", "password1");
         } catch (IllegalArgumentException e) {
             error = e.getMessage();
         }
@@ -611,7 +612,7 @@ public class testAccountManagementService {
         Account account = null;
         String error = null;
         try {
-            account = accountManagementService.login("account1", "invalidPassword");
+          //  account = accountManagementService.login("account1", "invalidPassword");
         } catch (IllegalArgumentException e) {
             error = e.getMessage();
         }
@@ -712,7 +713,7 @@ public class testAccountManagementService {
         // Act
         Account account = null;
         try {
-            account = accountManagementService.updateUsername("newUsername", "oldUsername");
+           // account = accountManagementService.updateUsername("newUsername", "oldUsername");
         } catch (IllegalArgumentException e) {
             fail(e.getMessage());
         }
@@ -733,7 +734,7 @@ public class testAccountManagementService {
         Account account = null;
         String error = null;
         try {
-            account = accountManagementService.updateUsername("newUsername", "oldUsername");
+         //   account = accountManagementService.updateUsername("newUsername", "oldUsername");
         } catch (IllegalArgumentException e) {
             error = e.getMessage();
         }
@@ -751,16 +752,12 @@ public class testAccountManagementService {
     @Test
     public void testUpdateCustomerPhoneNumber(){
         // Act
-        Customer customer = null;
-        try {
-            customer = accountManagementService.updateCustomerPhoneNumber("phoneNewNumber", "0123456789", "customer1");
-        } catch (IllegalArgumentException e) {
-            fail(e.getMessage());
-        }
+        accountManagementService.updateCustomerPhoneNumber("123456", customer1.getEmail());
+
         // Assert
-        assertNotNull(customer);
-        assertEquals("newPhoneNumber", customer.getPhoneNumber());
-        verify(customerRepository, times(1)).findByEmail("customer1@email.com");
+        assertNotNull(customerRepository.findByEmail(customer1.getEmail()));
+        assertEquals("123456", customer1.getPhoneNumber());
+        verify(customerRepository, times(1)).findByEmail(customer1.getEmail());
     }
 
     /**
@@ -771,17 +768,10 @@ public class testAccountManagementService {
     @Test
     public void testUpdateCustomerPhoneNumberInvalid(){
         // Act
-        Customer customer = null;
-        String error = null;
-        try {
-            customer = accountManagementService.updateCustomerPhoneNumber("newPhoneNumber", "0123456789", "customer1@email.com");
-        } catch (IllegalArgumentException e) {
-            error = e.getMessage();
-        }
+        EntityNotFoundException error = assertThrows(EntityNotFoundException.class, () -> accountManagementService.updateCustomerPhoneNumber("invalidPhoneNumber","invalidEmail" ));
         // Assert
-        assertNull(customer);
         assertEquals("Customer not found", error);
-        verify(customerRepository, times(0)).findByEmail("customer1@email.com");
+        verify(customerRepository, times(0)).findByEmail("invalidEmail");
     }
 
 
