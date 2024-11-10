@@ -6,6 +6,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -285,28 +286,17 @@ public class PurchaseManagementService {
     @Transactional
     public void removeCreditCardFromWallet(String customerEmail, int creditCardId) {
         Customer customer = findCustomerByEmail(customerEmail);
-        CreditCard creditCard = findCreditCardById(creditCardId);
+        CreditCard creditCardToRemove = findCreditCardById(creditCardId);
+        var wallet = customer.getCopyofCreditCards();
 
-
-        if (customer.getCopyofCreditCards().isEmpty()) {
-            throw new IllegalArgumentException("Customer doesn't have credit cards!");
+        if (!wallet.contains(creditCardToRemove)) {
+            throw new IllegalArgumentException("Customer is not associated with given credit card");
         }
 
-        if (customer.getCopyofCreditCards().contains(creditCard) && creditCard.getCustomer() == customer) {
-            customer.removeCreditCartFromWallet(creditCard);
-            creditCard.setCustomer(null);
-            creditCardRepository.save(creditCard);
-            customerRepository.save(customer);
-            return;
+        if(!customer.removeCreditCartFromWallet(creditCardToRemove)){
+            throw new IllegalStateException("Failed to delete credit card from customer");
         }
-
-        if (!customer.getCopyofCreditCards().contains(creditCard)) {
-            throw new IllegalArgumentException("Customer does not own credit card : " + creditCard.getCardNumber());
-        }
-
-        throw new IllegalArgumentException("Credit card is not associated to customer : " + customer.getUsername());
-
-
+        customerRepository.save(customer);
     }
 
     @Transactional

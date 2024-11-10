@@ -22,13 +22,33 @@ public class PurchaseManagementController {
         return new GameDTO(purchaseManagementService.findGameById(gameId));
     }
 
+    @GetMapping("games/promotions/{gameId}")
+    public float getPromotionalPrice(@PathVariable int gameId) {
+        return purchaseManagementService.getPromotionalPrice(gameId);
+    }
+
     @GetMapping("reviews/{reviewId}")
     public ReviewDTO getReviewById(@PathVariable int reviewId) {
         return new ReviewDTO(purchaseManagementService.findReviewById(reviewId));
     }
 
+    @PutMapping("customers/{customerEmail}/reviews/{reviewId}/likes")
+    public void likeReview(@PathVariable int reviewId, @PathVariable String customerEmail) {
+        purchaseManagementService.likeReview(customerEmail, reviewId);
+    }
+
+    @PostMapping("customers/{customerEmail}/reviews")
+    public void postReview(@PathVariable String customerEmail, @RequestParam int purchaseId, @RequestParam int rating, @RequestBody String text) {
+        purchaseManagementService.postReview(customerEmail,rating,text, purchaseId);
+    }
+
+    @PostMapping("reviews/{reviewId}/replies")
+    public void replyToReview(@PathVariable int reviewId, @RequestParam int managerId, @RequestBody String replyText) {
+        purchaseManagementService.replyToReview(reviewId, replyText,managerId);
+    }
+
     @GetMapping("customers/{customerEmail}")
-    public CustomerDTO getReviewById(@PathVariable String customerEmail) {
+    public CustomerDTO getCustomerByEmail(@PathVariable String customerEmail) {
         return new CustomerDTO(purchaseManagementService.findCustomerByEmail(customerEmail));
     }
 
@@ -37,18 +57,18 @@ public class PurchaseManagementController {
         return new PurchaseDTO(purchaseManagementService.findPurchaseById(purchaseId));
     }
 
-    @GetMapping("creditcards/{creditCardId}")
-    public CreditCardDTO getCreditCardById(@PathVariable int creditCardId) {
-        return new CreditCardDTO(purchaseManagementService.findCreditCardById(creditCardId));
-    }
-
     @GetMapping("addresses/{addressId}")
     public AddressDTO getAddressById(@PathVariable int addressId) {
         return new AddressDTO(purchaseManagementService.findAddressById(addressId));
     }
 
-    @PutMapping("{customerEmail}/creditCards/{cardNumber}")
-    public CreditCardDTO addCreditCardToCustomerWallet(@PathVariable int cardNumber,
+    @GetMapping("credit-cards/{creditCardId}")
+    public CreditCardDTO getCreditCardById(@PathVariable int creditCardId) {
+        return new CreditCardDTO(purchaseManagementService.findCreditCardById(creditCardId));
+    }
+
+    @PutMapping("customers/{customerEmail}/credit-cards")
+    public CreditCardDTO addCreditCardToCustomerWallet(@RequestBody int cardNumber,
                                                        @RequestBody String cvv,
                                                        @PathVariable String customerEmail,
                                                        @RequestBody String expiryDate,
@@ -57,45 +77,27 @@ public class PurchaseManagementController {
 
     }
 
-    @PutMapping("reviews/{reviewId}/{customerEmail}")
-    public void likeReview(@PathVariable int reviewId, @PathVariable String customerEmail) {
-        purchaseManagementService.likeReview(customerEmail, reviewId);
+    @GetMapping("customers/{customerEmail}/credit-cards")
+    public Set<CreditCardDTO> getCreditCardsByCustomer(@PathVariable String customerEmail) {
+        Set<CreditCard> wallet = purchaseManagementService.viewCustomerCreditCards(customerEmail);
+        return wallet.stream().map(CreditCardDTO::new).collect(Collectors.toSet());
     }
 
-    @PostMapping("{customerEmail}/reviews/{reviewId}/{rating}")
-    public void postReview(@PathVariable String customerEmail, @PathVariable int reviewId, @PathVariable int rating, @RequestBody String text) {
-        purchaseManagementService.postReview(customerEmail,rating,text,reviewId);
+    @DeleteMapping("customers/{customerEmail}/credit-cards/{creditCardId}")
+    public void removeCreditCardFromWallet(@PathVariable String customerEmail, @PathVariable int creditCardId) {
+        purchaseManagementService.removeCreditCardFromWallet(customerEmail, creditCardId);
     }
 
-    @PostMapping("reviews/{reviewId}/{managerId}")
-    public void replyToReview(@PathVariable int reviewId, @PathVariable int managerId, @RequestBody String replyText) {
-        purchaseManagementService.replyToReview(reviewId, replyText,managerId);
-    }
-
-    @PostMapping("{customerEmail}/cart")
-    public void chechout(@PathVariable String customerEmail, @RequestBody int billingAddressId, @RequestBody int creditCardId) {
+    @PostMapping("customers/{customerEmail}/carts")
+    public void checkout(@PathVariable String customerEmail, @RequestBody int billingAddressId, @RequestBody int creditCardId) {
         purchaseManagementService.checkout(customerEmail, billingAddressId, creditCardId);
     }
 
-    @GetMapping("{customerEmail}/cart")
+    @GetMapping("customers/{customerEmail}/carts/price")
     public float getCartPrice(@PathVariable String customerEmail) {
         return purchaseManagementService.getCartPrice(customerEmail);
     }
 
-    @GetMapping("games/{gameId}")
-    public float getPromotionalPrice(@PathVariable int gameId) {
-        return purchaseManagementService.getPromotionalPrice(gameId);
-    }
 
-    @GetMapping("customers/{customerEmail}/creditCards")
-    public Set<CreditCardDTO> getCreditCards(@PathVariable String customerEmail) {
-     Set<CreditCard> wallet = purchaseManagementService.viewCustomerCreditCards(customerEmail);
-     return wallet.stream().map(CreditCardDTO::new).collect(Collectors.toSet());
-    }
-
-    @DeleteMapping("{customerEmail}/creditCards/{creditCardId}")
-    public void removeCreditCardFromWallet(@PathVariable String customerEmail, @PathVariable int creditCardId) {
-        purchaseManagementService.removeCreditCardFromWallet(customerEmail, creditCardId);
-    }
 
 }
