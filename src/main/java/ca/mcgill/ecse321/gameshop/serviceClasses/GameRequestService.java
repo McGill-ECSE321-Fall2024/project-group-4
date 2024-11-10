@@ -24,7 +24,7 @@ public class GameRequestService {
         if (gameRequest.isPresent()) {
             return gameRequest.get();
         }
-        throw new IllegalArgumentException("No Game Request with id " + id);
+        throw new IllegalArgumentException("No Game Request found");
     }
 
     @Transactional
@@ -33,7 +33,7 @@ public class GameRequestService {
         if (game.isPresent()) {
             return game.get();
         }
-        throw new IllegalArgumentException("No Game with id " + id);
+        throw new IllegalArgumentException("No Game found");
     }
 
     @Transactional
@@ -42,16 +42,21 @@ public class GameRequestService {
         if (employee.isPresent()) {
             return employee.get();
         }
-        throw new IllegalArgumentException("No Employee with id " + id);
+        throw new IllegalArgumentException("No Employee found");
     }
 
     @Transactional
-    public GameRequest createGameRequest(String externalReview, RequestStatus status, int gameId, int employeeId){
+    public GameRequest createGameRequest(String externalReview, int gameId, int employeeId){
 
         Game game = findGameById(gameId);
+
+        if(game.isActive()) {
+            throw new IllegalArgumentException("Game is already active");
+        }
+
         Employee employee = findEmployeeById(employeeId);
 
-        GameRequest gameRequest = new GameRequest(externalReview, status, employee, game);
+        GameRequest gameRequest = new GameRequest(externalReview, RequestStatus.PENDING, employee, game);
 
         employee.addGameRequest(gameRequest);
 
@@ -67,12 +72,15 @@ public class GameRequestService {
         GameRequest gameRequest = findGameRequestById(gameRequestId);
 
         if(gameRequest.getStatus() == RequestStatus.APPROVED){
-            throw new IllegalArgumentException("Game Request with id " + gameRequestId + " is already approved");
+            throw new IllegalArgumentException("Game Request is already approved");
         }
         if(gameRequest.getStatus() == RequestStatus.DENIED){
-            throw new IllegalArgumentException("Game Request with id " + gameRequestId + " is already denied");
+            throw new IllegalArgumentException("Game Request is already denied");
         }
 
+        Game game = gameRequest.getGame();
+        game.setActive(true);
+        gameRepository.save(game);
         gameRequest.setStatus(RequestStatus.APPROVED);
         gameRequestRepository.save(gameRequest);
         return gameRequest;
@@ -83,13 +91,13 @@ public class GameRequestService {
         GameRequest gameRequest = findGameRequestById(gameRequestId);
 
         if(gameRequest.getStatus() == RequestStatus.APPROVED){
-            throw new IllegalArgumentException("Game Request with id " + gameRequestId + " is already approved");
+            throw new IllegalArgumentException("Game Request is already approved");
         }
         if(gameRequest.getStatus() == RequestStatus.DENIED){
-            throw new IllegalArgumentException("Game Request with id " + gameRequestId + " is already denied");
+            throw new IllegalArgumentException("Game Request is already denied");
         }
 
-        gameRequest.setStatus(RequestStatus.PENDING);
+        gameRequest.setStatus(RequestStatus.DENIED);
         gameRequestRepository.save(gameRequest);
         return gameRequest;
     }
