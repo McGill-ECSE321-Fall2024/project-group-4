@@ -45,7 +45,7 @@ public class TestManager {
         managerRepository.save(manager);
 
         //load
-        Optional<Manager> loadedManagerOpt = managerRepository.findById(manager.getId());
+        Optional<Manager> loadedManagerOpt = managerRepository.findManagerById(manager.getId());
 
         //compare
         assertTrue(loadedManagerOpt.isPresent());
