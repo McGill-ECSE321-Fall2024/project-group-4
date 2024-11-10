@@ -28,6 +28,8 @@ public class PurchaseManagementService {
     private CreditCardRepository creditCardRepository;
     @Autowired
     private AddressRepository addressRepository;
+    @Autowired
+    private CartItemRepository cartItemRepo;
 
     @Transactional
     public Review findReviewById(int id) {
@@ -151,28 +153,33 @@ public class PurchaseManagementService {
             throw new IllegalArgumentException("Credit card is expired");
         }
 
-        Set<Game> gamesInCart = customer.getCopyCart();
-        if (gamesInCart.isEmpty()) {
+        Set<CartItem> cartItems = cartItemRepo.findByCartItemId_Customer_Id(customer.getId());
+        if (cartItems.isEmpty()) {
             throw new IllegalArgumentException("Cannot checkout an empty cart!");
         }
 
-        gamesInCart.forEach(game -> {
-            customer.removeGameFromCart(game);
-            game.removeInCartOf(customer);
-            if (!game.isActive()) throw new IllegalArgumentException("Cannot checkout an inactive game");
-            if (game.getStock() == 0) throw new IllegalArgumentException("Game is out of stock");
-            game.setStock(game.getStock() - 1);
-            gameRepository.save(game);
+        cartItems.forEach(cartItem -> {
+            Game gameToBuy = cartItem.getGame();
+            if (!gameToBuy.isActive()) throw new IllegalArgumentException("Cannot checkout an inactive game");
+            if (gameToBuy.getStock() <= 0) throw new IllegalArgumentException("Game is out of stock");
+            gameToBuy.setStock(gameToBuy.getStock() - cartItem.getQuantity());
+            gameRepository.save(gameToBuy);
         }); //remove the games from the customers cart
 
-        gamesInCart.stream().map(game -> new Purchase(dateOfPurchase, applyPromotion(game, dateOfPurchase), game, customer, address, creditCard)).collect(Collectors.toSet()).forEach(purchaseRepository::save);
+
+        cartItems.stream().map(cartItem -> new Purchase(dateOfPurchase, applyPromotion(cartItem.getGame(), dateOfPurchase), cartItem.getGame(), customer, address, creditCard))
+                .collect(Collectors.toSet())
+                .forEach(purchaseRepository::save);
+
+        cartItemRepo.deleteAll(cartItems);
+
         customerRepository.save(customer);
     }
 
     @Transactional
     public float getCartPrice(String customerEmail, LocalDate currentDate) {
         Customer customer = findCustomerByEmail(customerEmail);
-        long price = customer.getCopyCart().stream().mapToLong(game -> (long) applyPromotion(game, currentDate)).sum();
+        double price = cartItemRepo.findByCartItemId_Customer_Id(customer.getId()).stream().mapToDouble(cartItem -> applyPromotion(cartItem.getGame(), currentDate)).sum();
         return (float) price;
     }
 
@@ -187,7 +194,7 @@ public class PurchaseManagementService {
         float originalPrice = game.getPrice();
         int discount = game.getCopyPromotions().stream().filter(promotion ->
                 (currentDate.isAfter(promotion.getStartDate().toLocalDate()) && currentDate.isBefore(promotion.getEndDate()
-                        .toLocalDate()))).mapToInt(activePromotions -> activePromotions.getDiscount()).sum(); //sum up the active discounts on the game
+                        .toLocalDate()))).mapToInt(Promotion::getDiscount).sum(); //sum up the active discounts on the game
 
         if (discount >= 100) return 0; //discount cannot exceed 100%
         return originalPrice * ((float) discount/100);

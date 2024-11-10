@@ -53,7 +53,7 @@ public class GameManagementController {
      * Endpoint to retrieve all games in the inventory.
      * @return A list of GameDTO objects representing all games in the inventory.
      */
-    @GetMapping("/inventory")
+    @GetMapping("/games")
     public List<GameDTO> getInventory() {
         Set<Game> inventory = gameManagementService.viewInventory();
         return inventory.stream().map(GameDTO::new).collect(Collectors.toList());

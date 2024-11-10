@@ -1,8 +1,10 @@
 package ca.mcgill.ecse321.gameshop.serviceClasses;
 
+import ca.mcgill.ecse321.gameshop.DAO.CartItemRepository;
 import ca.mcgill.ecse321.gameshop.DAO.CategoryRepository;
 import ca.mcgill.ecse321.gameshop.DAO.CustomerRepository;
 import ca.mcgill.ecse321.gameshop.DAO.GameRepository;
+import ca.mcgill.ecse321.gameshop.model.CartItem;
 import ca.mcgill.ecse321.gameshop.model.Category;
 import ca.mcgill.ecse321.gameshop.model.Customer;
 import ca.mcgill.ecse321.gameshop.model.Game;
@@ -13,8 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class GameManagementService {
@@ -26,27 +31,45 @@ public class GameManagementService {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private CartItemRepository cartItemRepository;
+
     @Transactional
     public void addGameToCart(int customerId, int gameId){
         Game gameToAdd = gameRepository.findById(gameId).orElseThrow(()-> new EntityNotFoundException("Game to add to cart not found"));
         Customer customer = customerRepository.findById(customerId).orElseThrow(()-> new EntityNotFoundException("Customer to add game to cart of not found"));
-        customer.addGameToCart(gameToAdd);
-        customerRepository.save(customer);
+
+        Optional<CartItem> existingCartItemOpt = cartItemRepository.findByCartItemId_Customer_IdAndCartItemId_Game_Id(customerId, gameId);
+
+        if(existingCartItemOpt.isPresent()){
+            CartItem existingCartItem = existingCartItemOpt.get();
+            existingCartItem.setQuantity(existingCartItem.getQuantity()+1);
+            cartItemRepository.save(existingCartItem);
+        } else {
+            CartItem cartItem = new CartItem(1, customer, gameToAdd);
+            cartItemRepository.save(cartItem);
+        }
+
     }
 
     public Set<Game> viewGamesInCart(int customerId){
-        Customer customer = customerRepository.findById(customerId).orElseThrow(()-> new EntityNotFoundException("Customer to add game to cart of not found"));
-        return customer.getCopyCart();
+        if(!customerRepository.existsById(customerId)){
+            throw new EntityNotFoundException("Customer to add game to cart of not found");
+        }
+        Set<CartItem> itemsInCart = cartItemRepository.findByCartItemId_Customer_Id(customerId);
+        return itemsInCart.stream().map((CartItem::getGame)).collect(Collectors.toSet());
     }
     @Transactional
     public void removeGameFromCart(int customerId, int gameId){
-        Game gameToRemove = gameRepository.findById(gameId).orElseThrow(()-> new EntityNotFoundException("Game to remove from cart not found"));
-        Customer customer = customerRepository.findById(customerId).orElseThrow(()-> new EntityNotFoundException("Customer to remove game from cart of not found"));
-
-        if(!customer.removeGameFromCart(gameToRemove)){
-            throw new EntityNotFoundException("Game to remove was not in customer's cart");
+        if(!gameRepository.existsById(gameId) || !customerRepository.existsById(customerId)){
+            throw new EntityNotFoundException("Game to remove from cart or customer not found");
         }
-        customerRepository.save(customer);
+
+        CartItem existingCartItem = cartItemRepository.findByCartItemId_Customer_IdAndCartItemId_Game_Id(customerId, gameId)
+                .orElseThrow(() -> new EntityNotFoundException("Game to remove was not in customer's cart"));
+
+        cartItemRepository.delete(existingCartItem);
     }
     @Transactional
     public void createCategory(String name){
@@ -85,7 +108,7 @@ public class GameManagementService {
         // Find each category and associate it with the new game
         for (String categoryName : categoryNames) {
             var category = categoryRepo.findByName(categoryName)
-                                    .orElseThrow(() -> new EntityNotFoundException("Category not found: " + categoryName));
+                                    .orElseThrow(() -> new EntityNotFoundException("Category not found"));
             category.addInCategory(newGame);
             categoryRepo.save(category);
         }
@@ -102,26 +125,15 @@ public class GameManagementService {
     }
 
     @Transactional
-    public void updateInventoryAfterPurchase(int gameId, int quantityPurchased) {
+    public void updateStock(int gameId, int newStock) {
         Game game = gameRepository.findById(gameId).orElseThrow(() -> new EntityNotFoundException("Game not found"));
-        if (game.getStock() < quantityPurchased) {
-            throw new IllegalStateException("Insufficient stock for the game");
+        if (newStock < 0) {
+            throw new IllegalStateException("Cannot set stock to negative number");
         }
-        game.updateStock(-quantityPurchased);
+        game.setStock(newStock);
         gameRepository.save(game);
     }
 
-    /**
-     * Allows staff to manually update inventory
-     * @param gameId
-     * @param stockChange
-     */
-    @Transactional
-    public void updateStock(int gameId, int stockChange) {
-        Game game = gameRepository.findById(gameId).orElseThrow(() -> new EntityNotFoundException("Game not found"));
-        game.updateStock(stockChange);
-        gameRepository.save(game);
-    }
 
     
 

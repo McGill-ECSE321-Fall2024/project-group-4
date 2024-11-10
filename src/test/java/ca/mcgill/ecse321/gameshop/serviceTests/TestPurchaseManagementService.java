@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.sql.Date;
@@ -20,25 +19,27 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class testPurchaseManagementService {
+public class TestPurchaseManagementService {
 
     @InjectMocks
     PurchaseManagementService purhcaseManagementService;
 
     @Mock
-    ReviewRepository reviewRepository;
+    private ReviewRepository reviewRepository;
     @Mock
-    CustomerRepository customerRepository;
+    private CustomerRepository customerRepository;
     @Mock
-    PurchaseRepository purchaseRepository;
+    private PurchaseRepository purchaseRepository;
     @Mock
-    ReplyRepository replyRepository;
+    private ReplyRepository replyRepository;
     @Mock
-    AddressRepository addressRepository;
+    private AddressRepository addressRepository;
     @Mock
-    CreditCardRepository creditCardRepository;
+    private CreditCardRepository creditCardRepository;
     @Mock
     private GameRepository gameRepository;
+    @Mock
+    private CartItemRepository cartItemRepository;
 
     Customer customer;
     Customer customer2;
@@ -49,7 +50,7 @@ public class testPurchaseManagementService {
     Address cusomterAddress;
     CreditCard creditCard;
     CreditCard creditCard2;
-    Game game;
+    Game game1;
     Game game2;
     Purchase purchase;
     Review referenceReview;
@@ -71,9 +72,9 @@ public class testPurchaseManagementService {
         cusomterAddress = new Address("Rue University","Montreal", "Quebec","Canada", "123 4h4", customer);
         creditCard = new CreditCard(123123, 123, LocalDate.of(2025, 10,25),customer, cusomterAddress);
         creditCard2 = new CreditCard(12312233, 12233, LocalDate.of(2025, 10,25),customer2, cusomterAddress);
-        game = new Game("testGame", "An average game", "example.url",15,true, 5);
+        game1 = new Game("testGame", "An average game", "example.url",15,true, 5);
         game2 = new Game("testGame2", "A good game", "example.url",30,true, 1);
-        purchase = new Purchase(date,15,game,customer,cusomterAddress,creditCard);
+        purchase = new Purchase(date,15, game1,customer,cusomterAddress,creditCard);
         referenceReview = new Review(rating, reviewText, purchase);
 
         customer.addAddress(cusomterAddress);
@@ -99,7 +100,7 @@ public class testPurchaseManagementService {
         when(creditCardRepository.findById(1)).thenReturn(Optional.of(creditCard2));
         when(creditCardRepository.findById(-5)).thenReturn(Optional.empty());
 
-        when(gameRepository.findById(game.getId())).thenReturn(Optional.of(game));
+        when(gameRepository.findById(game1.getId())).thenReturn(Optional.of(game1));
         when(gameRepository.findById(game2.getId())).thenReturn(Optional.of(game2));
         when(gameRepository.findById(-5)).thenReturn(Optional.empty());
 
@@ -473,14 +474,14 @@ public class testPurchaseManagementService {
         Promotion promotion = new Promotion(50);
         promotion.setStartDate(Date.valueOf(LocalDate.of(2004,12,2)));
         promotion.setEndDate(Date.valueOf(LocalDate.of(2040,12,2)));//apply a 50% promotion to the game
-        promotion.addGame(game);
-        game.addPromotion(promotion);
+        promotion.addGame(game1);
+        game1.addPromotion(promotion);
 
         //Act
-        float discountedPrice = purhcaseManagementService.applyPromotion(game, LocalDate.of(2024,10,10));
+        float discountedPrice = purhcaseManagementService.applyPromotion(game1, LocalDate.of(2024,10,10));
 
         //Assert
-        assertEquals(game.getPrice()/2, discountedPrice); //asssert that the cost is reduced by half
+        assertEquals(game1.getPrice()/2, discountedPrice); //asssert that the cost is reduced by half
     }
 
     @Test
@@ -489,11 +490,11 @@ public class testPurchaseManagementService {
         Promotion promotion = new Promotion(110);
         promotion.setStartDate(Date.valueOf(LocalDate.of(2004,12,2)));
         promotion.setEndDate(Date.valueOf(LocalDate.of(2040,12,2)));//apply a 110% promotion to the game
-        promotion.addGame(game);
-        game.addPromotion(promotion);
+        promotion.addGame(game1);
+        game1.addPromotion(promotion);
 
         //Act
-        float discountedPrice = purhcaseManagementService.applyPromotion(game, LocalDate.of(2024,10,10));
+        float discountedPrice = purhcaseManagementService.applyPromotion(game1, LocalDate.of(2024,10,10));
 
         //Assert
         assertEquals(0f, discountedPrice); //assert that the game is free (only 100% was applied)
@@ -503,24 +504,24 @@ public class testPurchaseManagementService {
     public void testApplyPrommotionWhenPromotionIsOver() {
         //Arrange
         Promotion promotion = new Promotion(50);
-        promotion.addGame(game);
+        promotion.addGame(game1);
         promotion.setStartDate(Date.valueOf(LocalDate.of(2004,1,2)));
         promotion.setEndDate(Date.valueOf(LocalDate.of(2040,1,2)));//apply a 50% promotion to the game
 
         //Act
-        float discountedPrice = purhcaseManagementService.applyPromotion(game, LocalDate.of(2044,10,10));
+        float discountedPrice = purhcaseManagementService.applyPromotion(game1, LocalDate.of(2044,10,10));
 
         //Assert
-        assertEquals(game.getPrice(), discountedPrice); //asssert that the cost did not change
+        assertEquals(game1.getPrice(), discountedPrice); //asssert that the cost did not change
     }
 
     @Test
     public void testApplyPromotionWithNoPromotion() {
         //Act
-        float discountedPrice = purhcaseManagementService.applyPromotion(game, LocalDate.of(2044,10,10));
+        float discountedPrice = purhcaseManagementService.applyPromotion(game1, LocalDate.of(2044,10,10));
 
         //Assert
-        assertEquals(game.getPrice(), discountedPrice); //asssert that the cost did not change
+        assertEquals(game1.getPrice(), discountedPrice); //asssert that the cost did not change
     }
 
     @Test
@@ -538,7 +539,7 @@ public class testPurchaseManagementService {
     public void testApplyPromotionWithInvalidDate() {
 
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purhcaseManagementService.applyPromotion(game, null));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purhcaseManagementService.applyPromotion(game1, null));
 
         //Assert
         assertEquals("Date is null!",exception.getMessage());
@@ -591,8 +592,9 @@ public class testPurchaseManagementService {
     @Test
     public void testCheckoutInacitveGame() {
         //Arrange
-        game.setActive(false);
-        customer.addGameToCart(game);
+        game1.setActive(false);
+        when(cartItemRepository.findByCartItemId_Customer_Id(customer.getId()))
+                .thenReturn(Set.of(new CartItem(1, customer, game1)));
 
         //Act
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purhcaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), creditCard.getId(),LocalDate.of(2024,10,10)));
@@ -605,8 +607,9 @@ public class testPurchaseManagementService {
     @Test
     public void testCheckoutOutOfStockgame() {
         //Arrange
-        customer.addGameToCart(game);
-        game.setStock(0);
+        when(cartItemRepository.findByCartItemId_Customer_Id(customer.getId()))
+                .thenReturn(Set.of(new CartItem(1, customer, game1)));
+        game1.setStock(0);
 
         //Act
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purhcaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), creditCard.getId(),LocalDate.of(2024,10,10)));
@@ -619,35 +622,48 @@ public class testPurchaseManagementService {
     @Test
     public void testCheckoutCart1() {
         //Arrange
-        int initialStockGame1 = game.getStock();
+        int initialStockGame1 = game1.getStock();
         int initialStockGame2 = game2.getStock();
-        customer.addGameToCart(game);
-        customer.addGameToCart(game2);
+        //since persistence layer is not active, both games will have the same ID (both 0)
+        //as a result, we are mocking as if the game2 has id of 1 and game1 has id of 0
+        Game spyGame = spy(game2);
+        when(spyGame.getId()).thenReturn(game1.getId()+1);
+
+
+        Set<CartItem> customerCart = new HashSet<>();
+        customerCart.add(new CartItem(1, customer, game1));
+        customerCart.add(new CartItem(1, customer, spyGame));
+
+        when(cartItemRepository.findByCartItemId_Customer_Id(customer.getId()))
+                .thenReturn(customerCart);
+
+        doAnswer(invocation -> {
+            customerCart.clear();
+            return null;
+        }).when(cartItemRepository).deleteAll(anyIterable());
 
         //Act
         purhcaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), creditCard.getId(), LocalDate.of(2024,10,10));
 
-        //Arrange
-        assertEquals(initialStockGame1 - 1, game.getStock());
-        assertEquals(initialStockGame2 - 1, game2.getStock());
+        //Assert
+        assertEquals(initialStockGame1 - 1, game1.getStock());
+        assertEquals(initialStockGame2 - 1, spyGame.getStock());
 
-        assertTrue(game.getCopyInCartOf().isEmpty());
-        assertTrue(game2.getCopyInCartOf().isEmpty());
-        assertTrue(customer.getCopyCart().isEmpty());
+        assertTrue(customerCart.isEmpty());
 
         assertEquals(3, customer.getPurchases().size()); //note that we already have a purchase in customer from initialization
 
         verify(customerRepository, times(1)).save(customer);
-        verify(gameRepository, times(1)).save(game);
-        verify(gameRepository, times(1)).save(game2);
+        verify(gameRepository, times(1)).save(game1);
+        verify(gameRepository, times(1)).save(spyGame);
         verify(purchaseRepository, times(2)).save(any(Purchase.class));
-
     }
 
     @Test
     public void testGetCartPrice() {
         //Arrange
-        customer.addGameToCart(game2);
+        when(cartItemRepository.findByCartItemId_Customer_Id(customer.getId()))
+                .thenReturn(Set.of(new CartItem(1, customer, game2)));
 
         float cartPrice = purhcaseManagementService.getCartPrice(customer.getEmail(), LocalDate.of(2024,10,10));
 
