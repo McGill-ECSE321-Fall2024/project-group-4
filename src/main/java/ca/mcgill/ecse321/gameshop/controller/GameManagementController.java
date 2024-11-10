@@ -1,6 +1,5 @@
 package ca.mcgill.ecse321.gameshop.controller;
 
-import ca.mcgill.ecse321.gameshop.dto.CategoryDTO;
 import ca.mcgill.ecse321.gameshop.dto.GameDTO;
 import ca.mcgill.ecse321.gameshop.model.Game;
 import ca.mcgill.ecse321.gameshop.serviceClasses.GameManagementService;
@@ -18,17 +17,17 @@ public class GameManagementController {
     @Autowired
     private GameManagementService gameManagementService;
 
-    @GetMapping("carts/{customerId}")
+    @GetMapping("customers/{customerId}/carts")
     public List<GameDTO> getGamesInCart(@PathVariable int customerId){
         Set<Game> gamesInCart = gameManagementService.viewGamesInCart(customerId);
         return gamesInCart.stream().map(GameDTO::new).collect(Collectors.toList());
     }
-    @PutMapping("carts/{customerId}/{gameId}")
+    @PutMapping("customers/{customerId}/carts/{gameId}")
     public void addGameToCart(@PathVariable int customerId, @PathVariable int gameId){
         gameManagementService.addGameToCart(customerId, gameId);
     }
 
-    @DeleteMapping("carts/{customerId}/{gameId}")
+    @DeleteMapping("customers/{customerId}/carts/{gameId}")
     public void deleteGameFromCart(@PathVariable int customerId, @PathVariable int gameId){
         gameManagementService.removeGameFromCart(customerId, gameId);
     }
@@ -53,13 +52,13 @@ public class GameManagementController {
      * Endpoint to retrieve all games in the inventory.
      * @return A list of GameDTO objects representing all games in the inventory.
      */
-    @GetMapping("/games")
+    @GetMapping("games")
     public List<GameDTO> getInventory() {
         Set<Game> inventory = gameManagementService.viewInventory();
         return inventory.stream().map(GameDTO::new).collect(Collectors.toList());
     }
 
-    @PostMapping("/games")
+    @PostMapping("games")
     public GameDTO addGame(
             @RequestParam String name,
             @RequestParam String description,
@@ -73,12 +72,12 @@ public class GameManagementController {
     }
 
 
-    @DeleteMapping("/games/{gameId}")
+    @DeleteMapping("games/{gameId}")
     public void removeGame(@PathVariable int gameId) {
         gameManagementService.removeGame(gameId);
     }
 
-    @PutMapping("/games/{gameId}/stock")
+    @PutMapping("games/{gameId}/stock")
     public GameDTO updateStock(@PathVariable int gameId, @RequestParam int stockChange) {
         gameManagementService.updateStock(gameId, stockChange);
         Game updatedGame = gameManagementService.viewInventory()
