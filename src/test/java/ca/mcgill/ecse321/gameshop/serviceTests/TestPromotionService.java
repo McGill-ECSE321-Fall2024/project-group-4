@@ -2,7 +2,7 @@ package ca.mcgill.ecse321.gameshop.serviceTests;
 
 import ca.mcgill.ecse321.gameshop.DAO.*;
 import ca.mcgill.ecse321.gameshop.model.*;
-import ca.mcgill.ecse321.gameshop.serviceClasses.PromotionService;
+import ca.mcgill.ecse321.gameshop.serviceClasses.GameManagementService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 public class TestPromotionService {
 
     @InjectMocks
-    private PromotionService promotionService;
+    private GameManagementService promotionService;
 
     @Mock
     private PromotionRepository promotionRepository;

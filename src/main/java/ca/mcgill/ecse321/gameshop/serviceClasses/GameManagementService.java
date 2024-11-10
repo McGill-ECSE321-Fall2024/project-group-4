@@ -8,6 +8,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
 
@@ -27,6 +29,9 @@ public class GameManagementService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private PromotionRepository promotionRepository;
 
     @Transactional
     public void addGameToCart(int customerId, int gameId){
@@ -152,5 +157,73 @@ public class GameManagementService {
         gameRequest.setStatus(RequestStatus.DENIED);
         gameRequestRepository.save(gameRequest);
         return gameRequest;
+    }
+
+    @Transactional
+    public Promotion findPromotionById(int id) {
+        Optional<Promotion> promotion = promotionRepository.findById(id);
+        if (promotion.isPresent()) {
+            return promotion.get();
+        }
+        throw new IllegalArgumentException("Promotion not found");
+    }
+
+    @Transactional
+    public Promotion createPromotion(int discount, Date startDate, Date endDate) {
+        Promotion promotion = new Promotion(discount);
+
+        if(discount < 0 || discount > 100) {
+            throw new IllegalArgumentException("Discount must be between 0 and 100");
+        }
+        if(endDate.before(Date.valueOf(LocalDate.now()))) {
+            throw new IllegalArgumentException("End date cannot be before current date");
+        }
+        if(startDate.after(endDate)) {
+            throw new IllegalArgumentException("Start date cannot be after end date");
+        }
+
+        promotion.setStartDate(startDate);
+        promotion.setEndDate(endDate);
+
+        promotionRepository.save(promotion);
+        return promotion;
+
+    }
+
+    @Transactional
+    public void deletePromotion(int id) {
+
+        Promotion promotion = findPromotionById(id);
+
+        Set<Game> gamesInPromotion = promotion.getCopyGames();
+
+        gamesInPromotion.forEach(game -> {
+            promotion.removeGame(game);
+            game.removePromotion(promotion);
+            gameRepository.save(game);
+        });
+
+        promotionRepository.delete(promotion);
+    }
+
+    @Transactional
+    public Promotion updatePromotion(int id, int discount, Date startDate, Date endDate) {
+        Promotion promotion = findPromotionById(id);
+
+        if(discount < 0 || discount > 100) {
+            throw new IllegalArgumentException("Discount must be between 0 and 100");
+        }
+        promotion.setDiscount(discount);
+        if(endDate.before(Date.valueOf(LocalDate.now()))) {
+            throw new IllegalArgumentException("End date cannot be before current date");
+        }
+        if(startDate.after(endDate)) {
+            throw new IllegalArgumentException("Start date cannot be after end date");
+        }
+        promotion.setStartDate(startDate);
+        promotion.setEndDate(endDate);
+        promotionRepository.save(promotion);
+        return promotion;
+
     }
 }
