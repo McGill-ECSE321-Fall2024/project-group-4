@@ -61,7 +61,7 @@ public class testAccountManagementService {
         managerRepository.deleteAll();
     }
 
-    @SuppressWarnings("null")
+
     @BeforeEach
     public void setUp(){
         //initialize all fields

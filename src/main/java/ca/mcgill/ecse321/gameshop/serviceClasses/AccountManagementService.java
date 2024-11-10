@@ -232,7 +232,7 @@ public class AccountManagementService {
      * 
      * @param oldPassword
      * @param newPassword
-     * @param username
+     * @param email
      * @return Account
      * 
      * @Author Ana Gordon
@@ -270,7 +270,7 @@ public class AccountManagementService {
      * Update account username
      * 
      * @param newUsername
-     * @param oldusername
+     * @param oldUsername
      * @return Account
      * 
      * @Author Ana Gordon
