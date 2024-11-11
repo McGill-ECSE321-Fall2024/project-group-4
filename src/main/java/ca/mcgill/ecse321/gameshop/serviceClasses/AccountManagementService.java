@@ -238,42 +238,21 @@ public class AccountManagementService {
 
 
     /**
-     * Activate an employee account by username
+     * Set the activity an employee account by username
      * 
      * @param id
+     * @param is_active the activity status of the employee
      * @return boolean
      * 
      * @Author Ana Gordon
      */
     @Transactional
-    public boolean activateEmployee(int id) {
+    public void setEmployeeStatus(int id, boolean is_active) {
         Employee employee = employeeRepository.findEmployeeById(id).orElseThrow(()-> new EntityNotFoundException("Employee does not exist"));
-        if (employee.isActive()) {
-            return false;
-        }
-        employee.setActive(true);
+        employee.setActive(is_active);
         employeeRepository.save(employee);
-        return true;
     }
 
-    /**
-     * Deactivate an employee account by username
-     * 
-     * @param id
-     * @return boolean
-     * 
-     * @Author Ana Gordon
-     */
-    @Transactional
-    public boolean deactivateEmployee(int id) {
-        Employee employee = employeeRepository.findEmployeeById(id).orElseThrow(()-> new EntityNotFoundException("Employee does not exist"));
-        if (!employee.isActive()) {
-            return false;
-        }
-        employee.setActive(false);
-        employeeRepository.save(employee);
-        return true;
-    }
 
     /**
      * Login to a customer account
@@ -433,7 +412,7 @@ public class AccountManagementService {
         }
 
         if (employeeRepository.findByUsername(newUsername).isPresent()) {
-            throw new IllegalArgumentException("Username is already in use by another employee");
+            throw new EntityExistsException("Username is already in use by another employee");
         }
 
         Employee employee = employeeRepository.findByUsername(oldUsername).orElseThrow(()-> new EntityNotFoundException("Employee does not exist"));
