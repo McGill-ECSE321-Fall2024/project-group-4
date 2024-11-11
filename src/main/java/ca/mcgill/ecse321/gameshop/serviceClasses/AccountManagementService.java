@@ -352,7 +352,7 @@ public class AccountManagementService {
         }
 
 
-        Manager manager = managerRepository.findManagerByUsername(username).orElseThrow(()-> new EntityNotFoundException("Manager does not exist"));
+        Manager manager = managerRepository.findByUsername(username).orElseThrow(()-> new EntityNotFoundException("Manager does not exist"));
         if (!manager.getPassword().equals(password)) {
             throw new IllegalArgumentException("Wrong password!");
         }
