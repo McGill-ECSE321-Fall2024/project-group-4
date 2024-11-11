@@ -20,24 +20,35 @@ public class SearchService {
 
     @Transactional
     public Set<Game> searchGames(String searchInput) {
+
+        if (searchInput.isEmpty()) {
+            Set<Game> games = new HashSet<>();
+            gameRepository.findAll().forEach(game -> {if(game.isActive()){games.add(game);}});
+            return games;
+        }
+
         String[] words = searchInput.split(" ");
 
         Set<Game> searchedGames = new HashSet<>();
 
         gameRepository.findAll().forEach(game -> {
-            int matchCounter = 0;
-            String[] gameWords = game.getName().split(" ");
 
-            for(String searchedWord : words) {
-                for(String word : gameWords) {
-                    if(searchedWord.equals(word)) {
-                        matchCounter++;
-                        break;
+            if(game.isActive()) {
+
+                int matchCounter = 0;
+                String[] gameWords = game.getName().split(" ");
+
+                for (String searchedWord : words) {
+                    for (String word : gameWords) {
+                        if (searchedWord.equalsIgnoreCase(word)) {
+                            matchCounter++;
+                            break;
+                        }
                     }
                 }
-            }
-            if(matchCounter == words.length) {
-                searchedGames.add(game);
+                if (matchCounter == words.length) {
+                    searchedGames.add(game);
+                }
             }
         });
         return searchedGames;
