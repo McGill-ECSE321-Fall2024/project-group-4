@@ -4,7 +4,7 @@ import jakarta.persistence.Entity;
 
 @Entity
 public class Manager extends Account {
-    Manager(String username, String password) {
+    public Manager(String username, String password) {
         super(username, password);
     }
 

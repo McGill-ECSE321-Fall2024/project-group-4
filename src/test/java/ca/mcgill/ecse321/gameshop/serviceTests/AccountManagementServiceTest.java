@@ -115,7 +115,7 @@ public class AccountManagementServiceTest {
 
 
         when(managerRepository.save(any(Manager.class))).thenReturn(manager);
-        when(managerRepository.findManagerByUsername("manager")).thenReturn(Optional.of(manager));
+        when(managerRepository.findByUsername("manager")).thenReturn(Optional.of(manager));
         when(managerRepository.findAll()).thenReturn(Set.of(manager));
     }
 
@@ -852,7 +852,7 @@ public class AccountManagementServiceTest {
         //Assert
         assertNotNull(loadedManager);
         assertEquals(manager,loadedManager);
-        verify(managerRepository, times(1)).findManagerByUsername(username);
+        verify(managerRepository, times(1)).findByUsername(username);
 
     }
 
