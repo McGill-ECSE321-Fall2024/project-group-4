@@ -1,14 +1,8 @@
 package ca.mcgill.ecse321.gameshop.serviceClasses;
 
-import ca.mcgill.ecse321.gameshop.DAO.CustomerRepository;
-import ca.mcgill.ecse321.gameshop.DAO.GameRepository;
-import ca.mcgill.ecse321.gameshop.DAO.ManagerRepository;
-import ca.mcgill.ecse321.gameshop.DAO.EmployeeRepository;
+import ca.mcgill.ecse321.gameshop.DAO.*;
 
-import ca.mcgill.ecse321.gameshop.model.Customer;
-import ca.mcgill.ecse321.gameshop.model.Manager;
-import ca.mcgill.ecse321.gameshop.model.Employee;
-import ca.mcgill.ecse321.gameshop.model.Game;
+import ca.mcgill.ecse321.gameshop.model.*;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,6 +10,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -39,6 +34,9 @@ public class AccountManagementService {
 
     @Autowired
     private GameRepository gameRepository;
+
+    @Autowired
+    private PolicyRepository policyRepository;
 
     /**
      *
@@ -495,10 +493,49 @@ public class AccountManagementService {
         customerRepository.save(customer);
     }
 
+    @Transactional
     public Set<Game> viewWishlist(int customerId) {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new EntityNotFoundException("Customer not found"));
 
         return customer.getCopyWishlist();
+    }
+
+    @Transactional
+    public Policy findPolicyById(int policyId) {
+        Optional<Policy> policy = policyRepository.findById(policyId);
+        if (!policy.isPresent()) {
+            throw new EntityNotFoundException("Policy not found");
+        }
+        return policy.get();
+    }
+
+    @Transactional
+    public Policy createPolicy(String description) {
+        if(description.trim().isEmpty()) {
+            throw new IllegalArgumentException("Description cannot be empty, null or contain only spaces.");
+        }
+
+        Policy policy = new Policy(description);
+        policyRepository.save(policy);
+        return policy;
+    }
+
+    @Transactional
+    public Policy updatePolicy(int policyId, String description) {
+        if (description.trim().isEmpty()) {
+            throw new IllegalArgumentException("Description cannot be empty, null or contain only spaces.");
+        }
+
+        Policy policy = findPolicyById(policyId);
+        policy.setDescription(description);
+        policyRepository.save(policy);
+        return policy;
+    }
+
+    @Transactional
+    public void deletePolicy(int policyId) {
+        Policy policy = findPolicyById(policyId);
+        policyRepository.delete(policy);
     }
 }
