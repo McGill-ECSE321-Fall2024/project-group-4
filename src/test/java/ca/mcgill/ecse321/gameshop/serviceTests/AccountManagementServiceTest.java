@@ -572,23 +572,10 @@ public class AccountManagementServiceTest {
     @Test
     public void testDeactivateEmployee(){
         // Act
-        accountManagementService.deactivateEmployee(employee1.getId());
+        accountManagementService.setEmployeeStatus(employee1.getId(),false);
         // Assert
         assertFalse(employee1.isActive());
         verify(employeeRepository, times(1)).findEmployeeById(employee1.getId());
-    }
-
-    /**
-     * Test for deactivating employee, fail
-     * 
-     * @author Ana Gordon
-     */
-    @Test
-    public void testDeactivateEmployeeInvalid(){
-        // Act
-       EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> accountManagementService.deactivateEmployee(-1));
-
-       assertEquals(exception.getMessage(),"Employee does not exist");
     }
 
     /**
@@ -598,8 +585,11 @@ public class AccountManagementServiceTest {
      */
     @Test
     public void testActivateEmployee(){
+        //Arrange
+        employee1.setActive(false);
+
         // Act
-        accountManagementService.activateEmployee(employee1.getId());
+        accountManagementService.setEmployeeStatus(employee1.getId(),true);
         // Assert
         assertTrue(employee1.isActive());
         verify(employeeRepository, times(1)).findEmployeeById(employee1.getId());
@@ -607,13 +597,13 @@ public class AccountManagementServiceTest {
 
     /**
      * Test for activating employee, fail
-     * 
+     *
      * @author Ana Gordon
      */
     @Test
     public void testActivateEmployeeInvalid(){
         // Act
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> accountManagementService.activateEmployee(-1));
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> accountManagementService.setEmployeeStatus(-1, false));
 
         assertEquals(exception.getMessage(),"Employee does not exist");
     }
@@ -1332,7 +1322,7 @@ public class AccountManagementServiceTest {
         String newUsername = employee2.getUsername();
 
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->accountManagementService.updateEmployeeUsername(newUsername,oldUsername));
+        EntityExistsException exception = assertThrows(EntityExistsException.class, () ->accountManagementService.updateEmployeeUsername(newUsername,oldUsername));
 
         //Assert
         assertEquals("Username is already in use by another employee", exception.getMessage());
