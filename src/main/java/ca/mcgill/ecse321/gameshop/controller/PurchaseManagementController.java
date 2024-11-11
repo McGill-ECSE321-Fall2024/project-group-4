@@ -114,6 +114,34 @@ public class PurchaseManagementController {
         return purchaseManagementService.getCartPrice(customerEmail);
     }
 
+    @GetMapping("refunds/{refundId}")
+    @ResponseStatus(HttpStatus.FOUND)
+    public RefundRequestDTO getRefundById(@PathVariable int refundId) {
+        return new RefundRequestDTO(purchaseManagementService.getRefundById(refundId));
+    }
 
+    @GetMapping("employees/{employeeUsername}")
+    @ResponseStatus(HttpStatus.FOUND)
+    public EmployeeDTO getEmployeeByUsername(@PathVariable String employeeUsername) {
+        return new EmployeeDTO(purchaseManagementService.findEmployeeByUsername(employeeUsername));
+    }
+    
+    @GetMapping("customers/{customerEmail}/purchaseHistory")
+    @ResponseStatus(HttpStatus.FOUND)
+    public Set<PurchaseDTO> requestCustomerPurchaseHistory(@PathVariable String customerEmail, @RequestParam String requestor) {
+        Set<Purchase> purchases;
+        if (!requestor.isEmpty()) {
+            purchases = purchaseManagementService.requestCustomerPurchaseHistory(customerEmail, requestor);
+        }
+        else {
+            purchases = purchaseManagementService.viewCustomerPurchaseHistory(customerEmail);
+        }
+            return purchases.stream().map(PurchaseDTO::new).Collect(Collectors.toSet());    
+    }
 
+    @PostMapping("refunds")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public RefundRequestDTO requestRefund(@RequestParam int purchaseId, @RequestParam String reason) {
+        return new RefundRequestDTO(purchaseManagementService.requestRefund(purchaseId, reason));
+    }
 }
