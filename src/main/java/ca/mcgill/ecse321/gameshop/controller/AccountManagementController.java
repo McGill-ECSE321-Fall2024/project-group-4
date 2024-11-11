@@ -38,5 +38,7 @@ public class AccountManagementController {
         Set<Game> wishlist = accountManagementService.viewWishlist(customerId);
         return wishlist.stream().map(GameDTO::new).collect(Collectors.toList());
     }
+
+
 }
 

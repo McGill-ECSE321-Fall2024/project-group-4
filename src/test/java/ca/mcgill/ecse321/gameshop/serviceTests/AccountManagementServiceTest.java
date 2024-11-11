@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 
+import jakarta.persistence.EntityExistsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
@@ -245,7 +246,7 @@ public class AccountManagementServiceTest {
 
 
         // Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, ()->accountManagementService.createCustomer(email,password,username,phoneNumber)) ;
+        EntityExistsException exception = assertThrows(EntityExistsException.class, ()->accountManagementService.createCustomer(email,password,username,phoneNumber)) ;
 
         // Assert
         assertEquals(exception.getMessage(),"Customer with this email already exists.");
