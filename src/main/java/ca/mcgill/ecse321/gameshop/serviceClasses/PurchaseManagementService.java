@@ -331,11 +331,15 @@ public class PurchaseManagementService {
     }
 
     @Transactional
-    public void approveRefund(int refundId) {
+    public void approveRefund(int refundId, String approver) {
+        Employee approver = findEmployeeByUsername(approver);
         RefundRequest refund = findRefundById(refundId);
 
         if (refund.getStatus() != RequestStatus.PENDING) {
             throw new IllegalArgumentException("Only pending requests can be approved.");
+        }
+        if (refund.GetReviewer() != approver) {
+            throw new IllegalArgumentException("Only employees assigned to the refund request can approve it.");
         }
 
         refund.setStatus(RequestStatus.APPROVED);
@@ -343,11 +347,15 @@ public class PurchaseManagementService {
     }
 
     @Transactional
-    public void denyRefund(int refundId) {
+    public void denyRefund(int refundId, String denier) {
+        Employee denier = findEmployeeByUsername(denier);
         RefundRequest refund = findRefundById(refundId);
 
         if (refund.getStatus() != RequestStatus.PENDING) {
             throw new IllegalArgumentException("Only pending requests can be denied.");
+        }
+        if (refund.GetReviewer() != denier) {
+            throw new IllegalArgumentException("Only employees assigned to the refund request can deny it.");
         }
 
         refund.setStatus(RequestStatus.DENIED);
