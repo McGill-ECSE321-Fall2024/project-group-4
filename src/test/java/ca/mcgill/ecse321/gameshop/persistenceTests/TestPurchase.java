@@ -46,7 +46,7 @@ public class TestPurchase {
     private Purchase purchase;
     private Customer customer = new Customer("customer", "password", "customer@email.com", "0123456789");
     private Address address = new Address("street", "city", "province", "country", "postalCode", customer);
-    private CreditCard creditCard = new CreditCard(4567, 123, LocalDate.now(), customer, address);
+    private CreditCard creditCard = new CreditCard(4567, "123", LocalDate.now(), customer, address);
     private Review review;
     private Employee employee = new Employee("employee", "password", true);
     private RefundRequest refundRequest;
