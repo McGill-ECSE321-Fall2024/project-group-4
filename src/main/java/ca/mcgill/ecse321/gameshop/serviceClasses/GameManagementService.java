@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -225,5 +226,41 @@ public class GameManagementService {
         promotionRepository.save(promotion);
         return promotion;
 
+    }
+
+    @Transactional
+    public Set<Game> searchGames(String searchInput) {
+
+        if (searchInput.isEmpty()) {
+            Set<Game> games = new HashSet<>();
+            gameRepository.findAll().forEach(game -> {if(game.isActive()){games.add(game);}});
+            return games;
+        }
+
+        String[] words = searchInput.split(" ");
+
+        Set<Game> searchedGames = new HashSet<>();
+
+        gameRepository.findAll().forEach(game -> {
+
+            if(game.isActive()) {
+
+                int matchCounter = 0;
+                String[] gameWords = game.getName().split(" ");
+
+                for (String searchedWord : words) {
+                    for (String word : gameWords) {
+                        if (searchedWord.equalsIgnoreCase(word)) {
+                            matchCounter++;
+                            break;
+                        }
+                    }
+                }
+                if (matchCounter == words.length) {
+                    searchedGames.add(game);
+                }
+            }
+        });
+        return searchedGames;
     }
 }
