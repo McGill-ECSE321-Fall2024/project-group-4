@@ -20,4 +20,12 @@ public class GameShopExceptionHandler {
     public ResponseEntity<ErrorDTO> handleEntityExistsException(EntityExistsException exception){
         return new ResponseEntity<>(new ErrorDTO(List.of(exception.getMessage())), HttpStatus.CONFLICT);
     }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorDTO> handleEntityIllegalArgException(IllegalArgumentException exception){
+        return new ResponseEntity<>(new ErrorDTO(List.of(exception.getMessage())), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorDTO> handleEntityIllegalStateException(IllegalStateException exception){
+        return new ResponseEntity<>(new ErrorDTO(List.of(exception.getMessage())), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

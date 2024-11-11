@@ -10,7 +10,7 @@ public class CreditCard {
     @Id
     private int id;
     private int cardNumber;
-    private int cvv;
+    private String cvv;
     @Column(nullable = false)
     private LocalDate expiryDate;
     @ManyToOne(optional = false)
@@ -18,7 +18,7 @@ public class CreditCard {
     @ManyToOne(optional = false)
     private Address billingAddress;
 
-    public CreditCard(int cardNumber, int cvv, LocalDate expiryDate, Customer customer, Address billingAddress) {
+    public CreditCard(int cardNumber, String cvv, LocalDate expiryDate, Customer customer, Address billingAddress) {
         this.cardNumber = cardNumber;
         this.cvv = cvv;
         this.expiryDate = expiryDate;
@@ -42,11 +42,11 @@ public class CreditCard {
         this.cardNumber = cardNumber;
     }
 
-    public int getCvv() {
+    public String getCvv() {
         return cvv;
     }
 
-    public void setCvv(int cvv) {
+    public void setCvv(String cvv) {
         this.cvv = cvv;
     }
 

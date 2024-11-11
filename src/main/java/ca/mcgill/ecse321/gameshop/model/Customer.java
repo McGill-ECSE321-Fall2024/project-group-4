@@ -66,12 +66,12 @@ public class Customer extends Account {
         return new HashSet<>(likedReviews);
     }
 
-    public Set<Purchase> getPurchases() {
-        return purchases;
+    public Set<Purchase> getCopyPurchases() {
+        return new HashSet<>(purchases);
     }
 
     public boolean addPurchases(Purchase purchase){
-        return purchase.setCustomer(this);
+        return purchases.add(purchase);
     }
 
     public boolean removePurchases(Purchase purchase){
