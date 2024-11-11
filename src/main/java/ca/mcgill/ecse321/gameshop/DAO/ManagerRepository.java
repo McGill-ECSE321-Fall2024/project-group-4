@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface ManagerRepository extends CrudRepository<Manager, Integer> {
     Optional<Manager> findById(int id);
-
+    Optional<Manager> findManagerByUsername(String username);
 }

@@ -10,6 +10,7 @@ import ca.mcgill.ecse321.gameshop.model.Manager;
 import ca.mcgill.ecse321.gameshop.model.Employee;
 import ca.mcgill.ecse321.gameshop.model.Game;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,7 +90,7 @@ public class AccountManagementService {
         }
 
         if (customerRepository.findByEmail(email).isPresent()) {
-            throw new IllegalArgumentException("Customer with this email already exists.");
+            throw new EntityExistsException("Customer with this email already exists.");
         }
 
         Customer customer = new Customer(username, password, email, phoneNumber);
