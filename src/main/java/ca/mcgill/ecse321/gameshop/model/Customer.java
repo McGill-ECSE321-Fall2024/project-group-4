@@ -71,7 +71,7 @@ public class Customer extends Account {
     }
 
     public boolean addPurchases(Purchase purchase){
-        return purchase.setCustomer(this);
+        return purchases.add(purchase);
     }
 
     public boolean removePurchases(Purchase purchase){

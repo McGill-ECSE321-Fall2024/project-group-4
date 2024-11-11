@@ -236,8 +236,8 @@ public class PurchaseManagementService {
         }
 
         gamesInCart.forEach(game -> {
-            customer.removeGameFromCart(game);
             game.removeInCartOf(customer);
+            customer.removeGameFromCart(game);
             if (!game.isActive()) throw new IllegalArgumentException("Cannot checkout an inactive game");
             if (game.getStock() == 0) throw new IllegalArgumentException("Game is out of stock");
             game.setStock(game.getStock() - 1);

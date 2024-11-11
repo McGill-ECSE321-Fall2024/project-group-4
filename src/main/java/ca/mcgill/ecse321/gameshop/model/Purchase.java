@@ -38,7 +38,7 @@ public class Purchase {
         this.deliveryAddress = deliveryAddress;
         this.paymentMethod = paymentMethod;
 
-        customer.getCopyPurchasess().add(this);
+        customer.addPurchases(this);
     }
     protected Purchase() {
 
