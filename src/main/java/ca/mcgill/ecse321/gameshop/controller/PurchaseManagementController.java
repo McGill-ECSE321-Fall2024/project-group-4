@@ -144,4 +144,26 @@ public class PurchaseManagementController {
     public RefundRequestDTO requestRefund(@RequestParam int purchaseId, @RequestParam String reason) {
         return new RefundRequestDTO(purchaseManagementService.requestRefund(purchaseId, reason));
     }
+
+    @PutMapping("refunds/{refundId}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void processRefund(@PathVariable int refundId, @RequestParam String employeeUsername, @RequestParam Bool approve) {
+        if (approve) { // Put is to approve, not deny
+            purchaseManagementService.approveRefund(refundId, employeeUsername);
+        }
+        else { // approve = false, therefore deny, not approve
+            purchaseManagementService.denyRefund(refundId, employeeUsername);
+        }
+    }
+
+    @PutMapping("refunds/{refundId}/reviewer")
+    @ResponseStatus(HttpStatus.ACCEPTED) 
+    public void updateRefundReviewer(@PathVariable int refundId, @RequestParam String reviewerUsername, @RequestParam Bool add) {
+        if (add) { // Adding reviewer, not removing
+            purchaseManagementService.addReviewerToRefundRequest(refundId, employeeUsername);
+        }
+        else { // Removing reviewer, not adding
+            purchaseManagementService.removeReviewerFromRefundRequest(refundId, employeeUsername);
+        }
+    }
 }
