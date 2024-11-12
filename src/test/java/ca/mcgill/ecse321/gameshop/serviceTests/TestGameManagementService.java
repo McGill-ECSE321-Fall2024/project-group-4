@@ -74,6 +74,7 @@ public class TestGameManagementService {
                 .thenReturn(Optional.of(referenceCartItem));
 
         referenceCategory.addInCategory(referenceGame1);
+        when(categoryRepo.findByName(referenceCategory.getName())).thenReturn(Optional.of(referenceCategory));
     }
 
     @Test
@@ -86,18 +87,11 @@ public class TestGameManagementService {
 
     @Test
     public void testDeleteValidCategory(){
-        doAnswer(invocation -> {
-            referenceGame1.removeCategory(invocation.getArgument(0));
-            referenceGame2.removeCategory(invocation.getArgument(0));
-            return null;
-        }).when(categoryRepo).delete(any(Category.class));
-
-        when(categoryRepo.findByName(referenceCategory.getName())).thenReturn(Optional.of(referenceCategory));
-
         gameManagementService.deleteCategory(referenceCategory.getName());
 
         verify(categoryRepo, times(1)).delete(referenceCategory);
         assertTrue(referenceGame1.getCopyCategories().isEmpty());
+        verify(gameRepo, times(1)).save(referenceGame1);
     }
 
     @Test
@@ -108,8 +102,6 @@ public class TestGameManagementService {
 
     @Test
     public void testGetGamesInValidCategory(){
-        when(categoryRepo.findByName(referenceCategory.getName())).thenReturn(Optional.of(referenceCategory));
-
         Set<Game> gamesInCategory = gameManagementService.getGamesInCategory(referenceCategory.getName());
 
         assertNotNull(gamesInCategory);
@@ -119,6 +111,53 @@ public class TestGameManagementService {
     @Test
     public void testGetGamesInInvalidCategory(){
         assertThrows(EntityNotFoundException.class, ()-> gameManagementService.getGamesInCategory("non existent category"));
+    }
+
+    @Test
+    public void testAddGameToCategory(){
+        assertFalse(referenceCategory.containsInCategory(referenceGame2));
+        assertFalse(referenceGame2.containsCategory(referenceCategory));
+
+        gameManagementService.addGameToCategory(referenceCategory.getName(), referenceGame2.getId());
+
+        assertTrue(referenceCategory.containsInCategory(referenceGame2));
+        assertTrue(referenceGame2.containsCategory(referenceCategory));
+        verify(gameRepo, times(1)).save(referenceGame2);
+    }
+
+    @Test
+    public void testAddGameToCategoryAlreadyInCategory(){
+        assertTrue(referenceCategory.containsInCategory(referenceGame1));
+        assertTrue(referenceGame1.containsCategory(referenceCategory));
+
+        assertThrows(IllegalArgumentException.class, () -> gameManagementService.addGameToCategory(referenceCategory.getName(), referenceGame1.getId()));
+
+        verify(gameRepo, times(0)).save(any());
+        verify(categoryRepo, times(0)).save(any());
+    }
+
+    @Test
+    public void testRemoveGameFromCategory(){
+        assertTrue(referenceCategory.containsInCategory(referenceGame1));
+        assertTrue(referenceGame1.containsCategory(referenceCategory));
+
+        gameManagementService.removeGameFromCategory(referenceCategory.getName(), referenceGame1.getId());
+
+        assertFalse(referenceCategory.containsInCategory(referenceGame1));
+        assertFalse(referenceGame1.containsCategory(referenceCategory));
+        verify(categoryRepo, times(1)).save(referenceCategory);
+        verify(gameRepo, times(1)).save(referenceGame1);
+    }
+
+    @Test
+    public void testRemoveGameFromCategoryNotInCategory(){
+        assertFalse(referenceCategory.containsInCategory(referenceGame2));
+        assertFalse(referenceGame2.containsCategory(referenceCategory));
+
+        assertThrows(IllegalArgumentException.class, () -> gameManagementService.removeGameFromCategory(referenceCategory.getName(), referenceGame2.getId()));
+
+        verify(categoryRepo, times(0)).save(any());
+        verify(gameRepo, times(0)).save(any());
     }
 
     @Test

@@ -33,12 +33,6 @@ public class GameManagementController {
         gameManagementService.removeGameFromCart(customerId, gameId);
     }
 
-    @GetMapping("categories/{categoryName}/games")
-    public List<GameResponseDTO> getGamesInCategory(@PathVariable String categoryName){
-        Set<Game> gamesInCategory = gameManagementService.getGamesInCategory(categoryName);
-        return gamesInCategory.stream().map(GameResponseDTO::new).collect(Collectors.toList());
-    }
-
     @PostMapping("categories/{categoryName}")
     public void createCategory(@PathVariable String categoryName){
         gameManagementService.createCategory(categoryName);
@@ -48,6 +42,23 @@ public class GameManagementController {
     public void deleteCategory(@PathVariable String categoryName){
         gameManagementService.deleteCategory(categoryName);
     }
+
+    @GetMapping("categories/{categoryName}/games")
+    public List<GameResponseDTO> getGamesInCategory(@PathVariable String categoryName){
+        Set<Game> gamesInCategory = gameManagementService.getGamesInCategory(categoryName);
+        return gamesInCategory.stream().map(GameResponseDTO::new).collect(Collectors.toList());
+    }
+
+    @PutMapping("categories/{categoryName}/games/{gameId}")
+    public void addGameToCategory(@PathVariable String categoryName, @PathVariable int gameId){
+        gameManagementService.addGameToCategory(categoryName, gameId);
+    }
+
+    @DeleteMapping("categories/{categoryName}/games/{gameId}")
+    public void removeGameFromCategory(@PathVariable String categoryName, @PathVariable int gameId){
+        gameManagementService.removeGameFromCategory(categoryName, gameId);
+    }
+
 
     /**
      * Endpoint to retrieve all games in the inventory.
@@ -62,7 +73,7 @@ public class GameManagementController {
     @PostMapping("games")
     public GameResponseDTO addGame(@RequestBody GameRequestDTO gameRequestDTO) {
         Game newGame = gameManagementService.addNewGame(gameRequestDTO.name(), gameRequestDTO.description(),
-                gameRequestDTO.cover(), gameRequestDTO.price(), gameRequestDTO.isActive(),
+                gameRequestDTO.coverPicture(), gameRequestDTO.price(), gameRequestDTO.isActive(),
                 gameRequestDTO.stock(), gameRequestDTO.categories());
 
         return new GameResponseDTO(newGame);
@@ -75,15 +86,7 @@ public class GameManagementController {
     }
 
     @PutMapping("games/{gameId}/stock")
-    public GameResponseDTO updateStock(@PathVariable int gameId, @RequestParam int stockChange) {
+    public void updateStock(@PathVariable int gameId, @RequestParam int stockChange) {
         gameManagementService.updateStock(gameId, stockChange);
-        Game updatedGame = gameManagementService.viewInventory()
-                            .stream()
-                            .filter(game -> game.getId() == gameId)
-                            .findFirst()
-                            .orElseThrow(() -> new EntityNotFoundException("Game not found"));
-        return new GameResponseDTO(updatedGame);
     }
-
-
 }

@@ -7,7 +7,7 @@ import java.util.List;
 public record GameRequestDTO(
         String name,
         String description,
-        String cover,
+        String coverPicture,
         float price,
         boolean isActive,
         int stock,

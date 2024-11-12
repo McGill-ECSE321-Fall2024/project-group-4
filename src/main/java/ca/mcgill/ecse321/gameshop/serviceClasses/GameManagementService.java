@@ -82,6 +82,13 @@ public class GameManagementService {
     @Transactional
     public void deleteCategory(String name){
         var category = categoryRepo.findByName(name).orElseThrow(()-> new EntityNotFoundException("Category to delete was not found"));
+
+        for(Game game : category.getCopyInCategory()){
+            if(!game.removeCategory(category)){
+                throw new IllegalStateException("Could not remove games from category to delete");
+            }
+            gameRepository.save(game);
+        }
         categoryRepo.delete(category);
     }
 
@@ -89,6 +96,32 @@ public class GameManagementService {
         var category = categoryRepo.findByName(name).orElseThrow(()-> new EntityNotFoundException("Category to get games in was not found"));
         return category.getCopyInCategory();
 
+    }
+
+    @Transactional
+    public void addGameToCategory(String categoryName, int gameId){
+        var category = categoryRepo.findByName(categoryName).orElseThrow(()-> new EntityNotFoundException("Category to add game to was not found"));
+        var game = gameRepository.findById(gameId).orElseThrow(()-> new EntityNotFoundException("Game to add to category was not found"));
+
+        if(!game.addCategory(category)){
+            throw new IllegalArgumentException("Game already in category");
+        }
+
+        categoryRepo.save(category);
+        gameRepository.save(game);
+    }
+
+    @Transactional
+    public void removeGameFromCategory(String categoryName, int gameId){
+        var category = categoryRepo.findByName(categoryName).orElseThrow(()-> new EntityNotFoundException("Category to remove game from was not found"));
+        var game = gameRepository.findById(gameId).orElseThrow(()-> new EntityNotFoundException("Game to remove from category was not found"));
+
+        if(!game.removeCategory(category)){
+            throw new IllegalArgumentException("Game not in category");
+        }
+
+        categoryRepo.save(category);
+        gameRepository.save(game);
     }
 
     public Set<Game> viewInventory() {
