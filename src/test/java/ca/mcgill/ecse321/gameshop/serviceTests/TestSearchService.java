@@ -16,6 +16,11 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test search games service
+ *
+ * @author Camille Pouliot
+ */
 @SpringBootTest
 public class TestSearchService {
 
@@ -48,6 +53,11 @@ public class TestSearchService {
         gameRepository.deleteAll();
     }
 
+    /**
+     * Test searching games with a one word string
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testOneWordSearch() {
         //Act
@@ -60,6 +70,11 @@ public class TestSearchService {
         verify(gameRepository, times(1)).findAll();
     }
 
+    /**
+     * Test search games with a two word string
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testTwoWordSearch() {
         //Act
@@ -73,6 +88,11 @@ public class TestSearchService {
         verify(gameRepository, times(1)).findAll();
     }
 
+    /**
+     * Test searching an empty string
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testEmptySearch() {
         //Act
@@ -86,6 +106,11 @@ public class TestSearchService {
         verify(gameRepository, times(1)).findAll();
     }
 
+    /**
+     * Test searching a string with no match
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testSearchNoMatch() {
         //Act
