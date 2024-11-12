@@ -8,8 +8,8 @@ import java.sql.Date;
 /**
  * DTO for {@link ca.mcgill.ecse321.gameshop.model.Promotion}
  */
-public record PromotionDTO(int id, int discount, Date startDate, Date endDate) implements Serializable {
-    public PromotionDTO(Promotion promotion) {
+public record PromotionResponseDTO(int id, int discount, Date startDate, Date endDate) implements Serializable {
+    public PromotionResponseDTO(Promotion promotion) {
         this(promotion.getId(), promotion.getDiscount(), promotion.getStartDate(), promotion.getEndDate());
     }
 }

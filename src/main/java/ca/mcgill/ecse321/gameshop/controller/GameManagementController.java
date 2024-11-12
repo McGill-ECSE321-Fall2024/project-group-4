@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.gameshop.controller;
 
-import ca.mcgill.ecse321.gameshop.dto.GameDTO;
+import ca.mcgill.ecse321.gameshop.dto.GameRequestDTO;
+import ca.mcgill.ecse321.gameshop.dto.GameResponseDTO;
 import ca.mcgill.ecse321.gameshop.model.Game;
 import ca.mcgill.ecse321.gameshop.serviceClasses.GameManagementService;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,9 +19,9 @@ public class GameManagementController {
     private GameManagementService gameManagementService;
 
     @GetMapping("customers/{customerId}/cart")
-    public List<GameDTO> getGamesInCart(@PathVariable int customerId){
+    public List<GameResponseDTO> getGamesInCart(@PathVariable int customerId){
         Set<Game> gamesInCart = gameManagementService.viewGamesInCart(customerId);
-        return gamesInCart.stream().map(GameDTO::new).collect(Collectors.toList());
+        return gamesInCart.stream().map(GameResponseDTO::new).collect(Collectors.toList());
     }
     @PutMapping("customers/{customerId}/cart/{gameId}")
     public void addGameToCart(@PathVariable int customerId, @PathVariable int gameId){
@@ -33,9 +34,9 @@ public class GameManagementController {
     }
 
     @GetMapping("categories/{categoryName}/games")
-    public List<GameDTO> getGamesInCategory(@PathVariable String categoryName){
+    public List<GameResponseDTO> getGamesInCategory(@PathVariable String categoryName){
         Set<Game> gamesInCategory = gameManagementService.getGamesInCategory(categoryName);
-        return gamesInCategory.stream().map(GameDTO::new).collect(Collectors.toList());
+        return gamesInCategory.stream().map(GameResponseDTO::new).collect(Collectors.toList());
     }
 
     @PostMapping("categories/{categoryName}")
@@ -53,22 +54,18 @@ public class GameManagementController {
      * @return A list of GameDTO objects representing all games in the inventory.
      */
     @GetMapping("games")
-    public List<GameDTO> getInventory() {
+    public List<GameResponseDTO> getInventory() {
         Set<Game> inventory = gameManagementService.viewInventory();
-        return inventory.stream().map(GameDTO::new).collect(Collectors.toList());
+        return inventory.stream().map(GameResponseDTO::new).collect(Collectors.toList());
     }
 
     @PostMapping("games")
-    public GameDTO addGame(
-            @RequestParam String name,
-            @RequestParam String description,
-            @RequestParam String cover,
-            @RequestParam float price,
-            @RequestParam boolean isActive,
-            @RequestParam int stock,
-            @RequestParam List<String> categories) {
-        Game newGame = gameManagementService.addNewGame(name, description, cover, price, isActive, stock, categories);
-        return new GameDTO(newGame);
+    public GameResponseDTO addGame(@RequestBody GameRequestDTO gameRequestDTO) {
+        Game newGame = gameManagementService.addNewGame(gameRequestDTO.name(), gameRequestDTO.description(),
+                gameRequestDTO.cover(), gameRequestDTO.price(), gameRequestDTO.isActive(),
+                gameRequestDTO.stock(), gameRequestDTO.categories());
+
+        return new GameResponseDTO(newGame);
     }
 
 
@@ -78,14 +75,14 @@ public class GameManagementController {
     }
 
     @PutMapping("games/{gameId}/stock")
-    public GameDTO updateStock(@PathVariable int gameId, @RequestParam int stockChange) {
+    public GameResponseDTO updateStock(@PathVariable int gameId, @RequestParam int stockChange) {
         gameManagementService.updateStock(gameId, stockChange);
         Game updatedGame = gameManagementService.viewInventory()
                             .stream()
                             .filter(game -> game.getId() == gameId)
                             .findFirst()
                             .orElseThrow(() -> new EntityNotFoundException("Game not found"));
-        return new GameDTO(updatedGame);
+        return new GameResponseDTO(updatedGame);
     }
 
 

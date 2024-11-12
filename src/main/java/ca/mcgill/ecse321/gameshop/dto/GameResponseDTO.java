@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 /**
  * DTO for {@link ca.mcgill.ecse321.gameshop.model.Game}
  */
-public record GameDTO (
+public record GameResponseDTO(
         int id,
         String name,
         String description,
@@ -17,12 +17,12 @@ public record GameDTO (
         float price,
         boolean isActive,
         int stock,
-        Set<CategoryDTO> categories) implements Serializable {
+        Set<CategoryResponseDTO> categories) implements Serializable {
 
-    public GameDTO(Game game) {
+    public GameResponseDTO(Game game) {
         this(game.getId(), game.getName(), game.getDescription(), game.getCoverPicture(), game.getPrice(),
                 game.isActive(), game.getStock(),
-                game.getCopyCategories().stream().map(CategoryDTO::new).collect(Collectors.toSet())
+                game.getCopyCategories().stream().map(CategoryResponseDTO::new).collect(Collectors.toSet())
         );
     }
 }
