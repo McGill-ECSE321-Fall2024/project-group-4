@@ -100,21 +100,8 @@ public class GameManagementController {
     }
 
     @PutMapping("/promotions/{promotionId}/{discount}")
-    public void updatePromotionDiscount(@PathVariable int promotionId, @PathVariable int discount){
-        Promotion updatedPromotion = gameManagementService.findPromotionById(promotionId);
-        gameManagementService.updatePromotion(promotionId, discount, updatedPromotion.getStartDate(), updatedPromotion.getEndDate());
-    }
-
-    @PutMapping("/promotions/{promotionId}/{startDate}")
-    public void updatePromotionStartDate(@PathVariable int promotionId, @PathVariable Date startDate){
-        Promotion updatedPromotion = gameManagementService.findPromotionById(promotionId);
-        gameManagementService.updatePromotion(promotionId, updatedPromotion.getDiscount(), startDate, updatedPromotion.getEndDate());
-    }
-
-    @PutMapping("/promotions/{promotionId}/{endDate}")
-    public void updatePromotionEndDate(@PathVariable int promotionId, @PathVariable Date endDate){
-        Promotion updatedPromotion = gameManagementService.findPromotionById(promotionId);
-        gameManagementService.updatePromotion(promotionId, updatedPromotion.getDiscount(), updatedPromotion.getStartDate(), endDate);
+    public void updatePromotionDiscount(@PathVariable int promotionId, @PathVariable int discount, @RequestParam Date startDate, @RequestParam Date endDate){
+        gameManagementService.updatePromotion(promotionId, discount, startDate, endDate);
     }
 
     @DeleteMapping("/promorions/{promotionId}")
