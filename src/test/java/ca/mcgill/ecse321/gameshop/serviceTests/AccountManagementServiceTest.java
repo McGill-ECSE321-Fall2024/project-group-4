@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -49,6 +51,9 @@ public class AccountManagementServiceTest {
     @Mock
     private EmployeeRepository employeeRepository;
 
+    @Mock
+    private AddressRepository addressRepository;
+
     // Initialize the examples
     Account account1;
     Account account2;
@@ -61,6 +66,7 @@ public class AccountManagementServiceTest {
     Set<Employee> employees = new HashSet<>();
     private Customer referenceCustomer;
     private Game referenceGame;
+
 
     @AfterEach
     public void tearDown() {
@@ -1432,6 +1438,135 @@ public class AccountManagementServiceTest {
 
         assertEquals(1, wishlist.size());
         assertTrue(wishlist.contains(referenceGame));
+    }
+
+    @Test
+    public void testAddValidAddress() {
+        //Arrange
+        String street = "st catherine";
+        String zipCode = "H3X X9P";
+        String country = "Canada";
+        String province = "Quebec";
+        String city = "Montreal";
+        int initialSize = customer1.getCopyAddresses().size();
+
+        //Act
+        Address createdAddress = accountManagementService.createAddress(street,city,province,zipCode,country,customer1.getEmail());
+
+        //Assert
+        assertNotNull(createdAddress);
+        assertEquals(initialSize+1,customer1.getCopyAddresses().size());
+        assertTrue(customer1.containsAddress(createdAddress));
+        verify(customerRepository, times(1)).save(customer1);
+        verify(addressRepository, times(1)).save(createdAddress);
+
+    }
+
+    @Test
+    public void testAddInvalidAddress() {
+        //Arrange
+        String street = "";
+        String zipCode = "H3X X9P";
+        String country = "Canada";
+        String province = "Quebec";
+        String city = "Montreal";
+        int initialSize = customer1.getCopyAddresses().size();
+
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, ()-> accountManagementService.createAddress(street,city,province,zipCode,country,customer1.getEmail()));
+
+        //Assert
+        assertEquals("Address contains null or empty strings", exception.getMessage());
+
+    }
+
+    @Test
+    public void testAddInvalidAddress2() {
+        //Arrange
+        String street = "a street";
+        String zipCode = "";
+        String country = "Canada";
+        String province = "Quebec";
+        String city = "Montreal";
+        int initialSize = customer1.getCopyAddresses().size();
+
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, ()-> accountManagementService.createAddress(street,city,province,zipCode,country,customer1.getEmail()));
+
+        //Assert
+        assertEquals("Address contains null or empty strings", exception.getMessage());
+
+    }
+
+    @Test
+    public void testAddInvalidAddress3() {
+        //Arrange
+        String street = "a street";
+        String zipCode = "H3X X9P";
+        String country = null;
+        String province = "Quebec";
+        String city = "Montreal";
+        int initialSize = customer1.getCopyAddresses().size();
+
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, ()-> accountManagementService.createAddress(street,city,province,zipCode,country,customer1.getEmail()));
+
+        //Assert
+        assertEquals("Address contains null or empty strings", exception.getMessage());
+
+    }
+
+    @Test
+    public void testAddInvalidAddress4() {
+        //Arrange
+        String street = "a street";
+        String zipCode = "H3X X9P";
+        String country = "Canada";
+        String province = null;
+        String city = "Montreal";
+        int initialSize = customer1.getCopyAddresses().size();
+
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, ()-> accountManagementService.createAddress(street,city,province,zipCode,country,customer1.getEmail()));
+
+        //Assert
+        assertEquals("Address contains null or empty strings", exception.getMessage());
+
+    }
+
+    @Test
+    public void testAddInvalidAddress5() {
+        //Arrange
+        String street = "a street";
+        String zipCode = "H3X X9P";
+        String country = "Canada";
+        String province = "Quebec";
+        String city = "";
+        int initialSize = customer1.getCopyAddresses().size();
+
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, ()-> accountManagementService.createAddress(street,city,province,zipCode,country,customer1.getEmail()));
+
+        //Assert
+        assertEquals("Address contains null or empty strings", exception.getMessage());
+
+    }
+
+    @Test
+    public void testAddAddressForInexistentCustomer() {
+        //Arrange
+        String street = "a street";
+        String zipCode = "H3X X9P";
+        String country = "Canada";
+        String province = "Quebec";
+        String city = "a city";
+
+        //Act
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, ()-> accountManagementService.createAddress(street,city,province,zipCode,country,"uniqueEmail"));
+
+        //Assert
+        assertEquals("Customer not found", exception.getMessage());
+
     }
 }
 
