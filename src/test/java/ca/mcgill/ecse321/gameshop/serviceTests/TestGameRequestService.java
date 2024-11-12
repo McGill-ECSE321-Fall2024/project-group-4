@@ -16,7 +16,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-
+/**
+ * Test for game request service
+ *
+ * @author Camille Pouliot
+ */
 @SpringBootTest
 public class TestGameRequestService {
 
@@ -72,6 +76,11 @@ public class TestGameRequestService {
         when(employeeRepository.findById(-1)).thenReturn(Optional.empty());
     }
 
+    /**
+     * Test finding a game request
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testFindGameRequest() {
         //Act
@@ -86,6 +95,11 @@ public class TestGameRequestService {
         verify(gameRequestRepository, times(1)).findById(1);
     }
 
+    /**
+     * Test finding a game request with an invalid id
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testFindGameRequestInvalid() {
         //Act
@@ -96,6 +110,11 @@ public class TestGameRequestService {
         verify(gameRequestRepository, times(1)).findById(-1);
     }
 
+    /**
+     * Test finding a game
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testFindGame() {
         //Act
@@ -112,6 +131,11 @@ public class TestGameRequestService {
         verify(gameRepository, times(1)).findById(1);
     }
 
+    /**
+     * Test finding a game with an invalid id
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testFindGameInvalid() {
         //Act
@@ -122,6 +146,11 @@ public class TestGameRequestService {
         verify(gameRepository, times(1)).findById(-1);
     }
 
+    /**
+     * Test finding an employee
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testFindEmployee() {
         //Act
@@ -136,6 +165,11 @@ public class TestGameRequestService {
         verify(employeeRepository, times(1)).findById(employee.getId());
     }
 
+    /**
+     * Test finding an employee with an invalid id
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testFindEmployeeInvalid() {
         //Act
@@ -146,6 +180,11 @@ public class TestGameRequestService {
         verify(employeeRepository, times(1)).findById(-1);
     }
 
+    /**
+     * Test creating a game request
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testCreateGameRequestNormal() {
         //Act
@@ -160,6 +199,11 @@ public class TestGameRequestService {
 
     }
 
+    /**
+     * Test creating a game request with an active game
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testCreateGameRequestActiveGame() {
         //Act
@@ -169,6 +213,11 @@ public class TestGameRequestService {
         assertEquals(exception.getMessage(), "Game is already active");
     }
 
+    /**
+     * Test approving a game request
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testApproveGameRequestNormal() {
         //Act
@@ -183,6 +232,11 @@ public class TestGameRequestService {
         verify(gameRequestRepository, times(1)).save(loadedApprovedGameRequest);
     }
 
+    /**
+     * Test approving a game request that was already approved
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testApproveGameRequestApprovedGameRequest() {
         //Act
@@ -193,6 +247,11 @@ public class TestGameRequestService {
         verify(gameRequestRepository, times(1)).findById(2);
     }
 
+    /**
+     * Test approving a game request that was already rejected
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testApproveGameRequestDeniedGameRequest() {
         //Act
@@ -203,6 +262,11 @@ public class TestGameRequestService {
         verify(gameRequestRepository, times(1)).findById(3);
     }
 
+    /**
+     * Test rejecting a game request
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testDenyGameRequestNormal() {
         //Act
@@ -217,6 +281,11 @@ public class TestGameRequestService {
         verify(gameRequestRepository, times(1)).save(loadedDeniedGameRequest);
     }
 
+    /**
+     * Test rejecting a game request that was already approved
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testDenyGameRequestApprovedGameRequest() {
         //Act
@@ -228,6 +297,11 @@ public class TestGameRequestService {
 
     }
 
+    /**
+     * Test rejecting a game request that was already rejected
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testDenyGameRequestDeniedGameRequest() {
         //Act
