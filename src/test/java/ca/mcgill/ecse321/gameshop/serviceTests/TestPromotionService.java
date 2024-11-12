@@ -18,6 +18,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test for promotion service
+ *
+ * @author Camille Pouliot
+ */
 @SpringBootTest
 public class TestPromotionService {
 
@@ -58,6 +63,11 @@ public class TestPromotionService {
         gameRepository.deleteAll();
     }
 
+    /**
+     * Test finding a promotion
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testFindPromotionById() {
         //Act
@@ -73,6 +83,11 @@ public class TestPromotionService {
         verify(promotionRepository, times(1)).findById(promotion.getId());
     }
 
+    /**
+     * Test finding a promotion with an invalid id
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testFindPromotionByInvalidId() {
         //Act
@@ -83,6 +98,11 @@ public class TestPromotionService {
         verify(promotionRepository, times(1)).findById(-1);
     }
 
+    /**
+     * Test creating a promotion
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testCreatePromotion() {
         //Act
@@ -96,6 +116,11 @@ public class TestPromotionService {
         verify(promotionRepository, times(1)).save(createdPromotion);
     }
 
+    /**
+     * Test creating a promotion with an invalid discount less than 0
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testCreatePromotionDiscountLT0() {
         //Act
@@ -105,6 +130,11 @@ public class TestPromotionService {
         assertEquals("Discount must be between 0 and 100", exception.getMessage());
     }
 
+    /**
+     * Test creating a promotion with an invalid discount greater than 100
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testCreatePromotionDiscountTGT100() {
         //Act
@@ -114,6 +144,11 @@ public class TestPromotionService {
         assertEquals("Discount must be between 0 and 100", exception.getMessage());
     }
 
+    /**
+     * Test creating a promotion with an end date before the start date
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testCreatePromotionEndBeforeStart() {
         //Act
@@ -123,6 +158,11 @@ public class TestPromotionService {
         assertEquals("Start date cannot be after end date", exception.getMessage());
     }
 
+    /**
+     * Test creating a promotion with an end date before the current date
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testCreatePromotionEndBeforeCurrent() {
         //Act
@@ -132,6 +172,11 @@ public class TestPromotionService {
         assertEquals("End date cannot be before current date", exception.getMessage());
     }
 
+    /**
+     * Test deleting a promotion
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testDeletePromotion() {
         //Act
@@ -145,6 +190,11 @@ public class TestPromotionService {
         verify(promotionRepository, times(1)).delete(promotion);
     }
 
+    /**
+     * Test updating a promotion
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testUpdatePromotion() {
         //Act
@@ -159,6 +209,11 @@ public class TestPromotionService {
         verify(promotionRepository, times(1)).save(updatedPromotion);
     }
 
+    /**
+    * Test updating a promotion with an invalid discount less than 0
+    *
+    * @author Camille Pouliot
+     */
     @Test
     public void testUpdatePromotionDiscountLT0() {
         //Act
@@ -169,6 +224,11 @@ public class TestPromotionService {
         verify(promotionRepository, times(1)).findById(promotion.getId());
     }
 
+    /**
+     * Test updating a promotion with an invalid discount greater than 100
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testUpdatePromotionDiscountTGT100() {
         //Act
@@ -179,6 +239,11 @@ public class TestPromotionService {
         verify(promotionRepository, times(1)).findById(promotion.getId());
     }
 
+    /**
+     * Test updating a promotion with an end date before the start date
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testUpdatePromotionEndBeforeStart() {
         //Act
@@ -189,6 +254,11 @@ public class TestPromotionService {
         verify(promotionRepository, times(1)).findById(promotion.getId());
     }
 
+    /**
+     * Test updating a promotion with an end date before the current date
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testUpdatePromotionEndBeforeCurrent() {
         //Act

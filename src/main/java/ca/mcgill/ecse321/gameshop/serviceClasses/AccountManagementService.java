@@ -490,6 +490,14 @@ public class AccountManagementService {
         return customer.getCopyWishlist();
     }
 
+    /**
+     * Get a policy from id
+     *
+     * @param policyId
+     * @return Policy
+     *
+     * @author Camille Pouliot
+     */
     @Transactional
     public Policy findPolicyById(int policyId) {
         Optional<Policy> policy = policyRepository.findById(policyId);
@@ -499,6 +507,14 @@ public class AccountManagementService {
         return policy.get();
     }
 
+    /**
+     * Creates a new policy
+     *
+     * @param description
+     * @return Policy
+     *
+     * @author Camille Pouliot
+     */
     @Transactional
     public Policy createPolicy(String description) {
         if(description.trim().isEmpty()) {
@@ -510,6 +526,15 @@ public class AccountManagementService {
         return policy;
     }
 
+    /**
+     * Update a policy's fields
+     *
+     * @param policyId
+     * @param description
+     * @return Policy
+     *
+     * @author Camille Pouliot
+     */
     @Transactional
     public Policy updatePolicy(int policyId, String description) {
         if (description.trim().isEmpty()) {
@@ -522,6 +547,13 @@ public class AccountManagementService {
         return policy;
     }
 
+    /**
+     * Delete a policy
+     *
+     * @param policyId
+     *
+     * @author Camille Pouliot
+     */
     @Transactional
     public void deletePolicy(int policyId) {
         Policy policy = findPolicyById(policyId);

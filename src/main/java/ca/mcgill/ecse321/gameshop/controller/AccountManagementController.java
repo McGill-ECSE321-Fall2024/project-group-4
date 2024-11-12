@@ -110,22 +110,54 @@ public class AccountManagementController {
         return new EmployeeDTO(accountManagementService.updateEmployeeUsername(newUsername,oldUsername));
     }
 
+    /**
+     * Get a policy from id
+     *
+     * @param policyId
+     * @return PolicyDTO
+     *
+     * @author Camille Pouliot
+     */
     @GetMapping("/policies/{policyId}")
     public PolicyDTO getPolicyById(@PathVariable int policyId) {
         return new PolicyDTO(accountManagementService.findPolicyById(policyId));
     }
 
+    /**
+     * Create a new policy
+     *
+     * @param policyDTO
+     * @return PolicyDTO
+     *
+     * @author Camille Pouliot
+     */
     @PostMapping("/policies")
     public PolicyDTO createPolicy(@RequestBody PolicyDTO policyDTO) {
         Policy createdPolicy = accountManagementService.createPolicy(policyDTO.description());
         return new PolicyDTO(createdPolicy);
     }
 
+    /**
+     * Update a policy's description
+     *
+     * @param policyId
+     * @param description
+     * @return PolicyDTO
+     *
+     * @author Camille Pouliot
+     */
     @PutMapping("/policies/{policyId}/{description}")
     public PolicyDTO updatePolicy(@PathVariable int policyId, @PathVariable String description) {
         return new PolicyDTO(accountManagementService.updatePolicy(policyId,description));
     }
 
+    /**
+     * Delete a policy
+     *
+     * @param policyId
+     *
+     * @author Camille Pouliot
+     */
     @DeleteMapping("/policies/{policyId}")
     public void deletePolicy(@PathVariable int policyId) {
         accountManagementService.deletePolicy(policyId);

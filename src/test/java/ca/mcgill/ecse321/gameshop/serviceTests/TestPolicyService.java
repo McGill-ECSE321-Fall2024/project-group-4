@@ -18,6 +18,11 @@ import ca.mcgill.ecse321.gameshop.DAO.*;
 import ca.mcgill.ecse321.gameshop.model.*;
 import ca.mcgill.ecse321.gameshop.serviceClasses.AccountManagementService;
 
+/**
+ * Test for policy service
+ *
+ * @author Camille Pouliot
+ */
 @SpringBootTest
 public class TestPolicyService {
 
@@ -43,6 +48,11 @@ public class TestPolicyService {
         policyRepository.deleteAll();
     }
 
+    /**
+     * Test finding a policy
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testFindPolicy() {
         //Act
@@ -55,6 +65,11 @@ public class TestPolicyService {
         verify(policyRepository, times(1)).findById(policy.getId());
     }
 
+    /**
+     * Test finding a policy with an invalid id
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testFindInvalidPolicy() {
         //Act
@@ -65,6 +80,11 @@ public class TestPolicyService {
         verify(policyRepository, times(1)).findById(-1);
     }
 
+    /**
+     * Test creating a policy
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testCreatePolicy() {
         //Act
@@ -76,6 +96,11 @@ public class TestPolicyService {
         verify(policyRepository, times(1)).save(createdPolicy);
     }
 
+    /**
+     * Test creating a policy with an invalid description
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testCreateInvalidPolicy() {
         //Act
@@ -85,6 +110,11 @@ public class TestPolicyService {
         assertEquals("Description cannot be empty, null or contain only spaces.", exception.getMessage());
     }
 
+    /**
+     * Test updating a policy
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testUpdatePolicy() {
         //Act
@@ -97,6 +127,11 @@ public class TestPolicyService {
         verify(policyRepository, times(1)).save(policy);
     }
 
+    /**
+     * Test updating a policy with an invalid description
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testUpdateInvalidPolicy() {
         //Act
@@ -106,6 +141,11 @@ public class TestPolicyService {
         assertEquals("Description cannot be empty, null or contain only spaces.", exception.getMessage());
     }
 
+    /**
+     * Test deleting a policy
+     *
+     * @author Camille Pouliot
+     */
     @Test
     public void testDeletePolicy() {
         //Act
