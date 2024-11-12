@@ -1,11 +1,17 @@
 package ca.mcgill.ecse321.gameshop.controller;
 
+import ca.mcgill.ecse321.gameshop.dto.EmployeeDTO;
 import ca.mcgill.ecse321.gameshop.dto.GameDTO;
+import ca.mcgill.ecse321.gameshop.dto.GameRequestDTO;
+import ca.mcgill.ecse321.gameshop.dto.PromotionDTO;
 import ca.mcgill.ecse321.gameshop.model.Game;
+import ca.mcgill.ecse321.gameshop.model.GameRequest;
+import ca.mcgill.ecse321.gameshop.model.Promotion;
 import ca.mcgill.ecse321.gameshop.serviceClasses.GameManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,4 +51,75 @@ public class GameManagementController {
     public void deleteCategory(@PathVariable String categoryName){
         gameManagementService.deleteCategory(categoryName);
     }
+
+    @GetMapping("/gameRequests/{gameRequestId}")
+    public GameRequestDTO getGameRequestById(@PathVariable int gameRequestId) {
+        return new GameRequestDTO(gameManagementService.findGameRequestById(gameRequestId));
+    }
+
+    @GetMapping("/games/{gameId}")
+    public GameDTO getGameById(@PathVariable int gameId) {
+        return new GameDTO(gameManagementService.findGameById(gameId));
+    }
+
+    @GetMapping("/employees/{employeeId}")
+    public EmployeeDTO getEmployeeById(@PathVariable int employeeId) {
+        return new EmployeeDTO(gameManagementService.findEmployeeById(employeeId));
+    }
+
+    @GetMapping("/promotions/{promotionId}")
+    public PromotionDTO getPromotionById(@PathVariable int promotionId) {
+        return new PromotionDTO(gameManagementService.findPromotionById(promotionId));
+    }
+
+    @GetMapping("/games/{searchPrompt}")
+    public Set<GameDTO> getGamesBySearchPrompt(@PathVariable String searchPrompt) {
+        Set<Game> searchedGames = gameManagementService.searchGames(searchPrompt);
+        return searchedGames.stream().map(GameDTO::new).collect(Collectors.toSet());
+    }
+
+    @PostMapping("/gameRequests")
+    public GameRequestDTO createGameRequest(@RequestBody GameRequestDTO gameRequestDTO){
+        GameRequest createdGameRequest = gameManagementService.createGameRequest(gameRequestDTO.externalReview(), gameRequestDTO.game().id(), gameRequestDTO.requestor().id());
+        return new GameRequestDTO(createdGameRequest);
+    }
+
+    @PostMapping("/promotions")
+    public PromotionDTO createPromotion(@RequestBody PromotionDTO promotionDTO, @RequestParam Date startDate, @RequestParam Date endDate){
+        Promotion createdPromotion = gameManagementService.createPromotion(promotionDTO.discount(), startDate, endDate);
+        return new PromotionDTO(createdPromotion);
+    }
+
+    @PutMapping("/gameRequests/{gameRequestId}/requestStatus/{status}")
+    public void setGameRequestStatus(@PathVariable int gameRequestId, @PathVariable String status){
+        if(status.equalsIgnoreCase("approve")){
+            gameManagementService.approveGameRequest(gameRequestId);
+        } else if(status.equalsIgnoreCase("reject")){
+            gameManagementService.rejectGameRequest(gameRequestId);
+        }
+    }
+
+    @PutMapping("/promotions/{promotionId}/{discount}")
+    public void updatePromotionDiscount(@PathVariable int promotionId, @PathVariable int discount){
+        Promotion updatedPromotion = gameManagementService.findPromotionById(promotionId);
+        gameManagementService.updatePromotion(promotionId, discount, updatedPromotion.getStartDate(), updatedPromotion.getEndDate());
+    }
+
+    @PutMapping("/promotions/{promotionId}/{startDate}")
+    public void updatePromotionStartDate(@PathVariable int promotionId, @PathVariable Date startDate){
+        Promotion updatedPromotion = gameManagementService.findPromotionById(promotionId);
+        gameManagementService.updatePromotion(promotionId, updatedPromotion.getDiscount(), startDate, updatedPromotion.getEndDate());
+    }
+
+    @PutMapping("/promotions/{promotionId}/{endDate}")
+    public void updatePromotionEndDate(@PathVariable int promotionId, @PathVariable Date endDate){
+        Promotion updatedPromotion = gameManagementService.findPromotionById(promotionId);
+        gameManagementService.updatePromotion(promotionId, updatedPromotion.getDiscount(), updatedPromotion.getStartDate(), endDate);
+    }
+
+    @DeleteMapping("/promorions/{promotionId}")
+    public void deletePromotion(@PathVariable int promotionId){
+        gameManagementService.deletePromotion(promotionId);
+    }
+
 }
