@@ -18,11 +18,11 @@ public class PurchaseManagementController {
     PurchaseManagementService purchaseManagementService;
 
 
-    @GetMapping("games/{gameId}")
-    @ResponseStatus(HttpStatus.FOUND)
-    public GameDTO getGameById(@PathVariable int gameId) {
-        return new GameDTO(purchaseManagementService.findGameById(gameId));
-    }
+//    @GetMapping("games/{gameId}")
+//    @ResponseStatus(HttpStatus.FOUND)
+//    public GameDTO getGameById(@PathVariable int gameId) {
+//        return new GameDTO(purchaseManagementService.findGameById(gameId));
+//    }
 
     @GetMapping("games/promotions/{gameId}")
     @ResponseStatus(HttpStatus.FOUND)
