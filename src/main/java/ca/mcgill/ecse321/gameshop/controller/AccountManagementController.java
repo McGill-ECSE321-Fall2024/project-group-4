@@ -4,13 +4,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import ca.mcgill.ecse321.gameshop.dto.CustomerDTO;
-import ca.mcgill.ecse321.gameshop.dto.EmployeeDTO;
-import ca.mcgill.ecse321.gameshop.dto.ManagerDTO;
+import ca.mcgill.ecse321.gameshop.dto.*;
+import ca.mcgill.ecse321.gameshop.model.Policy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import ca.mcgill.ecse321.gameshop.dto.GameDTO;
 import ca.mcgill.ecse321.gameshop.model.Game;
 import ca.mcgill.ecse321.gameshop.serviceClasses.AccountManagementService;
 
@@ -110,6 +108,27 @@ public class AccountManagementController {
     @PutMapping("/login/employees/{oldUsername}")
     public EmployeeDTO updateEmployeeUsername(@PathVariable String oldUsername, @RequestBody String newUsername) {
         return new EmployeeDTO(accountManagementService.updateEmployeeUsername(newUsername,oldUsername));
+    }
+
+    @GetMapping("/policies/{policyId}")
+    public PolicyDTO getPolicyById(@PathVariable int policyId) {
+        return new PolicyDTO(accountManagementService.findPolicyById(policyId));
+    }
+
+    @PostMapping("/policies")
+    public PolicyDTO createPolicy(@RequestBody PolicyDTO policyDTO) {
+        Policy createdPolicy = accountManagementService.createPolicy(policyDTO.description());
+        return new PolicyDTO(createdPolicy);
+    }
+
+    @PutMapping("/policies/{policyId}/{description}")
+    public PolicyDTO updatePolicy(@PathVariable int policyId, @PathVariable String description) {
+        return new PolicyDTO(accountManagementService.updatePolicy(policyId,description));
+    }
+
+    @DeleteMapping("/policies/{policyId}")
+    public void deletePolicy(@PathVariable int policyId) {
+        accountManagementService.deletePolicy(policyId);
     }
 
 
