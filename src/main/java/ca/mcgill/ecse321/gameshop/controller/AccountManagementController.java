@@ -164,6 +164,11 @@ public class AccountManagementController {
     }
 
 
+    @PostMapping("/customers/{customerEmail}/addresses")
+    public AddressDTO createAddress(@PathVariable String customerEmail, @RequestBody String zipCode, @RequestBody String city, @RequestBody String province, @RequestBody String country, @RequestBody String street) {
+        return new AddressDTO(accountManagementService.createAddress(street,city,province,zipCode,country,customerEmail));
+    }
+
 
 
 
