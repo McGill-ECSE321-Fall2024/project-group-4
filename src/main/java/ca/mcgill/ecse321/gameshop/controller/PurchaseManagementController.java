@@ -114,6 +114,4 @@ public class PurchaseManagementController {
         return purchaseManagementService.getCartPrice(customerEmail);
     }
 
-
-
 }
