@@ -81,7 +81,7 @@ public class PurchaseManagementController {
     @PutMapping("customers/{customerEmail}/credit-cards")
     @ResponseStatus(HttpStatus.CREATED)
     public CreditCardDTO addCreditCardToCustomerWallet(@RequestBody int cardNumber,
-                                                       @RequestBody String cvv,
+                                                       @RequestBody int cvv,
                                                        @PathVariable String customerEmail,
                                                        @RequestBody String expiryDate,
                                                        @RequestBody int addressId) {

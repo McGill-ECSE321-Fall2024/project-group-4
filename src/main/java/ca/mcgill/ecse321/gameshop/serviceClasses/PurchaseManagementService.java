@@ -130,9 +130,10 @@ public class PurchaseManagementService {
 
 
     @Transactional
-    public CreditCard addCreditCardToCustomerWallet(int cardNumber, String cvv, String expiryDate, String customerEmail, int addressId) {
+    public CreditCard addCreditCardToCustomerWallet(int cardNumber, int cvv, String expiryDate, String customerEmail, int addressId) {
 
-        Matcher cvvMatcher = Pattern.compile("^\\d{3}$").matcher(cvv); //create a Regex to identify and match valid CVV patterns
+        String stringCVV = String.valueOf(cvv); //
+        Matcher cvvMatcher = Pattern.compile("^\\d{3}$").matcher(stringCVV); //create a Regex to identify and match valid CVV patterns
         if (!cvvMatcher.matches()) {
             throw new IllegalArgumentException("Invalid cvv number, enter a 3 digit CVV");
         }

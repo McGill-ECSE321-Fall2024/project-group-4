@@ -92,8 +92,8 @@ public class testPurchaseManagementService {
         manager = new Manager();
         cusomterAddress = new Address("Rue University","Montreal", "Quebec","Canada", "123 4h4", customer);
 
-        creditCard = new CreditCard(123123, "123", LocalDate.of(2025, 10,1),customer, cusomterAddress);
-        CreditCard originalCreditCard2 = new CreditCard(12312233, "124", LocalDate.of(2025, 10,1),customer2, cusomterAddress);
+        creditCard = new CreditCard(123123, 123, LocalDate.of(2025, 10,1),customer, cusomterAddress);
+        CreditCard originalCreditCard2 = new CreditCard(12312233, 124, LocalDate.of(2025, 10,1),customer2, cusomterAddress);
         creditCard2 = spy(originalCreditCard2);
         when(creditCard2.getId()).thenReturn(creditCard.getId() + 1);
 
@@ -628,18 +628,9 @@ public class testPurchaseManagementService {
     }
 
     @Test
-    public void addCreditCardToCustomerWalletWithInvalidCVV1() {
-        //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->purchaseManagementService.addCreditCardToCustomerWallet(creditCard.getCardNumber(), "Invalid CVV", "10/2", creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId()));
-
-        //Assert
-        assertEquals("Invalid cvv number, enter a 3 digit CVV", exception.getMessage());
-    }
-
-    @Test
     public void addCreditCardToCustomerWalletWithInvalidCVV2() {
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->purchaseManagementService.addCreditCardToCustomerWallet(creditCard.getCardNumber(), "1234", "10/2", creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId()));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->purchaseManagementService.addCreditCardToCustomerWallet(creditCard.getCardNumber(), 1234, "10/2", creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId()));
 
         //Assert
         assertEquals("Invalid cvv number, enter a 3 digit CVV", exception.getMessage());

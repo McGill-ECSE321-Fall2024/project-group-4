@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 public record CreditCardDTO(int id,
                             int cardNumber,
-                            String cvv,
+                            int cvv,
                             LocalDate expiryDate,
                             CustomerDTO customer)
         implements Serializable {
