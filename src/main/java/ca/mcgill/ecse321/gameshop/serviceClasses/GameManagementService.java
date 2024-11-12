@@ -76,6 +76,14 @@ public class GameManagementService {
 
     }
 
+    /**
+     * Get a game request from id
+     *
+     * @param id
+     * @return GameRequest
+     *
+     * @author Camille Pouliot
+     */
     @Transactional
     public GameRequest findGameRequestById(int id){
         Optional<GameRequest> gameRequest = gameRequestRepository.findById(id);
@@ -85,6 +93,14 @@ public class GameManagementService {
         throw new IllegalArgumentException("No Game Request found");
     }
 
+    /**
+     * Get a game from id
+     *
+     * @param id
+     * @return Game
+     *
+     * @author Camille Pouliot
+     */
     @Transactional
     public Game findGameById(int id){
         Optional<Game> game = gameRepository.findById(id);
@@ -94,6 +110,14 @@ public class GameManagementService {
         throw new IllegalArgumentException("No Game found");
     }
 
+    /**
+     * Get an employee from id
+     *
+     * @param id
+     * @return Employee
+     *
+     * @author Camille Pouliot
+     */
     @Transactional
     public Employee findEmployeeById(int id){
         Optional<Employee> employee = employeeRepository.findById(id);
@@ -103,6 +127,16 @@ public class GameManagementService {
         throw new IllegalArgumentException("No Employee found");
     }
 
+    /**
+     * Create a game request
+     *
+     * @param externalReview
+     * @param gameId
+     * @param employeeId
+     * @return GameRequest
+     *
+     * @author Camille Pouliot
+     */
     @Transactional
     public GameRequest createGameRequest(String externalReview, int gameId, int employeeId){
 
@@ -125,6 +159,14 @@ public class GameManagementService {
 
     }
 
+    /**
+     * Approves a game request
+     *
+     * @param gameRequestId
+     * @return GameRequest
+     *
+     * @author Camille Pouliot
+     */
     @Transactional
     public GameRequest approveGameRequest(int gameRequestId){
         GameRequest gameRequest = findGameRequestById(gameRequestId);
@@ -144,6 +186,14 @@ public class GameManagementService {
         return gameRequest;
     }
 
+    /**
+     * Rejects a game request
+     *
+     * @param gameRequestId
+     * @return GameRequest
+     *
+     * @author Camille Pouliot
+     */
     @Transactional
     public GameRequest rejectGameRequest(int gameRequestId){
         GameRequest gameRequest = findGameRequestById(gameRequestId);
@@ -160,6 +210,14 @@ public class GameManagementService {
         return gameRequest;
     }
 
+    /**
+     * Get a promotion from id
+     *
+     * @param id
+     * @return Promotion
+     *
+     * @author Camille Pouliot
+     */
     @Transactional
     public Promotion findPromotionById(int id) {
         Optional<Promotion> promotion = promotionRepository.findById(id);
@@ -169,6 +227,16 @@ public class GameManagementService {
         throw new IllegalArgumentException("Promotion not found");
     }
 
+    /**
+     * Create a promotion
+     *
+     * @param discount
+     * @param startDate
+     * @param endDate
+     * @return Promotion
+     *
+     * @author Camille Pouliot
+     */
     @Transactional
     public Promotion createPromotion(int discount, Date startDate, Date endDate) {
         Promotion promotion = new Promotion(discount);
@@ -191,6 +259,13 @@ public class GameManagementService {
 
     }
 
+    /**
+     * Delete a promotion
+     *
+     * @param id
+     *
+     * @author Camille Pouliot
+     */
     @Transactional
     public void deletePromotion(int id) {
 
@@ -207,6 +282,17 @@ public class GameManagementService {
         promotionRepository.delete(promotion);
     }
 
+    /**
+     * Updates a promotion
+     *
+     * @param id
+     * @param discount
+     * @param startDate
+     * @param endDate
+     * @return Promotion
+     *
+     * @author Camille Pouliot
+     */
     @Transactional
     public Promotion updatePromotion(int id, int discount, Date startDate, Date endDate) {
         Promotion promotion = findPromotionById(id);
@@ -228,6 +314,14 @@ public class GameManagementService {
 
     }
 
+    /**
+     * Search games that corresponds to the search input
+     *
+     * @param searchInput
+     * @return Set<Game>
+     *
+     * @author Camille Pouliot
+     */
     @Transactional
     public Set<Game> searchGames(String searchInput) {
 
