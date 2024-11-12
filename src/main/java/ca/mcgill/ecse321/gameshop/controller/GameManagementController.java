@@ -52,44 +52,110 @@ public class GameManagementController {
         gameManagementService.deleteCategory(categoryName);
     }
 
+    /**
+     * Return the game request with the given id
+     *
+     * @param gameRequestId
+     * @return GameRequestDTO
+     *
+     * @author Camille Pouliot
+     */
     @GetMapping("/gameRequests/{gameRequestId}")
     public GameRequestDTO getGameRequestById(@PathVariable int gameRequestId) {
         return new GameRequestDTO(gameManagementService.findGameRequestById(gameRequestId));
     }
 
+    /**
+     * Return the game with the given id
+     *
+     * @param gameId
+     * @return GameDTO
+     *
+     * @author Camille Pouliot
+     */
     @GetMapping("/games/{gameId}")
     public GameDTO getGameById(@PathVariable int gameId) {
         return new GameDTO(gameManagementService.findGameById(gameId));
     }
 
+    /**
+     * Return the employee with the given id
+     *
+     * @param employeeId
+     * @return EmployeeDTO
+     *
+     * @author Camille Pouliot
+     */
     @GetMapping("/employees/{employeeId}")
     public EmployeeDTO getEmployeeById(@PathVariable int employeeId) {
         return new EmployeeDTO(gameManagementService.findEmployeeById(employeeId));
     }
 
+    /**
+     * Return the promotion with the given id
+     *
+     * @param promotionId
+     * @return PromotionDTO
+     *
+     * @author Camille Pouliot
+     */
     @GetMapping("/promotions/{promotionId}")
     public PromotionDTO getPromotionById(@PathVariable int promotionId) {
         return new PromotionDTO(gameManagementService.findPromotionById(promotionId));
     }
 
+    /**
+     * Return the games that contains the search prompt
+     *
+     * @param searchPrompt
+     * @return Set<GameDTO>
+     *
+     * @author Camille Pouliot
+     */
     @GetMapping("/games/{searchPrompt}")
     public Set<GameDTO> getGamesBySearchPrompt(@PathVariable String searchPrompt) {
         Set<Game> searchedGames = gameManagementService.searchGames(searchPrompt);
         return searchedGames.stream().map(GameDTO::new).collect(Collectors.toSet());
     }
 
+    /**
+     * Create a new game request
+     *
+     * @param gameRequestDTO
+     * @return GameRequestDTO
+     *
+     * @author Camille Pouliot
+     */
     @PostMapping("/gameRequests")
     public GameRequestDTO createGameRequest(@RequestBody GameRequestDTO gameRequestDTO){
         GameRequest createdGameRequest = gameManagementService.createGameRequest(gameRequestDTO.externalReview(), gameRequestDTO.game().id(), gameRequestDTO.requestor().id());
         return new GameRequestDTO(createdGameRequest);
     }
 
+    /**
+     * Create a new promotion
+     *
+     * @param promotionDTO
+     * @param startDate
+     * @param endDate
+     * @return PromotionDTO
+     *
+     * @author Camille Pouliot
+     */
     @PostMapping("/promotions")
     public PromotionDTO createPromotion(@RequestBody PromotionDTO promotionDTO, @RequestParam Date startDate, @RequestParam Date endDate){
         Promotion createdPromotion = gameManagementService.createPromotion(promotionDTO.discount(), startDate, endDate);
         return new PromotionDTO(createdPromotion);
     }
 
+    /**
+     * Set the status of a pending game request
+     *
+     * @param gameRequestId
+     * @param status
+     *
+     * @author Camille Pouliot
+     */
     @PutMapping("/gameRequests/{gameRequestId}/requestStatus/{status}")
     public void setGameRequestStatus(@PathVariable int gameRequestId, @PathVariable String status){
         if(status.equalsIgnoreCase("approve")){
@@ -99,11 +165,28 @@ public class GameManagementController {
         }
     }
 
+    /**
+     * Update a promotion fields
+     *
+     * @param promotionId
+     * @param discount
+     * @param startDate
+     * @param endDate
+     *
+     * @author Camille Pouliot
+     */
     @PutMapping("/promotions/{promotionId}/{discount}")
-    public void updatePromotionDiscount(@PathVariable int promotionId, @PathVariable int discount, @RequestParam Date startDate, @RequestParam Date endDate){
+    public void updatePromotion(@PathVariable int promotionId, @PathVariable int discount, @RequestParam Date startDate, @RequestParam Date endDate){
         gameManagementService.updatePromotion(promotionId, discount, startDate, endDate);
     }
 
+    /**
+     * Delete a promotion
+     *
+     * @param promotionId
+     *
+     * @author Camille Pouliot
+     */
     @DeleteMapping("/promorions/{promotionId}")
     public void deletePromotion(@PathVariable int promotionId){
         gameManagementService.deletePromotion(promotionId);
