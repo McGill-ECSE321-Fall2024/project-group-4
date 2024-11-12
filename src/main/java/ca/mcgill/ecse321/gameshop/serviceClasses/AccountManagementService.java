@@ -47,6 +47,8 @@ public class AccountManagementService {
 
     @Autowired
     private PolicyRepository policyRepository;
+    @Autowired
+    private AddressRepository addressRepository;
 
     /**
      *
@@ -559,4 +561,36 @@ public class AccountManagementService {
         Policy policy = findPolicyById(policyId);
         policyRepository.delete(policy);
     }
+
+    /**
+     *
+     * Creates an address and adds it to a customer
+     *
+     * @param street of the address
+     * @param city of the address
+     * @param province of the address
+     * @param zip of the address
+     * @param country of the address
+     * @param customerEmail of customer residing at the address
+     * @author Tarek Namani
+     * @throws IllegalArgumentException if any of the string fields are invalid
+     * @throws EntityNotFoundException if the customer does not exist
+     * @return the created address
+     */
+    @Transactional
+    public Address createAddress(String street, String city, String province, String zip, String country, String customerEmail) {
+
+        Customer customer = customerRepository.findByEmail(customerEmail).orElseThrow(() -> new EntityNotFoundException("Customer not found"));
+        if (street == null || street == "" || city == null || city == "" || province == null || province == "" || zip == null || zip == "" || country == null || country == "") {
+            throw new IllegalArgumentException("Address contains null or empty strings");}
+        Address customerAddress = new Address(street, city, province, zip, country,customer);
+
+        addressRepository.save(customerAddress);
+        customerRepository.save(customer);
+
+        return customerAddress;
+
+    }
+
+
 }

@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -61,6 +63,8 @@ public class AccountManagementServiceTest {
     Set<Employee> employees = new HashSet<>();
     private Customer referenceCustomer;
     private Game referenceGame;
+    @Autowired
+    private AddressRepository addressRepository;
 
     @AfterEach
     public void tearDown() {
@@ -1432,6 +1436,30 @@ public class AccountManagementServiceTest {
 
         assertEquals(1, wishlist.size());
         assertTrue(wishlist.contains(referenceGame));
+    }
+
+    @Test
+    public void testAddValidAddress() {
+        //Arrange
+        String street = "st catherine";
+        String zipCode = "H3X X9P";
+        String country = "Canada";
+        String province = "Quebec";
+        String city = "Montreal";
+        int initialSize = referenceCustomer.getCopyAddresses().size();
+
+        //Act
+        Address createdAddress = accountManagementService.createAddress(street,city,province,zipCode,country,referenceCustomer.getEmail());
+
+        //Assert
+        assertNotNull(createdAddress);
+        assertEquals(initialSize+1,referenceCustomer.getCopyAddresses().size());
+        assertTrue(referenceCustomer.containsAddress(createdAddress));
+        verify(customerRepository, times(1)).save(referenceCustomer);
+        verify(addressRepository, times(1)).save(createdAddress);
+
+
+
     }
 }
 
