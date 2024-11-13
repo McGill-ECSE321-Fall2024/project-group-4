@@ -31,15 +31,10 @@ public record CustomerDTO(String username,
                 , customer.getId());
     }
 
-    public static List<CustomerDTO> convertToDto(List<Customer> customers) {
-        List<CustomerDTO> customerDto = new ArrayList<CustomerDTO>(customers.size());
-        for (Customer customer : customers) {
-            customerDto.add(new CustomerDTO(customer));
-        }
-        return customerDto;
+    public Customer toCustomer() {
+        Customer customer = new Customer(this.username, this.password, this.email, this.phoneNumber);
+        
+        return customer;
     }
-
-    
-
 }
 

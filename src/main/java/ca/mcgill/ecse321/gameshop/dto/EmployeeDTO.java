@@ -14,12 +14,8 @@ public record EmployeeDTO(int id, String username, String password, boolean isAc
                 employee.getCopyGameRequests().stream().map(GameRequestDTO::new).collect(Collectors.toSet()),
                 employee.getCopyRefundRequests().stream().map(RefundRequestDTO::new).collect(Collectors.toSet()));
     }
-
-    public static List<EmployeeDTO> convertToDto(List<Employee> employees) {
-        List<EmployeeDTO> employeeDto = new ArrayList<EmployeeDTO>(employees.size());
-        for (Employee employee : employees) {
-            employeeDto.add(new EmployeeDTO(employee));
-        }
-        return employeeDto;
+    public Employee toEmployee() {
+        Employee employee = new Employee(this.username, this.password, this.isActive);
+        return employee;
     }
 }
