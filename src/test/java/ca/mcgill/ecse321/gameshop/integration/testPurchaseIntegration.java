@@ -12,6 +12,7 @@ import ca.mcgill.ecse321.gameshop.model.Address;
 import ca.mcgill.ecse321.gameshop.model.Customer;
 import ca.mcgill.ecse321.gameshop.model.Game;
 import ca.mcgill.ecse321.gameshop.serviceClasses.GameManagementService;
+import jakarta.transaction.Transactional;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.*;
@@ -180,6 +181,7 @@ public class testPurchaseIntegration {
         //Arrange
         AddressDTO customerAddress = new AddressDTO(validCustomerAddress);
 
+
         //Act
         ResponseEntity<String> response = client.postForEntity("/accounts/customers/"+customerEmail+"/addresses", customerAddress, String.class);
 
@@ -191,8 +193,8 @@ public class testPurchaseIntegration {
         assertEquals(customerProvince, addressParams.getString("province"));
         assertEquals(customerCountry,addressParams.getString("country"));
         assertEquals(customerPostalCode, addressParams.getString("postalCode"));
-        assertEquals(customerUsername,addressParams.getJSONObject("customer").getString("username"));
-        assertTrue(addressRepository.findById(validCustomerAddress.getId()).isPresent());
+        assertTrue(customerRepository.findByEmail(customerEmail).get().getCopyAddresses().size()==1);
+        assertTrue(addressRepository.findById(addressParams.getInt("id")).isPresent());
     }
 
 
