@@ -226,7 +226,7 @@ public class GameManagementController {
      *
      * @author Camille Pouliot
      */
-    @DeleteMapping("/promorions/{promotionId}")
+    @DeleteMapping("/promotions/{promotionId}")
     public void deletePromotion(@PathVariable int promotionId){
         gameManagementService.deletePromotion(promotionId);
     }
