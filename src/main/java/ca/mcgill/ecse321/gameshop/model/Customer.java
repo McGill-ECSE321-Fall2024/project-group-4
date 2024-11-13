@@ -75,7 +75,7 @@ public class Customer extends Account {
         return purchases.contains(purchase);
     }
 
-    public Set<Purchase> getCopyPurchasess(){
+    public Set<Purchase> getCopyPurchases(){
         return new HashSet<>(purchases);
     }
 

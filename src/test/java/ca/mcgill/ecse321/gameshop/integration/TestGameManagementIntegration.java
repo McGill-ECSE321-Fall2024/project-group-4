@@ -3,7 +3,7 @@ package ca.mcgill.ecse321.gameshop.integration;
 import ca.mcgill.ecse321.gameshop.DAO.CartItemRepository;
 import ca.mcgill.ecse321.gameshop.DAO.CategoryRepository;
 import ca.mcgill.ecse321.gameshop.DAO.GameRepository;
-import ca.mcgill.ecse321.gameshop.dto.GameRequestDTO;
+import ca.mcgill.ecse321.gameshop.dto.GameInputDTO;
 import ca.mcgill.ecse321.gameshop.dto.GameResponseDTO;
 import ca.mcgill.ecse321.gameshop.model.Category;
 import ca.mcgill.ecse321.gameshop.model.Game;
@@ -15,7 +15,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -75,7 +74,7 @@ public class TestGameManagementIntegration {
     @Order(3)
     public void testCreateNewGame(){
         //Arrange
-        GameRequestDTO gameToMake = new GameRequestDTO("test game", "test description",
+        GameInputDTO gameToMake = new GameInputDTO("test game", "test description",
                 "test coverPicture", 24.99f, true, 100, List.of(TEST_CATEGORY_NAME1));
 
         //Act
