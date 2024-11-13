@@ -28,7 +28,7 @@ import java.util.Optional;
 /**
  * Service class for the Account entity
  * 
- * @author Ana Gordon, Tarek Namani, Clara Mickail
+ * @author Ana Gordon, Tarek Namani, Clara Mickail, Camille Pouliot
  */
 @Service
 public class AccountManagementService {
@@ -254,7 +254,7 @@ public class AccountManagementService {
      * @param is_active the activity status of the employee
      * @return boolean
      * 
-     * @Author Ana Gordon
+     * @author Ana Gordon
      */
     @Transactional
     public void setEmployeeStatus(int id, boolean is_active) {
@@ -271,7 +271,7 @@ public class AccountManagementService {
      * @param password
      * @return Customer
      * 
-     * @Author Ana Gordon
+     * @author Ana Gordon
      */
     @Transactional
     public Customer customerLogin(String email, String password) {
@@ -298,7 +298,7 @@ public class AccountManagementService {
      * @param password
      * @return Employee
      *
-     * @Author Tarek Namani
+     * @author Tarek Namani
      */
     @Transactional
     public Employee employeeLogin(String username, String password) {
@@ -328,7 +328,7 @@ public class AccountManagementService {
      * @param password
      * @return Manager
      *
-     * @Author Tarek Namani
+     * @author Tarek Namani
      */
     @Transactional
     public Manager managerLogin(String username, String password) {
@@ -356,7 +356,7 @@ public class AccountManagementService {
      * @param email
      * @return Account
      * 
-     * @Author Ana Gordon
+     * @author Ana Gordon
      */
     @Transactional
     public Customer updateCustomerPassword(String oldPassword, String newPassword, String email) {
@@ -387,7 +387,7 @@ public class AccountManagementService {
      * @oaram customerEmail
      * @return Customer
      * 
-     * @Author Ana Gordon
+     * @author Ana Gordon
      */
     @Transactional
     public Customer updateCustomerUsername(String newUsername, String customerEmail) {
@@ -410,7 +410,7 @@ public class AccountManagementService {
      * @param oldUsername
      * @return Customer
      *
-     * @Author Ana Gordon
+     * @author Ana Gordon
      */
     @Transactional
     public Employee updateEmployeeUsername(String newUsername, String oldUsername) {
@@ -438,7 +438,7 @@ public class AccountManagementService {
      * @param newPhoneNumber
      * @param customerEmail
      * 
-     * @Author Ana Gordon
+     * @author Ana Gordon
      */
     @Transactional
     public Customer updateCustomerPhoneNumber(String newPhoneNumber, String customerEmail) {
@@ -458,6 +458,14 @@ public class AccountManagementService {
 
     }
 
+    /**
+     * Add a game to a customer wishlist
+     *
+     * @param customerId
+     * @param gameId
+     *
+     * @author Clara Mickail
+     */
     @Transactional
     public void addGameToWishlist(int customerId, int gameId) {
         Customer customer = customerRepository.findById(customerId)
@@ -470,6 +478,14 @@ public class AccountManagementService {
         }
     }
 
+    /**
+     * Remove a game from a customer wishlist
+     *
+     * @param customerId
+     * @param gameId
+     *
+     * @author Clara Mickail
+     */
     @Transactional
     public void removeGameFromWishlist(int customerId, int gameId) {
         Customer customer = customerRepository.findById(customerId)
@@ -484,6 +500,14 @@ public class AccountManagementService {
         customerRepository.save(customer);
     }
 
+    /**
+     * Get a customer wishlist
+     *
+     * @param customerId
+     * @return Set<Game>
+     *
+     * @author Clara Mickail
+     */
     @Transactional
     public Set<Game> viewWishlist(int customerId) {
         Customer customer = customerRepository.findById(customerId)

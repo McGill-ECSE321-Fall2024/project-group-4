@@ -13,48 +13,116 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Methods of game management controller
+ *
+ * @author Jake Kogut, Clara Mickail, Camille Pouliot
+ */
 @RestController
 public class GameManagementController {
     @Autowired
     private GameManagementService gameManagementService;
 
-    @GetMapping("customers/{customerId}/cart")
+    /**
+     * Get the list of games in a customer cart
+     *
+     * @param customerId Customer unique identifier
+     * @return a list of the games in the customer cart
+     *
+     * @author Jake Kogut
+     */
+    @GetMapping("/customers/{customerId}/cart")
     public List<GameResponseDTO> getGamesInCart(@PathVariable int customerId){
         Set<Game> gamesInCart = gameManagementService.viewGamesInCart(customerId);
         return gamesInCart.stream().map(GameResponseDTO::new).collect(Collectors.toList());
     }
-    @PutMapping("customers/{customerId}/cart/{gameId}")
+
+    /**
+     * Add a game to a customer cart
+     *
+     * @param customerId Customer unique identifier
+     * @param gameId Unique identifier to add to the customer cart
+     *
+     * @author Jake Kogut
+     */
+    @PutMapping("/customers/{customerId}/cart/{gameId}")
     public void addGameToCart(@PathVariable int customerId, @PathVariable int gameId){
         gameManagementService.addGameToCart(customerId, gameId);
     }
 
-    @DeleteMapping("customers/{customerId}/cart/{gameId}")
+    /**
+     * Delete a game from a customer cart
+     *
+     * @param customerId Customer unique identifier
+     * @param gameId Game unique identifier to delete
+     *
+     * @author Jake Kogut
+     */
+    @DeleteMapping("/customers/{customerId}/cart/{gameId}")
     public void deleteGameFromCart(@PathVariable int customerId, @PathVariable int gameId){
         gameManagementService.removeGameFromCart(customerId, gameId);
     }
 
-    @PostMapping("categories/{categoryName}")
+    /**
+     * Create a category
+     *
+     * @param categoryName Name of the category to create
+     *
+     * @author Jake Kogut
+     */
+    @PostMapping("/categories/{categoryName}")
     public void createCategory(@PathVariable String categoryName){
         gameManagementService.createCategory(categoryName);
     }
 
-    @DeleteMapping("categories/{categoryName}")
+    /**
+     * Delete a category
+     *
+     * @param categoryName Name of the category to delete
+     *
+     * @author Jake Kogut
+     */
+    @DeleteMapping("/categories/{categoryName}")
     public void deleteCategory(@PathVariable String categoryName){
         gameManagementService.deleteCategory(categoryName);
     }
 
-    @GetMapping("categories/{categoryName}/games")
+    /**
+     * Get a list of games from a category
+     *
+     * @param categoryName Name of a category
+     * @return List of the games in the category
+     *
+     * @author Jake Kogut
+     */
+    @GetMapping("/categories/{categoryName}/games")
     public List<GameResponseDTO> getGamesInCategory(@PathVariable String categoryName){
         Set<Game> gamesInCategory = gameManagementService.getGamesInCategory(categoryName);
         return gamesInCategory.stream().map(GameResponseDTO::new).collect(Collectors.toList());
     }
 
-    @PutMapping("categories/{categoryName}/games/{gameId}")
+    /**
+     * Add a game to a category
+     *
+     * @param categoryName Name of a category
+     * @param gameId Game unique identifier to add to the category
+     *
+     * @author Jake Kogut
+     */
+    @PutMapping("/categories/{categoryName}/games/{gameId}")
     public void addGameToCategory(@PathVariable String categoryName, @PathVariable int gameId){
         gameManagementService.addGameToCategory(categoryName, gameId);
     }
 
-    @DeleteMapping("categories/{categoryName}/games/{gameId}")
+    /**
+     * Delete a game from a category
+     *
+     * @param categoryName Name of a category
+     * @param gameId Game unique identifier to remove from the category
+     *
+     * @author Jake Kogut
+     */
+    @DeleteMapping("/categories/{categoryName}/games/{gameId}")
     public void removeGameFromCategory(@PathVariable String categoryName, @PathVariable int gameId){
         gameManagementService.removeGameFromCategory(categoryName, gameId);
     }
@@ -62,15 +130,26 @@ public class GameManagementController {
 
     /**
      * Endpoint to retrieve all games in the inventory.
+     *
      * @return A list of GameResponseDTO objects representing all games in the inventory.
+     *
+     * @author Clara Mickail
      */
-    @GetMapping("games")
+    @GetMapping("/games")
     public List<GameResponseDTO> getInventory() {
         Set<Game> inventory = gameManagementService.viewInventory();
         return inventory.stream().map(GameResponseDTO::new).collect(Collectors.toList());
     }
 
-    @PostMapping("games")
+    /**
+     * Add a game and return it
+     *
+     * @param gameRequestDTO game request that approves the game
+     * @return The added game response
+     *
+     * @author Clara Mickail
+     */
+    @PostMapping("/games")
     public GameResponseDTO addGame(@RequestBody GameInputDTO gameRequestDTO) {
         Game newGame = gameManagementService.addNewGame(gameRequestDTO.name(), gameRequestDTO.description(),
                 gameRequestDTO.coverPicture(), gameRequestDTO.price(), gameRequestDTO.isActive(),
@@ -79,13 +158,27 @@ public class GameManagementController {
         return new GameResponseDTO(newGame);
     }
 
-
-    @DeleteMapping("games/{gameId}")
+    /**
+     * Delete a game
+     *
+     * @param gameId Game unique identifier to delete
+     *
+     * @author Clara Mickail
+     */
+    @DeleteMapping("/games/{gameId}")
     public void removeGame(@PathVariable int gameId) {
         gameManagementService.removeGame(gameId);
     }
 
-    @PutMapping("games/{gameId}/stock")
+    /**
+     * Update the stock of a game
+     *
+     * @param gameId Game unique identifier to update
+     * @param stockChange New stock of the game
+     *
+     * @author Clara Mickail
+     */
+    @PutMapping("/games/{gameId}/stock")
     public void updateStock(@PathVariable int gameId, @RequestParam int stockChange) {
         gameManagementService.updateStock(gameId, stockChange);
     }
@@ -93,8 +186,8 @@ public class GameManagementController {
     /**
      * Return the game request with the given id
      *
-     * @param gameRequestId
-     * @return GameRequestDTO
+     * @param gameRequestId Game Request identifier
+     * @return Game request DTO corresponding to the id
      *
      * @author Camille Pouliot
      */
@@ -106,8 +199,8 @@ public class GameManagementController {
     /**
      * Return the game with the given id
      *
-     * @param gameId
-     * @return GameResponseDTO
+     * @param gameId  Game unique identifier
+     * @return Game DTO corresponding to the id
      *
      * @author Camille Pouliot
      */
@@ -119,8 +212,8 @@ public class GameManagementController {
     /**
      * Return the employee with the given id
      *
-     * @param employeeId
-     * @return EmployeeDTO
+     * @param employeeId Employee unique identifier
+     * @return Employee DTO corresponding to the unique identifier
      *
      * @author Camille Pouliot
      */
@@ -132,8 +225,8 @@ public class GameManagementController {
     /**
      * Return the promotion with the given id
      *
-     * @param promotionId
-     * @return PromotionDTO
+     * @param promotionId Promotion unique identifier
+     * @return Promotion DTO corresponding to the unique identifier
      *
      * @author Camille Pouliot
      */
@@ -145,8 +238,8 @@ public class GameManagementController {
     /**
      * Return the games that contains the search prompt
      *
-     * @param searchPrompt
-     * @return Set<GameResponseDTO>
+     * @param searchPrompt String of words to search in the catalogue
+     * @return List of the games that correspond to the search prompt
      *
      * @author Camille Pouliot
      */
@@ -159,8 +252,8 @@ public class GameManagementController {
     /**
      * Create a new game request
      *
-     * @param gameRequestDTO
-     * @return GameRequestDTO
+     * @param gameRequestDTO Game request DTO to add to the server
+     * @return Game request DTO of the created game request, different from the param
      *
      * @author Camille Pouliot
      */
@@ -173,10 +266,10 @@ public class GameManagementController {
     /**
      * Create a new promotion
      *
-     * @param promotionDTO
-     * @param startDate
-     * @param endDate
-     * @return PromotionDTO
+     * @param promotionDTO Promotion DTO to add to the server
+     * @param startDate Start date of the promotion
+     * @param endDate End date of the promotion
+     * @return Promotion DTO of the created promotion, different from the param
      *
      * @author Camille Pouliot
      */
@@ -189,8 +282,8 @@ public class GameManagementController {
     /**
      * Set the status of a pending game request
      *
-     * @param gameRequestId
-     * @param status
+     * @param gameRequestId Game request unique identifier
+     * @param status New status of the pending game request (approve, reject)
      *
      * @author Camille Pouliot
      */
@@ -206,10 +299,10 @@ public class GameManagementController {
     /**
      * Update a promotion fields
      *
-     * @param promotionId
-     * @param discount
-     * @param startDate
-     * @param endDate
+     * @param promotionId Promotion unique identifier
+     * @param discount Updated discount
+     * @param startDate Updated start date
+     * @param endDate Updated end date
      *
      * @author Camille Pouliot
      */
@@ -221,11 +314,11 @@ public class GameManagementController {
     /**
      * Delete a promotion
      *
-     * @param promotionId
+     * @param promotionId Promotion unique identifier to delete
      *
      * @author Camille Pouliot
      */
-    @DeleteMapping("/promorions/{promotionId}")
+    @DeleteMapping("/promotions/{promotionId}")
     public void deletePromotion(@PathVariable int promotionId){
         gameManagementService.deletePromotion(promotionId);
     }
