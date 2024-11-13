@@ -142,6 +142,7 @@ public class testPurchaseManagementService {
         when(refundRepository.findById(referenceRequest.getId())).thenReturn(Optional.of(referenceRequest));
         when(refundRepository.findById(approvedRequest.getId())).thenReturn(Optional.of(approvedRequest));
         when(refundRepository.findById(deniedRequest.getId())).thenReturn(Optional.of(deniedRequest));
+        when(refundRepository.findById(toModifyRequest.getId())).thenReturn(Optional.of(toModifyRequest));
         when(refundRepository.findById(-1)).thenReturn(Optional.empty());
 
         when(managerRepository.findById(manager.getId())).thenReturn(Optional.of(manager));
