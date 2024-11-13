@@ -46,6 +46,8 @@ public class TestPurchaseManagementService {
     RefundRequestRepository refundRepository;
     @Mock
     private ManagerRepository managerRepository;
+    @Mock
+    private CartItemRepository cartItemRepository;
 
     Customer customer;
     Customer customer2;
@@ -68,7 +70,8 @@ public class TestPurchaseManagementService {
     RefundRequest approvedRequest;
     RefundRequest deniedRequest;
     Manager manager;
-
+    CartItem cartItem1;
+    CartItem cartItem2;
 
 
     @AfterEach
@@ -99,7 +102,7 @@ public class TestPurchaseManagementService {
 
         game = new Game("testGame", "An average game", "example.url",15,true, 5);
 
-        Game originalGame2 = new Game("testGame2", "A good game", "example.url",30,true, 1);
+        Game originalGame2 = new Game("testGame2", "A good game", "example.url",30,true, 2);
         game2 = spy(originalGame2);
         when(game2.getId()).thenReturn(game.getId() + 1);
 
@@ -111,6 +114,10 @@ public class TestPurchaseManagementService {
         referenceReview = new Review(rating, reviewText, purchase);
         validEmployee = new Employee("employee", "password", true);
         inactiveEmployee = new Employee("inactive", "password", false);
+
+        cartItem1 = new CartItem(1, customer,game);
+        cartItem2 = new CartItem(1, customer,game2);
+
 
 
         referenceRequest = new RefundRequest(purchase, RequestStatus.PENDING, refundText, null);
@@ -166,6 +173,11 @@ public class TestPurchaseManagementService {
 
         when(managerRepository.findById(manager.getId())).thenReturn(Optional.of(manager));
         when(managerRepository.findById(-1)).thenReturn(Optional.empty());
+
+        Set<CartItem> cartItems = new HashSet<>();
+        cartItems.add(cartItem1);
+        cartItems.add(cartItem2);
+        when(cartItemRepository.findByCartItemId_Customer_Id(customer.getId())).thenReturn(cartItems);
 
 
 
@@ -239,7 +251,6 @@ public class TestPurchaseManagementService {
         assertEquals(game.getDescription(), loadedGame.getDescription());
         assertEquals(game.getPrice(), loadedGame.getPrice());
         assertEquals(game.getStock(), loadedGame.getStock());
-        assertEquals(game.getCopyInCartOf(), loadedGame.getCopyInCartOf());
         assertEquals(game.getCoverPicture(), loadedGame.getCoverPicture());
         assertEquals(game.getCopyPromotions(), loadedGame.getCopyPromotions());
         verify(gameRepository, times(1)).findById(game.getId());
@@ -900,7 +911,7 @@ public class TestPurchaseManagementService {
     @Test
     public void testCheckoutWithExpiredCreditCard() {
         //Arrange
-        customer.addGameToCart(game);
+        cartItemRepository.findByCartItemId_Customer_Id(customer.getId()).add(new CartItem(1,customer,game)); //create a new Cart item and link it to a customer
         creditCard.setExpiryDate(LocalDate.of(1999,10,19));
 
         //Act
@@ -913,6 +924,8 @@ public class TestPurchaseManagementService {
 
     @Test
     public void testCheckoutEmptyCart() {
+        //Arrange
+        cartItemRepository.findByCartItemId_Customer_Id(customer.getId()).clear();
 
         //Act
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purchaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), creditCard.getId()));
@@ -926,7 +939,7 @@ public class TestPurchaseManagementService {
     public void testCheckoutInacitveGame() {
         //Arrange
         game.setActive(false);
-        customer.addGameToCart(game);
+        cartItemRepository.findByCartItemId_Customer_Id(customer.getId()).add(new CartItem(1,customer,game));
 
         //Act
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purchaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), creditCard.getId()));
@@ -939,7 +952,7 @@ public class TestPurchaseManagementService {
     @Test
     public void testCheckoutOutOfStockgame() {
         //Arrange
-        customer.addGameToCart(game);
+        cartItemRepository.findByCartItemId_Customer_Id(customer.getId()).add(new CartItem(1,customer,game)); //create a new Cart item and link it to a customer
         game.setStock(0);
 
         //Act
@@ -955,10 +968,6 @@ public class TestPurchaseManagementService {
         //Arrange
         int initialStockGame1 = game.getStock();
         int initialStockGame2 = game2.getStock();
-        customer.addGameToCart(game);
-        customer.addGameToCart(game2);
-        game.addInCartOf(customer);
-        game2.addInCartOf(customer);
 
         //Act
         purchaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), creditCard.getId());
@@ -967,26 +976,24 @@ public class TestPurchaseManagementService {
         assertEquals(initialStockGame1 - 1, game.getStock());
         assertEquals(initialStockGame2 - 1, game2.getStock());
 
-        assertTrue(game.getCopyInCartOf().isEmpty());
-        assertTrue(game2.getCopyInCartOf().isEmpty());
-        assertTrue(customer.getCopyCart().isEmpty());
-
         assertEquals(4, customer.getCopyPurchases().size()); //note the two games originally in the cart from intialization
 
         verify(customerRepository, times(1)).save(customer);
-        verify(gameRepository, times(1)).save(game);
-        verify(gameRepository, times(1)).save(game2);
+        verify(gameRepository, times(1)).saveAll(any());
         verify(purchaseRepository, times(2)).save(any(Purchase.class));
+        verify(cartItemRepository, times(1)).deleteAll(any());
 
     }
 
     @Test
     public void testGetCartPrice() {
         //Arrange
-        customer.addGameToCart(game2);
+        float price = game.getPrice() + game2.getPrice();
 
+        //Act
         float cartPrice = purchaseManagementService.getCartPrice(customer.getEmail());
 
-        assertEquals( game2.getPrice() , cartPrice);
+        //Assert
+        assertEquals( price , cartPrice);
     }
 }

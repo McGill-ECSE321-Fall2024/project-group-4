@@ -30,9 +30,9 @@ public class AccountManagementController {
     }
 
     @GetMapping("/{customerId}/wishlist")
-    public List<GameDTO> viewWishlist(@PathVariable int customerId) {
+    public List<GameResponseDTO> viewWishlist(@PathVariable int customerId) {
         Set<Game> wishlist = accountManagementService.viewWishlist(customerId);
-        return wishlist.stream().map(GameDTO::new).collect(Collectors.toList());
+        return wishlist.stream().map(GameResponseDTO::new).collect(Collectors.toList());
     }
 
     @PostMapping("/customers/{email}")
