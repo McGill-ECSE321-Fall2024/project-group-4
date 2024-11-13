@@ -75,7 +75,7 @@ public class AccountManagementController {
         accountManagementService.setEmployeeStatus(id, status);
     }
 
-    @GetMapping("/login/customers/{customerEmail}")
+    @PutMapping("/login/customers/{customerEmail}")
     public CustomerDTO customerLogin(@PathVariable String customerEmail, @RequestBody String password) {
         return new CustomerDTO(accountManagementService.customerLogin(customerEmail,password));
     }

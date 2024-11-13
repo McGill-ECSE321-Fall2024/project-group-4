@@ -13,7 +13,8 @@ public record CustomerDTO(String username,
                           Set<AddressDTO> addresses,
                           Set<CreditCardDTO> creditCards,
                           Set<ReviewDTO> likedReviews,
-                          Set<PurchaseDTO> purchases) implements Serializable {
+                          Set<PurchaseDTO> purchases,
+                          Integer id) implements Serializable {
 
 
     public CustomerDTO(Customer customer) {
@@ -24,7 +25,8 @@ public record CustomerDTO(String username,
                 ,customer.getCopyAddresses().stream().map(AddressDTO::new).collect(Collectors.toSet())
                 ,customer.getCopyofCreditCards().stream().map(CreditCardDTO::new).collect(Collectors.toSet())
                 ,customer.getCopyLikedReviews().stream().map(ReviewDTO::new).collect(Collectors.toSet())
-                ,customer.getCopyPurchases().stream().map(PurchaseDTO::new).collect(Collectors.toSet()));
+                ,customer.getCopyPurchases().stream().map(PurchaseDTO::new).collect(Collectors.toSet())
+                , customer.getId());
     }
 
 }
