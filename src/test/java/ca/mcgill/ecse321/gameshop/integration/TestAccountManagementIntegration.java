@@ -23,9 +23,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -234,26 +236,35 @@ public class TestAccountManagementIntegration {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
-    /**
+        /**
      * 
      * Create a valid employee account (this method is not working)
      * 
-     * @Author Ana Gordon
+     * @Author Ana Gordon and Clara Mickail
      */
     @Test
     @Order(8)
     public void testCreateValidEmployeeAccount() {
-        Employee employee = new Employee(USERNAME, PASSWORD, true);
-        employeeRepository.save(employee);
+        EmployeeDTO employeeDTO = new EmployeeDTO(
+                0, 
+                USERNAME,
+                PASSWORD,
+                true,
+                Set.of(),
+                Set.of()
+        );
 
         ResponseEntity<EmployeeDTO> response = account.postForEntity(
-            "/accounts/employees/" + USERNAME,
-            employee, EmployeeDTO.class);
+                "/accounts/employees/" + USERNAME,
+                employeeDTO, 
+                EmployeeDTO.class
+        );
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertNotNull(employeeRepository.findByUsername(USERNAME));
+        assertTrue(employeeRepository.findByUsername(USERNAME).isPresent());
     }
+    
 
     /**
      * 
