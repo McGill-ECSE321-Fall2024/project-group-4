@@ -1,43 +1,21 @@
 package ca.mcgill.ecse321.gameshop.integration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import org.json.JSONException;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.springframework.test.context.event.annotation.AfterTestClass;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.beans.factory.annotation.Autowired;
-import ca.mcgill.ecse321.gameshop.serviceClasses.AccountManagementService;
-import ca.mcgill.ecse321.gameshop.serviceClasses.GameManagementService;
-
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
 import ca.mcgill.ecse321.gameshop.DAO.AccountRepository;
 import ca.mcgill.ecse321.gameshop.DAO.CustomerRepository;
 import ca.mcgill.ecse321.gameshop.DAO.EmployeeRepository;
 import ca.mcgill.ecse321.gameshop.DAO.ManagerRepository;
-import ca.mcgill.ecse321.gameshop.dto.AccountDTO;
 import ca.mcgill.ecse321.gameshop.dto.CustomerDTO;
-import ca.mcgill.ecse321.gameshop.dto.LoginRequestDTO;
-import ca.mcgill.ecse321.gameshop.dto.LoginResponseDTO;
-import ca.mcgill.ecse321.gameshop.model.Account;
 import ca.mcgill.ecse321.gameshop.model.Customer;
-import ca.mcgill.ecse321.gameshop.model.Employee;
-import ca.mcgill.ecse321.gameshop.model.Manager;
+import ca.mcgill.ecse321.gameshop.serviceClasses.AccountManagementService;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -100,8 +78,7 @@ public class TestAccountManagementIntegration {
         customerRepository.save(customer);
 
         //login to this customer account
-        ResponseEntity<CustomerDTO> response = account.getForEntity("/login/customers/" + EMAIL_STRING,
-        CustomerDTO.class);
+        ResponseEntity<CustomerDTO> response = account.postForEntity("/accounts/login/customers/" + EMAIL_STRING, PASSWORD ,CustomerDTO.class);
 
 
         assertEquals(HttpStatus.OK, response.getStatusCode());

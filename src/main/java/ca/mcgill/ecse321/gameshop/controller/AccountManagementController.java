@@ -1,16 +1,15 @@
 package ca.mcgill.ecse321.gameshop.controller;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import ca.mcgill.ecse321.gameshop.dto.*;
+import ca.mcgill.ecse321.gameshop.model.Game;
 import ca.mcgill.ecse321.gameshop.model.Policy;
+import ca.mcgill.ecse321.gameshop.serviceClasses.AccountManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import ca.mcgill.ecse321.gameshop.model.Game;
-import ca.mcgill.ecse321.gameshop.serviceClasses.AccountManagementService;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/accounts")
@@ -75,7 +74,7 @@ public class AccountManagementController {
         accountManagementService.setEmployeeStatus(id, status);
     }
 
-    @PutMapping("/login/customers/{customerEmail}")
+    @PostMapping("/login/customers/{customerEmail}")
     public CustomerDTO customerLogin(@PathVariable String customerEmail, @RequestBody String password) {
         return new CustomerDTO(accountManagementService.customerLogin(customerEmail,password));
     }
