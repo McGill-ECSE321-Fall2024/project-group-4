@@ -1,7 +1,10 @@
 package ca.mcgill.ecse321.gameshop.dto;
 
+import ca.mcgill.ecse321.gameshop.model.Customer;
 import ca.mcgill.ecse321.gameshop.model.Employee;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -10,5 +13,13 @@ public record EmployeeDTO(int id, String username, String password, boolean isAc
         this(employee.getId(), employee.getUsername(), employee.getPassword(), employee.isActive(),
                 employee.getCopyGameRequests().stream().map(GameRequestDTO::new).collect(Collectors.toSet()),
                 employee.getCopyRefundRequests().stream().map(RefundRequestDTO::new).collect(Collectors.toSet()));
+    }
+
+    public static List<EmployeeDTO> convertToDto(List<Employee> employees) {
+        List<EmployeeDTO> employeeDto = new ArrayList<EmployeeDTO>(employees.size());
+        for (Employee employee : employees) {
+            employeeDto.add(new EmployeeDTO(employee));
+        }
+        return employeeDto;
     }
 }

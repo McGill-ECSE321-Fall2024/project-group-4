@@ -3,6 +3,8 @@ package ca.mcgill.ecse321.gameshop.dto;
 import ca.mcgill.ecse321.gameshop.model.Customer;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,4 +31,15 @@ public record CustomerDTO(String username,
                 , customer.getId());
     }
 
+    public static List<CustomerDTO> convertToDto(List<Customer> customers) {
+        List<CustomerDTO> customerDto = new ArrayList<CustomerDTO>(customers.size());
+        for (Customer customer : customers) {
+            customerDto.add(new CustomerDTO(customer));
+        }
+        return customerDto;
+    }
+
+    
+
 }
+

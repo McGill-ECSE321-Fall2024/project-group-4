@@ -35,13 +35,13 @@ public class AccountManagementController {
     }
 
     @PostMapping("/customers/{email}")
-    public CustomerDTO createCustomer(@PathVariable String email, @RequestBody String password, @RequestBody String username, @RequestBody String phoneNumber) {
-        return new CustomerDTO(accountManagementService.createCustomer(email,password,username,phoneNumber));
+    public CustomerDTO createCustomer(@RequestBody CustomerDTO customerDTO) {
+        return new CustomerDTO(accountManagementService.createCustomer(customerDTO.username(), customerDTO.password() ,customerDTO.email(),customerDTO.phoneNumber()));
     }
 
     @PostMapping("/employees/{username}")
-    public EmployeeDTO createEmployee(@PathVariable String username, @RequestBody String password, @RequestBody boolean is_active) {
-        return new EmployeeDTO(accountManagementService.createEmployee(username,password,is_active));
+    public EmployeeDTO createEmployee(@RequestBody EmployeeDTO employeeDTO) {
+        return new EmployeeDTO(accountManagementService.createEmployee(employeeDTO.username(),employeeDTO.password(),employeeDTO.isActive()));
     }
 
     @PostMapping("/manager/")
@@ -79,12 +79,12 @@ public class AccountManagementController {
         return new CustomerDTO(accountManagementService.customerLogin(customerEmail,password));
     }
 
-    @GetMapping("/login/employees/{username}")
+    @PostMapping("/login/employees/{username}")
     public EmployeeDTO employeeLogin(@PathVariable String username, @RequestBody String password) {
         return new EmployeeDTO(accountManagementService.employeeLogin(username,password));
     }
 
-    @GetMapping("/login/manager/{username}")
+    @PostMapping("/login/manager/{username}")
     public ManagerDTO managerLogin(@PathVariable String username, @RequestBody String password) {
         return new ManagerDTO(accountManagementService.managerLogin(username,password));
     }
