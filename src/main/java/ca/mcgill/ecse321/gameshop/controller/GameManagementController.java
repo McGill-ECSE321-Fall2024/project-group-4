@@ -13,6 +13,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Methods of game management controller
+ *
+ * @author Jake Kogut, Clara Mickail, Camille Pouliot
+ */
 @RestController
 public class GameManagementController {
     @Autowired

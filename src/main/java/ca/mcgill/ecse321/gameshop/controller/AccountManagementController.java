@@ -28,8 +28,8 @@ public class AccountManagementController {
     /**
      * Add a game to a customer wishlist
      *
-     * @param customerId
-     * @param gameId
+     * @param customerId Customer unique identifier
+     * @param gameId Game unique identifier to add to wishlist of the customer
      *
      * @author Clara Mickail
      */
@@ -41,8 +41,8 @@ public class AccountManagementController {
     /**
      * Delete a game from a customer wishlist
      *
-     * @param customerId
-     * @param gameId
+     * @param customerId Customer unique identifier
+     * @param gameId Game unique identifier to remove from customer wishlist
      *
      * @author Clara Mickail
      */
@@ -54,8 +54,8 @@ public class AccountManagementController {
     /**
      * Get the wishlist of a customer
      *
-     * @param customerId
-     * @return List<GameResponseDTO>
+     * @param customerId Customer unique identifier
+     * @return List of the games in the customer wishlist
      *
      * @author Tarek Namani
      */
@@ -99,7 +99,7 @@ public class AccountManagementController {
     /**
      * Create the manager account
      *
-     * @return ManagerDTO
+     * @return The manager DTO
      *
      * @author Tarek Namani
      */
@@ -111,7 +111,7 @@ public class AccountManagementController {
     /**
      * Get the list of all the employee accounts
      *
-     * @return Set<EmployeeDTO>
+     * @return List of all employees
      *
      * @author Tarek Namani
      */
@@ -123,8 +123,8 @@ public class AccountManagementController {
     /**
      * Get an employee from username
      *
-     * @param username
-     * @return EmployeeDTO
+     * @param username Unique username of an employee
+     * @return Employee DTO with the username
      *
      * @author Tarek Namani
      */
@@ -136,7 +136,7 @@ public class AccountManagementController {
     /**
      * Get the list of all the customer accounts
      *
-     * @return Set<CustomerDTO>
+     * @return List of all the customers
      *
      * @author Tarek Namani
      */
@@ -145,6 +145,14 @@ public class AccountManagementController {
         return accountManagementService.getSetOfCustomers().stream().map(CustomerDTO::new).collect(Collectors.toSet());
     }
 
+    /**
+     * Get a customer by their unique email
+     *
+     * @param customerEmail Customer unique email
+     * @return Customer DTO with the email
+     *
+     * @author Tarek Namani
+     */
     @GetMapping("/customers/{customerEmail}")
     public CustomerDTO getCustomerByEmail(@PathVariable String customerEmail) {
         return new CustomerDTO(accountManagementService.getCustomerByEmail(customerEmail));
@@ -153,8 +161,8 @@ public class AccountManagementController {
     /**
      * Set the status of an employee as active/inactive
      *
-     * @param id
-     * @param status
+     * @param id Employee unique identifier
+     * @param status Updated status of the employee
      *
      * @author Tarek Namani
      */
@@ -166,9 +174,9 @@ public class AccountManagementController {
     /**
      * Login into a customer account
      *
-     * @param customerEmail
-     * @param password
-     * @return CustomerDTO
+     * @param customerEmail Customer unique email
+     * @param password Customer password
+     * @return Customer DTO that logged in
      *
      * @author Tarek Namani
      */
@@ -180,9 +188,9 @@ public class AccountManagementController {
     /**
      * Login into an employee account
      *
-     * @param username
-     * @param password
-     * @return EmployeeDTO
+     * @param username Employee unique username
+     * @param password Employee password
+     * @return Employee DTO that logged in
      *
      * @author Tarek Namani
      */
@@ -194,9 +202,9 @@ public class AccountManagementController {
     /**
      * Login into the manager account
      *
-     * @param username
-     * @param password
-     * @return ManagerDTO
+     * @param username Manager unique username
+     * @param password Manager password
+     * @return Manager DTO that logged in
      *
      * @author Tarek Namani
      */
@@ -223,9 +231,9 @@ public class AccountManagementController {
     /**
      * Change a customer username
      *
-     * @param customerEmail
-     * @param newUsername
-     * @return CustomerDTO
+     * @param customerEmail Customer unique email
+     * @param newUsername Updated username of customer
+     * @return Customer DTO of the updated customer
      *
      * @author Tarek Namani
      */
@@ -237,9 +245,9 @@ public class AccountManagementController {
     /**
      * Change a customer phone number
      *
-     * @param customerEmail
-     * @param newPhonenumber
-     * @return CustomerDTO
+     * @param customerEmail Customer unique email
+     * @param newPhonenumber Updated phone number
+     * @return Customer DTO of the updated customer
      *
      * @author Tarek Namani
      */
@@ -265,8 +273,8 @@ public class AccountManagementController {
     /**
      * Get a policy from id
      *
-     * @param policyId
-     * @return PolicyDTO
+     * @param policyId Policy unique identifier
+     * @return Policy DTO corresponding to the id
      *
      * @author Camille Pouliot
      */
@@ -278,8 +286,8 @@ public class AccountManagementController {
     /**
      * Create a new policy
      *
-     * @param policyDTO
-     * @return PolicyDTO
+     * @param policyDTO Policy DTO to add to the server
+     * @return Policy DTO of the created policy, different from the param
      *
      * @author Camille Pouliot
      */
@@ -292,9 +300,9 @@ public class AccountManagementController {
     /**
      * Update a policy's description
      *
-     * @param policyId
-     * @param description
-     * @return PolicyDTO
+     * @param policyId Policy unique identifier
+     * @param description Updated description of policy
+     * @return Policy DTO of the updated policy
      *
      * @author Camille Pouliot
      */
@@ -306,7 +314,7 @@ public class AccountManagementController {
     /**
      * Delete a policy
      *
-     * @param policyId
+     * @param policyId Policy unique identifier
      *
      * @author Camille Pouliot
      */
@@ -317,7 +325,7 @@ public class AccountManagementController {
 
 
     /**
-     * Craete an address into a customer account
+     * Create an address into a customer account
      *
      * @param customerEmail
      * @param zipCode
