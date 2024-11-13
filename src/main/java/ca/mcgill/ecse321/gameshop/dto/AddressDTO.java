@@ -17,4 +17,6 @@ public record AddressDTO(
     public AddressDTO(Address address) {
         this(address.getId(), address.getStreet(), address.getCity(), address.getProvince(), address.getCountry(), address.getPostalCode(), new CustomerDTO(address.getCustomer()));
     }
+
+
 }

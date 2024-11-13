@@ -297,8 +297,9 @@ public class AccountManagementController {
      * @author Tarek Namani
      */
     @PostMapping("/customers/{customerEmail}/addresses")
-    public AddressDTO createAddress(@PathVariable String customerEmail, @RequestBody String zipCode, @RequestBody String city, @RequestBody String province, @RequestBody String country, @RequestBody String street) {
-        return new AddressDTO(accountManagementService.createAddress(street,city,province,zipCode,country,customerEmail));
+    @ResponseStatus(HttpStatus.CREATED)
+    public AddressDTO createAddress(@PathVariable String customerEmail, @RequestBody AddressDTO address) {
+        return new AddressDTO(accountManagementService.createAddress(address.street(),address.city(),address.province(),address.postalCode(),address.country(),customerEmail));
     }
 
 

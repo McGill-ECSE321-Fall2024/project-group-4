@@ -1,11 +1,15 @@
 package ca.mcgill.ecse321.gameshop.integration;
 
 
+import ca.mcgill.ecse321.gameshop.DAO.AddressRepository;
 import ca.mcgill.ecse321.gameshop.DAO.CategoryRepository;
 import ca.mcgill.ecse321.gameshop.DAO.CustomerRepository;
 import ca.mcgill.ecse321.gameshop.DAO.GameRepository;
+import ca.mcgill.ecse321.gameshop.dto.AddressDTO;
 import ca.mcgill.ecse321.gameshop.dto.CustomerDTO;
 import ca.mcgill.ecse321.gameshop.dto.GameInputDTO;
+import ca.mcgill.ecse321.gameshop.model.Address;
+import ca.mcgill.ecse321.gameshop.model.Customer;
 import ca.mcgill.ecse321.gameshop.model.Game;
 import ca.mcgill.ecse321.gameshop.serviceClasses.GameManagementService;
 import org.json.JSONException;
@@ -30,13 +34,25 @@ public class testPurchaseIntegration {
     @Autowired
     private TestRestTemplate client;
 
-    private int gameId = 0;
-    private String gameName = "ECSE 321 game";
-    private String gameDescription = "A game about coding as many lines as possible";
-    private String gamePicture = "pic.url";
-    private float gamePrice = 15.0f;
-    private int stock = 5;
-    private Game game = new Game(gameName,gameDescription,gamePicture,gamePrice,true,stock);
+    private int gameId;
+    private final String gameName = "ECSE 321 game";
+    private final String gameDescription = "A game about coding as many lines as possible";
+    private final String gamePicture = "pic.url";
+    private final float gamePrice = 15.0f;
+    private final int stock = 5;
+
+    private final String customerEmail = "validCustomer@email.com";
+    private final String customerUsername = "validUser";
+    private final String customerPassword = "SafePassword";
+    private final String customerPhoneNumber = "123456789";
+    private CustomerDTO customerDTO;
+
+    private final String customerStreet = "st Catherine";
+    private final String customerPostalCode = "HX9 XBX";
+    private final String customerCountry = "Canada";
+    private final String customerProvince = "Quebec";
+    private final String customerCity = "Montreal";
+    private final Address validCustomerAddress = new Address(customerStreet,customerCity,customerProvince,customerCountry,customerPostalCode,new Customer(customerUsername,customerPassword,customerEmail,customerPhoneNumber));
     private GameManagementService gameManagementService;
     @Autowired
     private GameRepository gameRepository;
@@ -44,6 +60,8 @@ public class testPurchaseIntegration {
     CategoryRepository categoryRepository;
     @Autowired
     private CustomerRepository customerRepository;
+    @Autowired
+    private AddressRepository addressRepository;
 
 
     /**
@@ -57,7 +75,7 @@ public class testPurchaseIntegration {
     @Order(1)
     public void testFindInvalidGame() throws JSONException {
         //Act
-        ResponseEntity<String> response = client.getForEntity("/games/" + gameId, String.class);
+        ResponseEntity<String> response = client.getForEntity("/games/" + 0, String.class);
 
         //Arrange
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -141,19 +159,40 @@ public class testPurchaseIntegration {
     @Order(5)
     public void testCreateCustomer() throws JSONException {
         //Arrange
-        CustomerDTO customerDTO = new CustomerDTO("username","safePassword","validEmail","122333",null,null,null,null);
+        customerDTO = new CustomerDTO(customerUsername,customerPassword,customerEmail,customerPhoneNumber,null,null,null,null);
         //Act
         ResponseEntity<String> response = client.postForEntity("/accounts/customers/", customerDTO, String.class);
 
         //Assert
         Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode());
         JSONObject clientParams = new JSONObject(response.getBody());
-        assertEquals("username", clientParams.getString("username"));
-        assertEquals("safePassword", clientParams.getString("password"));
-        assertEquals("validEmail", clientParams.getString("email"));
-        assertEquals("122333", clientParams.getString("phoneNumber"));
-        assertTrue(customerRepository.findByEmail("validEmail").isPresent());
+        assertEquals(customerUsername, clientParams.getString("username"));
+        assertEquals(customerPassword, clientParams.getString("password"));
+        assertEquals(customerEmail, clientParams.getString("email"));
+        assertEquals(customerPhoneNumber, clientParams.getString("phoneNumber"));
+        assertTrue(customerRepository.findByEmail(customerEmail).isPresent());
 
+    }
+
+    @Test
+    @Order(6)
+    public void testCreateAddress() throws JSONException {
+        //Arrange
+        AddressDTO customerAddress = new AddressDTO(validCustomerAddress);
+
+        //Act
+        ResponseEntity<String> response = client.postForEntity("/accounts/customers/"+customerEmail+"/addresses", customerAddress, String.class);
+
+        //Assert
+        Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        JSONObject addressParams = new JSONObject(response.getBody());
+        assertEquals(customerStreet, addressParams.getString("street"));
+        assertEquals(customerCity, addressParams.getString("city"));
+        assertEquals(customerProvince, addressParams.getString("province"));
+        assertEquals(customerCountry,addressParams.getString("country"));
+        assertEquals(customerPostalCode, addressParams.getString("postalCode"));
+        assertEquals(customerUsername,addressParams.getJSONObject("customer").getString("username"));
+        assertTrue(addressRepository.findById(validCustomerAddress.getId()).isPresent());
     }
 
 
@@ -162,6 +201,7 @@ public class testPurchaseIntegration {
         customerRepository.deleteAll();
         categoryRepository.deleteAll();
         gameRepository.deleteAll();
+        addressRepository.deleteAll();
     }
 
 
