@@ -1,8 +1,9 @@
 package ca.mcgill.ecse321.gameshop.integration;
 
 
+import ca.mcgill.ecse321.gameshop.DAO.CategoryRepository;
 import ca.mcgill.ecse321.gameshop.DAO.GameRepository;
-import ca.mcgill.ecse321.gameshop.dto.GameDTO;
+import ca.mcgill.ecse321.gameshop.dto.GameInputDTO;
 import ca.mcgill.ecse321.gameshop.model.Game;
 import ca.mcgill.ecse321.gameshop.serviceClasses.GameManagementService;
 import org.json.JSONException;
@@ -14,8 +15,9 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -36,6 +38,8 @@ public class testPurchaseIntegration {
     private GameManagementService gameManagementService;
     @Autowired
     private GameRepository gameRepository;
+    @Autowired
+    CategoryRepository categoryRepository;
 
 
     /**
@@ -48,14 +52,47 @@ public class testPurchaseIntegration {
     @Test
     @Order(1)
     public void testFindInvalidGame() throws JSONException {
-
-
         //Act
         ResponseEntity<String> response = client.getForEntity("/games/" + gameId, String.class);
 
         //Arrange
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("No Game found with id 0", new JSONObject(response.getBody()).getJSONArray("errorMessages").get(0));
+        assertEquals("No Game found", new JSONObject(response.getBody()).getJSONArray("errorMessages").get(0));
+    }
+
+    @Test
+    @Order(2)
+    public void testCreateNewCategory(){
+        //Act
+        ResponseEntity<Void> response = client.postForEntity("/categories/" + "actionGames", null, void.class);
+
+        //Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(categoryRepository.findByName("actionGames").isPresent());
+    }
+
+
+
+    /**
+     *
+     *
+     * @author Tarek Namani
+     * Tests the functionality of adding a game to the catalogue
+     */
+    @Test
+    @Order(3)
+    public void testCreateGame() {
+        //Arrage
+        GameInputDTO gameInputDTO = new GameInputDTO(gameName,gameDescription,gamePicture,gamePrice,false,stock, List.of("actionGames"));
+
+        //Act
+        ResponseEntity<String> response = client.postForEntity("/games", gameInputDTO, String.class);
+
+        //Assert
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertTrue(gameRepository.existsById(gameId));
+
     }
 
     /**
@@ -65,17 +102,13 @@ public class testPurchaseIntegration {
      * @author Tarek Namani
      */
     @Test
-    @Order(2)
+    @Order(4)
     public void testFindGameById() throws JSONException {
-        //Arrange
-        gameRepository.save(game); //replace with createGame eventually
-
-
         //Act
         ResponseEntity<String> response = client.getForEntity("/games/" + game.getId(), String.class);
 
         //Arrange
-        assertEquals(HttpStatus.FOUND, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         JSONObject gameParams = new JSONObject(response.getBody());
         assertEquals(gameName, gameParams.getString("name"));
         assertEquals(String.valueOf(gamePrice), gameParams.getString("price")); //cannot getFloat from a json, convert ref to string instead
@@ -88,6 +121,7 @@ public class testPurchaseIntegration {
     @AfterAll
     public void cleanUp() {
         gameRepository.deleteAll();
+        categoryRepository.deleteAll();
     }
 
 

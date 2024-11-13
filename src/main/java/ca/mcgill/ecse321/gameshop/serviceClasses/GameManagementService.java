@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.HashSet;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -309,7 +308,7 @@ public class GameManagementService {
         if (game.isPresent()) {
             return game.get();
         }
-        throw new IllegalArgumentException("No Game found");
+        throw new EntityNotFoundException("No Game found");
     }
 
     /**

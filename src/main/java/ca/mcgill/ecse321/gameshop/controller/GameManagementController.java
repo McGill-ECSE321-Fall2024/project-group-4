@@ -6,6 +6,7 @@ import ca.mcgill.ecse321.gameshop.model.GameRequest;
 import ca.mcgill.ecse321.gameshop.model.Promotion;
 import ca.mcgill.ecse321.gameshop.serviceClasses.GameManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
@@ -141,15 +142,7 @@ public class GameManagementController {
         return inventory.stream().map(GameResponseDTO::new).collect(Collectors.toList());
     }
 
-    /**
-     * Add a game and return it
-     *
-     * @param gameRequestDTO game request that approves the game
-     * @return The added game response
-     *
-     * @author Clara Mickail
-     */
-    @PostMapping("/games")
+    @PostMapping("games")
     public GameResponseDTO addGame(@RequestBody GameInputDTO gameRequestDTO) {
         Game newGame = gameManagementService.addNewGame(gameRequestDTO.name(), gameRequestDTO.description(),
                 gameRequestDTO.coverPicture(), gameRequestDTO.price(), gameRequestDTO.isActive(),
