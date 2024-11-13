@@ -5,7 +5,6 @@ import ca.mcgill.ecse321.gameshop.model.Game;
 import ca.mcgill.ecse321.gameshop.model.GameRequest;
 import ca.mcgill.ecse321.gameshop.model.Promotion;
 import ca.mcgill.ecse321.gameshop.serviceClasses.GameManagementService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -151,7 +150,7 @@ public class GameManagementController {
      *
      * @author Camille Pouliot
      */
-    @GetMapping("/games/{searchPrompt}")
+    @GetMapping("catalogue/games/{searchPrompt}")
     public Set<GameResponseDTO> getGamesBySearchPrompt(@PathVariable String searchPrompt) {
         Set<Game> searchedGames = gameManagementService.searchGames(searchPrompt);
         return searchedGames.stream().map(GameResponseDTO::new).collect(Collectors.toSet());
