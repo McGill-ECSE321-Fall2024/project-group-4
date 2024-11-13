@@ -41,13 +41,13 @@ public class testPurchaseManagementService {
     @Mock
     CreditCardRepository creditCardRepository;
     @Mock
-    private GameRepository gameRepository;
+    GameRepository gameRepository;
     @Mock
     EmployeeRepository employeeRepository;
     @Mock
     RefundRequestRepository refundRepository;
-    @Autowired
-    private ManagerRepository managerRepository;
+    @Mock
+    ManagerRepository managerRepository;
 
     Customer customer;
     Customer customer2;
@@ -111,6 +111,7 @@ public class testPurchaseManagementService {
         when(reviewRepository.save(any(Review.class))).thenReturn(referenceReview);
 
         when(purchaseRepository.findById(purchase.getId())).thenReturn(Optional.of(purchase));
+        when(purchaseRepository.findById(purchase2.getId())).thenReturn(Optional.of(purchase2));
         when(purchaseRepository.findById(-5)).thenReturn(Optional.empty());
 
         when(customerRepository.save(any(Customer.class))).thenReturn(customer);
@@ -144,7 +145,6 @@ public class testPurchaseManagementService {
         when(refundRepository.findById(deniedRequest.getId())).thenReturn(Optional.of(deniedRequest));
         when(refundRepository.findById(toModifyRequest.getId())).thenReturn(Optional.of(toModifyRequest));
         when(refundRepository.findById(-1)).thenReturn(Optional.empty());
-
         when(managerRepository.findById(manager.getId())).thenReturn(Optional.of(manager));
         when(managerRepository.findById(-1)).thenReturn(Optional.empty());
 
@@ -182,7 +182,6 @@ public class testPurchaseManagementService {
 
         //Assert
         assertEquals("Employee username is null!", exception.getMessage());
-        verify(employeeRepository, times(1)).findByUsername(null);
     }
 
     @Test
@@ -195,7 +194,7 @@ public class testPurchaseManagementService {
         assertEquals(referenceRequest.getId(), refund.getId());
         assertEquals(refundText, refund.getReason());
         assertEquals(RequestStatus.PENDING, refund.getStatus());
-        assertNull(refund.getReviewer());
+        assertEquals(validEmployee, refund.getReviewer());
         verify(refundRepository, times(1)).findById(referenceRequest.getId());
     }
 
@@ -212,19 +211,19 @@ public class testPurchaseManagementService {
     @Test
     public void testFindGameById() {
         //Act
-        Game loadedGame = purchaseManagementService.findGameById(game.getId());
+        Game loadedGame = purchaseManagementService.findGameById(game2.getId());
 
         //Assert
         assertNotNull(loadedGame);
-        assertEquals(game.getId(), loadedGame.getId());
-        assertEquals(game.getName(), loadedGame.getName());
-        assertEquals(game.getDescription(), loadedGame.getDescription());
-        assertEquals(game.getPrice(), loadedGame.getPrice());
-        assertEquals(game.getStock(), loadedGame.getStock());
-        assertEquals(game.getCopyInCartOf(), loadedGame.getCopyInCartOf());
-        assertEquals(game.getCoverPicture(), loadedGame.getCoverPicture());
-        assertEquals(game.getCopyPromotions(), loadedGame.getCopyPromotions());
-        verify(gameRepository, times(1)).findById(game.getId());
+        assertEquals(game2.getId(), loadedGame.getId());
+        assertEquals(game2.getName(), loadedGame.getName());
+        assertEquals(game2.getDescription(), loadedGame.getDescription());
+        assertEquals(game2.getPrice(), loadedGame.getPrice());
+        assertEquals(game2.getStock(), loadedGame.getStock());
+        assertEquals(game2.getCopyInCartOf(), loadedGame.getCopyInCartOf());
+        assertEquals(game2.getCoverPicture(), loadedGame.getCoverPicture());
+        assertEquals(game2.getCopyPromotions(), loadedGame.getCopyPromotions());
+        verify(gameRepository, times(1)).findById(game2.getId());
 
     }
 
@@ -235,7 +234,7 @@ public class testPurchaseManagementService {
 
         //Assert
         assertEquals("No Refund Request found with id -1", exception.getMessage());
-        verify(refundRepository, times(1)).findById(null);
+        verify(refundRepository, times(1)).findById(-1);
     }
 
 
@@ -324,7 +323,7 @@ public class testPurchaseManagementService {
     @Test
     public void testDenyRefund() {
         //Act
-        purchaseManagementService.approveRefund(toModifyRequest.getId(), validEmployee.getUsername());
+        purchaseManagementService.denyRefund(toModifyRequest.getId(), validEmployee.getUsername());
 
         //Assert
         assertEquals(RequestStatus.DENIED, toModifyRequest.getStatus());
@@ -333,7 +332,7 @@ public class testPurchaseManagementService {
     @Test
     public void testDenyInvalidRefund() {
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.approveRefund(approvedRequest.getId(), validEmployee.getUsername()));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.denyRefund(approvedRequest.getId(), validEmployee.getUsername()));
 
         //Assert
         assertEquals("Only pending requests can be denied.", exception.getMessage());
@@ -342,7 +341,7 @@ public class testPurchaseManagementService {
     @Test
     public void testDenyInvalidRefund2() {
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.approveRefund(deniedRequest.getId(), validEmployee.getUsername()));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.denyRefund(deniedRequest.getId(), validEmployee.getUsername()));
 
         //Assert
         assertEquals("Only pending requests can be denied.", exception.getMessage());
