@@ -1,14 +1,13 @@
 package ca.mcgill.ecse321.gameshop.integration;
 
 
-import ca.mcgill.ecse321.gameshop.DAO.AddressRepository;
-import ca.mcgill.ecse321.gameshop.DAO.CategoryRepository;
-import ca.mcgill.ecse321.gameshop.DAO.CustomerRepository;
-import ca.mcgill.ecse321.gameshop.DAO.GameRepository;
+import ca.mcgill.ecse321.gameshop.DAO.*;
 import ca.mcgill.ecse321.gameshop.dto.AddressDTO;
+import ca.mcgill.ecse321.gameshop.dto.CreditCardDTO;
 import ca.mcgill.ecse321.gameshop.dto.CustomerDTO;
 import ca.mcgill.ecse321.gameshop.dto.GameInputDTO;
 import ca.mcgill.ecse321.gameshop.model.Address;
+import ca.mcgill.ecse321.gameshop.model.CreditCard;
 import ca.mcgill.ecse321.gameshop.model.Customer;
 import ca.mcgill.ecse321.gameshop.model.Game;
 import ca.mcgill.ecse321.gameshop.serviceClasses.GameManagementService;
@@ -19,9 +18,12 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,12 +50,20 @@ public class testPurchaseIntegration {
     private final String customerPhoneNumber = "123456789";
     private CustomerDTO customerDTO;
 
+    private final int creditCardNumber = 123456789;
+    private final int cvv = 123;
+    private final LocalDate expiryDate = LocalDate.of(2025, 1, 1);
+    private final String expiryDateString = "01/25";
+
     private final String customerStreet = "st Catherine";
     private final String customerPostalCode = "HX9 XBX";
     private final String customerCountry = "Canada";
     private final String customerProvince = "Quebec";
     private final String customerCity = "Montreal";
     private final Address validCustomerAddress = new Address(customerStreet,customerCity,customerProvince,customerCountry,customerPostalCode,new Customer(customerUsername,customerPassword,customerEmail,customerPhoneNumber));
+    private final CreditCard creditCard = new CreditCard(creditCardNumber, cvv,expiryDate,null,validCustomerAddress);
+    private int addressId = 0;
+
     private GameManagementService gameManagementService;
     @Autowired
     private GameRepository gameRepository;
@@ -63,6 +73,8 @@ public class testPurchaseIntegration {
     private CustomerRepository customerRepository;
     @Autowired
     private AddressRepository addressRepository;
+    @Autowired
+    private CreditCardRepository creditCardRepository;
 
 
     /**
@@ -196,15 +208,35 @@ public class testPurchaseIntegration {
         assertEquals(customerPostalCode, addressParams.getString("postalCode"));
         assertTrue(customerRepository.findByEmail(customerEmail).get().getCopyAddresses().size()==1);
         assertTrue(addressRepository.findById(addressParams.getInt("id")).isPresent());
+        addressId = addressParams.getInt("id");
+    }
+
+
+    @Order(7)
+    @Test
+    public void testCreateCustomerCreditCard() {
+        //Arrange
+        creditCard.setBillingAddress(validCustomerAddress);
+         CreditCardDTO creditCardDTO = new CreditCardDTO(creditCard);
+         String url = "/customers/" + customerEmail + "/credit-cards?expiryDate={expiryDate}&addressId={addressId}";
+        HttpEntity<CreditCardDTO> requestEntity = new HttpEntity<>(creditCardDTO);
+
+         //Act
+        ResponseEntity<String> response = client.exchange(url, HttpMethod.POST, requestEntity, String.class,expiryDateString,addressId);
+
+        //Assert
+        assertNotNull(response.getBody());
     }
 
 
     @BeforeAll
     public void cleanUp() {
+        creditCardRepository.deleteAll();
         customerRepository.deleteAll();
         categoryRepository.deleteAll();
         gameRepository.deleteAll();
         addressRepository.deleteAll();
+        categoryRepository.deleteAll();
     }
 
 

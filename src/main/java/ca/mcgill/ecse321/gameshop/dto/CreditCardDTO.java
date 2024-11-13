@@ -9,12 +9,12 @@ public record CreditCardDTO(int id,
                             int cardNumber,
                             int cvv,
                             LocalDate expiryDate,
-                            CustomerDTO customer)
+                            AddressDTO billingAddress)
         implements Serializable {
 
 
     public CreditCardDTO(CreditCard creditCard) {
-        this(creditCard.getId(), creditCard.getCardNumber(), creditCard.getCvv(),  creditCard.getExpiryDate(),new CustomerDTO(creditCard.getCustomer()));
+        this(creditCard.getId(), creditCard.getCardNumber(), creditCard.getCvv(),  creditCard.getExpiryDate(), new AddressDTO(creditCard.getBillingAddress()));
 
     }
 
