@@ -210,9 +210,9 @@ public class TestPromotionService {
     }
 
     /**
-    * Test updating a promotion with an invalid discount less than 0
-    *
-    * @author Camille Pouliot
+     * Test updating a promotion with an invalid discount less than 0
+     *
+     * @author Camille Pouliot
      */
     @Test
     public void testUpdatePromotionDiscountLT0() {

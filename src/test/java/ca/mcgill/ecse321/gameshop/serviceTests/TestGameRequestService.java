@@ -188,7 +188,7 @@ public class TestGameRequestService {
     @Test
     public void testCreateGameRequestNormal() {
         //Act
-            GameRequest loadedCreatedGameRequest = gameRequestService.createGameRequest("External Review", 1, employee.getId());
+        GameRequest loadedCreatedGameRequest = gameRequestService.createGameRequest("External Review", 1, employee.getId());
 
         //Assert
         assertNotNull(loadedCreatedGameRequest);
@@ -313,4 +313,3 @@ public class TestGameRequestService {
     }
 
 }
-

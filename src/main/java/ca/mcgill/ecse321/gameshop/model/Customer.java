@@ -16,13 +16,6 @@ public class Customer extends Account {
             inverseJoinColumns = @JoinColumn(name = "game_id")
     )
     private Set<Game> wishlist = new HashSet<>();
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "cart_map",
-            joinColumns = @JoinColumn(name = "customer_id"),
-            inverseJoinColumns = @JoinColumn(name = "game_id")
-    )
-    private Set<Game> cart = new HashSet<>();
     @OneToMany(mappedBy = "customer", orphanRemoval = true, cascade = CascadeType.REMOVE)
     private Set<Address> addresses = new HashSet<>();
     @OneToMany(mappedBy = "customer", orphanRemoval = true, cascade = CascadeType.REMOVE)
@@ -82,7 +75,7 @@ public class Customer extends Account {
         return purchases.contains(purchase);
     }
 
-    public Set<Purchase> getCopyPurchasess(){
+    public Set<Purchase> getCopyPurchases(){
         return new HashSet<>(purchases);
     }
 
@@ -131,28 +124,6 @@ public class Customer extends Account {
 
     public Set<Game> getCopyWishlist(){
         return new HashSet<>(wishlist);
-    }
-
-    protected Set<Game> getCart() {
-        return cart;
-    }
-
-    public boolean addGameToCart(Game game){
-        game.getInCartOf().add(this);
-        return cart.add(game);
-    }
-
-    public boolean removeGameFromCart(Game game){
-        game.getInCartOf().remove(this);
-        return cart.remove(game);
-    }
-
-    public boolean containsGameInCart(Game game){
-        return cart.contains(game);
-    }
-
-    public Set<Game> getCopyCart(){
-        return new HashSet<>(cart);
     }
     
     public String getEmail() {

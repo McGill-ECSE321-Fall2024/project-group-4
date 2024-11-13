@@ -5,11 +5,11 @@ import ca.mcgill.ecse321.gameshop.model.Category;
 /**
  * DTO for {@link ca.mcgill.ecse321.gameshop.model.Category}
  */
-public record CategoryDTO (
+public record CategoryResponseDTO(
         int id,
         String name
 ){
-    public CategoryDTO(Category category) {
+    public CategoryResponseDTO(Category category) {
         this(category.getId(), category.getName());
     }
 }
