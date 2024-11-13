@@ -5,6 +5,7 @@ import ca.mcgill.ecse321.gameshop.model.Game;
 import ca.mcgill.ecse321.gameshop.model.Policy;
 import ca.mcgill.ecse321.gameshop.serviceClasses.AccountManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import ca.mcgill.ecse321.gameshop.model.Customer;

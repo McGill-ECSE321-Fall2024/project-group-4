@@ -158,8 +158,7 @@ public class PurchaseManagementController {
         return new CreditCardDTO(purchaseManagementService.findCreditCardById(creditCardId));
     }
 
-
-    @PutMapping("customers/{customerEmail}/credit-cards")
+    @PostMapping("customers/{customerEmail}/credit-cards")
     @ResponseStatus(HttpStatus.CREATED)
     public CreditCardDTO addCreditCardToCustomerWallet(@RequestBody int cardNumber,
                                                        @RequestBody int cvv,

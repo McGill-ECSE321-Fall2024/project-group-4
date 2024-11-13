@@ -2,7 +2,9 @@ package ca.mcgill.ecse321.gameshop.integration;
 
 
 import ca.mcgill.ecse321.gameshop.DAO.CategoryRepository;
+import ca.mcgill.ecse321.gameshop.DAO.CustomerRepository;
 import ca.mcgill.ecse321.gameshop.DAO.GameRepository;
+import ca.mcgill.ecse321.gameshop.dto.CustomerDTO;
 import ca.mcgill.ecse321.gameshop.dto.GameInputDTO;
 import ca.mcgill.ecse321.gameshop.model.Game;
 import ca.mcgill.ecse321.gameshop.serviceClasses.GameManagementService;
@@ -40,6 +42,8 @@ public class testPurchaseIntegration {
     private GameRepository gameRepository;
     @Autowired
     CategoryRepository categoryRepository;
+    @Autowired
+    private CustomerRepository customerRepository;
 
 
     /**
@@ -60,6 +64,10 @@ public class testPurchaseIntegration {
         assertEquals("No Game found", new JSONObject(response.getBody()).getJSONArray("errorMessages").get(0));
     }
 
+    /**
+     * Create a new category for a valid game
+     * @author Tarek Namani
+     */
     @Test
     @Order(2)
     public void testCreateNewCategory(){
@@ -82,7 +90,7 @@ public class testPurchaseIntegration {
      */
     @Test
     @Order(3)
-    public void testCreateGame() {
+    public void testCreateGame() throws JSONException {
         //Arrage
         GameInputDTO gameInputDTO = new GameInputDTO(gameName,gameDescription,gamePicture,gamePrice,false,stock, List.of("actionGames"));
 
@@ -91,6 +99,13 @@ public class testPurchaseIntegration {
 
         //Assert
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        JSONObject gameParams = new JSONObject(response.getBody());
+        assertEquals(gameName, gameParams.getString("name"));
+        assertEquals(String.valueOf(gamePrice), gameParams.getString("price")); //cannot getFloat from a json, convert ref to string instead
+        assertEquals(gameDescription, gameParams.getString("description"));
+        assertEquals(stock, gameParams.getInt("stock"));
+        assertFalse(gameParams.getBoolean("isActive"));
+        gameId = gameParams.getInt("id");
         assertTrue(gameRepository.existsById(gameId));
 
     }
@@ -105,7 +120,7 @@ public class testPurchaseIntegration {
     @Order(4)
     public void testFindGameById() throws JSONException {
         //Act
-        ResponseEntity<String> response = client.getForEntity("/games/" + game.getId(), String.class);
+        ResponseEntity<String> response = client.getForEntity("/games/" + gameId, String.class);
 
         //Arrange
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -114,14 +129,39 @@ public class testPurchaseIntegration {
         assertEquals(String.valueOf(gamePrice), gameParams.getString("price")); //cannot getFloat from a json, convert ref to string instead
         assertEquals(gameDescription, gameParams.getString("description"));
         assertEquals(stock, gameParams.getInt("stock"));
-        assertTrue(gameParams.getBoolean("isActive"));
+        assertFalse(gameParams.getBoolean("isActive"));
+    }
+
+    /**
+     * @throws JSONException for converting to JSON when asserting
+     * @author Tarek Namani
+     * Creates a customer
+     */
+    @Test
+    @Order(5)
+    public void testCreateCustomer() throws JSONException {
+        //Arrange
+        CustomerDTO customerDTO = new CustomerDTO("username","safePassword","validEmail","122333",null,null,null,null);
+        //Act
+        ResponseEntity<String> response = client.postForEntity("/accounts/customers/", customerDTO, String.class);
+
+        //Assert
+        Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        JSONObject clientParams = new JSONObject(response.getBody());
+        assertEquals("username", clientParams.getString("username"));
+        assertEquals("safePassword", clientParams.getString("password"));
+        assertEquals("validEmail", clientParams.getString("email"));
+        assertEquals("122333", clientParams.getString("phoneNumber"));
+        assertTrue(customerRepository.findByEmail("validEmail").isPresent());
+
     }
 
 
-    @AfterAll
+    @BeforeAll
     public void cleanUp() {
-        gameRepository.deleteAll();
+        customerRepository.deleteAll();
         categoryRepository.deleteAll();
+        gameRepository.deleteAll();
     }
 
 
