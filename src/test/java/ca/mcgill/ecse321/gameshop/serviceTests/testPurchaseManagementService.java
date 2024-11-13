@@ -46,6 +46,8 @@ public class testPurchaseManagementService {
     EmployeeRepository employeeRepository;
     @Mock
     RefundRequestRepository refundRepository;
+    @Autowired
+    private ManagerRepository managerRepository;
 
     Customer customer;
     Customer customer2;
@@ -68,8 +70,7 @@ public class testPurchaseManagementService {
     RefundRequest approvedRequest;
     RefundRequest deniedRequest;
     Manager manager;
-    @Autowired
-    private ManagerRepository managerRepository;
+    RefundRequest toModifyRequest;
 
 
     @AfterEach
@@ -100,6 +101,7 @@ public class testPurchaseManagementService {
         referenceRequest = new RefundRequest(purchase, RequestStatus.PENDING, refundText, null);
         approvedRequest = new RefundRequest(purchase, RequestStatus.APPROVED, refundText, validEmployee);
         deniedRequest = new RefundRequest(purchase, RequestStatus.DENIED, refundText, validEmployee);
+        toModifyRequest = new RefundRequest(purchase, RequestStatus.PENDING, refundText, validEmployee);
 
         validEmployee.addRefundRequest(approvedRequest);
 
@@ -294,16 +296,16 @@ public class testPurchaseManagementService {
     @Test
     public void testApproveRefund() {
         //Act
-        purchaseManagementService.approveRefund(referenceRequest.getId());
+        purchaseManagementService.approveRefund(toModifyRequest.getId(), validEmployee.getUsername());
 
         //Assert
-        assertEquals(RequestStatus.APPROVED, referenceRequest.getStatus());
+        assertEquals(RequestStatus.APPROVED, toModifyRequest.getStatus());
     }
 
     @Test
     public void testApproveInvalidRefund() {
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.approveRefund(approvedRequest.getId()));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.approveRefund(approvedRequest.getId(), validEmployee.getUsername()));
 
         //Assert
         assertEquals("Only pending requests can be approved.", exception.getMessage());
@@ -312,7 +314,7 @@ public class testPurchaseManagementService {
     @Test
     public void testApproveInvalidRefund2() {
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.approveRefund(deniedRequest.getId()));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.approveRefund(deniedRequest.getId(), validEmployee.getUsername()));
 
         //Assert
         assertEquals("Only pending requests can be approved.", exception.getMessage());
@@ -321,16 +323,16 @@ public class testPurchaseManagementService {
     @Test
     public void testDenyRefund() {
         //Act
-        purchaseManagementService.approveRefund(referenceRequest.getId());
+        purchaseManagementService.approveRefund(toModifyRequest.getId(), validEmployee.getUsername());
 
         //Assert
-        assertEquals(RequestStatus.DENIED, referenceRequest.getStatus());
+        assertEquals(RequestStatus.DENIED, toModifyRequest.getStatus());
     }
 
     @Test
     public void testDenyInvalidRefund() {
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.approveRefund(approvedRequest.getId()));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.approveRefund(approvedRequest.getId(), validEmployee.getUsername()));
 
         //Assert
         assertEquals("Only pending requests can be denied.", exception.getMessage());
@@ -339,7 +341,7 @@ public class testPurchaseManagementService {
     @Test
     public void testDenyInvalidRefund2() {
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.approveRefund(deniedRequest.getId()));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.approveRefund(deniedRequest.getId(), validEmployee.getUsername()));
 
         //Assert
         assertEquals("Only pending requests can be denied.", exception.getMessage());
