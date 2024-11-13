@@ -15,6 +15,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * Methods for PurchaseManagementService
+ *
+ * @author
+ */
 @Service
 public class PurchaseManagementService {
 
@@ -41,7 +46,14 @@ public class PurchaseManagementService {
     @Autowired
     private CartItemRepository cartItemRepository;
 
-
+    /**
+     * Get a refund request from id
+     *
+     * @param id
+     * @return RefundRequest
+     *
+     * @author
+     */
     @Transactional 
     public RefundRequest findRefundById(int id) {
         Optional<RefundRequest> optRefund = refundRepository.findById(id);
@@ -51,6 +63,15 @@ public class PurchaseManagementService {
         }
         throw new EntityNotFoundException("No Refund Request found with id " + id);
     }
+
+    /**
+     * Find an employee from username
+     *
+     * @param username
+     * @return Employee
+     *
+     * @author
+     */
     @Transactional
     public Employee findEmployeeByUsername(String username) {
         if (username == null) throw new EntityNotFoundException("Employee username is null!");
@@ -62,6 +83,14 @@ public class PurchaseManagementService {
         throw new EntityNotFoundException("No Employee found with username " + username);
     }
 
+    /**
+     * Get a game from id
+     *
+     * @param gameId
+     * @return Game
+     *
+     * @author
+     */
     @Transactional
     public Game findGameById(int gameId) {
         Optional<Game> optGame = gameRepository.findById(gameId);
@@ -71,6 +100,14 @@ public class PurchaseManagementService {
         throw new EntityNotFoundException("No Game found with id " + gameId);
     }
 
+    /**
+     * Get review from id
+     *
+     * @param id
+     * @return Review
+     *
+     * @author
+     */
     @Transactional
     public Review findReviewById(int id) {
         Optional<Review> optReview = reviewRepository.findById(id);
@@ -80,6 +117,14 @@ public class PurchaseManagementService {
         throw new EntityNotFoundException("No Review found with id " + id);
     }
 
+    /**
+     * Get a customer from email
+     *
+     * @param email
+     * @return Customer
+     *
+     * @author
+     */
     @Transactional
     public Customer findCustomerByEmail(String email) {
         if (email == null) throw new IllegalArgumentException("Email is null!");
@@ -92,6 +137,14 @@ public class PurchaseManagementService {
 
     }
 
+    /**
+     * Get the manager from id
+     *
+     * @param id
+     * @return Manager
+     *
+     * @author
+     */
     @Transactional
     public Manager findManagerById(int id) {
         Optional<Manager> optManager = managerRepository.findById(id);
@@ -102,6 +155,14 @@ public class PurchaseManagementService {
 
     }
 
+    /**
+     * Get purchase from id
+     *
+     * @param id
+     * @return Purchase
+     *
+     * @author
+     */
     @Transactional
     public Purchase findPurchaseById(int id) {
         Optional<Purchase> optPurchase = purchaseRepository.findById(id);
@@ -111,6 +172,14 @@ public class PurchaseManagementService {
         throw new EntityNotFoundException("No Purchase found with id " + id);
     }
 
+    /**
+     * Get credit card from id
+     *
+     * @param creditCardId
+     * @return CreditCard
+     *
+     * @author
+     */
     @Transactional
     public CreditCard findCreditCardById(int creditCardId) {
         Optional<CreditCard> optionalCreditCard = creditCardRepository.findById(creditCardId);
@@ -120,6 +189,14 @@ public class PurchaseManagementService {
         throw new EntityNotFoundException("No Credit Card found with id " + creditCardId);
     }
 
+    /**
+     * Get address from id
+     *
+     * @param addressId
+     * @return Address
+     *
+     * @author
+     */
     @Transactional
     public Address findAddressById(int addressId) {
         Optional<Address> optAdress = addressRepository.findById(addressId);
@@ -130,7 +207,18 @@ public class PurchaseManagementService {
     }
 
 
-
+    /**
+     * Add a credit card to a customer wallet
+     *
+     * @param cardNumber
+     * @param cvv
+     * @param expiryDate
+     * @param customerEmail
+     * @param addressId
+     * @return CreditCard
+     *
+     * @author
+     */
     @Transactional
     public CreditCard addCreditCardToCustomerWallet(int cardNumber, int cvv, String expiryDate, String customerEmail, int addressId) {
 
@@ -159,6 +247,14 @@ public class PurchaseManagementService {
         return creditCard;
     }
 
+    /**
+     * Like a review
+     *
+     * @param customerEmail
+     * @param reviewId
+     *
+     * @author
+     */
     @Transactional
     public void likeReview(String customerEmail, int reviewId) {
 
@@ -173,6 +269,17 @@ public class PurchaseManagementService {
 
     }
 
+    /**
+     * Post a review
+     *
+     * @param reivewerEmail
+     * @param rating
+     * @param text
+     * @param purchaseId
+     * @return Review
+     *
+     * @author
+     */
     @Transactional
     public Review postReview(String reivewerEmail, int rating, String text, int purchaseId) {
         if (text == null) {
@@ -196,6 +303,15 @@ public class PurchaseManagementService {
         return review;
     }
 
+    /**
+     * Reply to a review
+     *
+     * @param reviewId
+     * @param replyText
+     * @param managerId
+     *
+     * @author
+     */
     @Transactional
     public void replyToReview(int reviewId, String replyText, int managerId) {
 
@@ -217,6 +333,15 @@ public class PurchaseManagementService {
 
     }
 
+    /**
+     * Checkout a customer cart/ Purchase a customer cart
+     *
+     * @param customerEmail
+     * @param addressId
+     * @param creditCardId
+     *
+     * @author
+     */
     @Transactional
     public void checkout(String customerEmail, int addressId, int creditCardId) {
         Customer customer = findCustomerByEmail(customerEmail);
@@ -252,6 +377,14 @@ public class PurchaseManagementService {
         customerRepository.save(customer);
     }
 
+    /**
+     * Get the price of a customer cart
+     *
+     * @param customerEmail
+     * @return float
+     *
+     * @author
+     */
     @Transactional
     public float getCartPrice(String customerEmail) {
 
@@ -260,6 +393,14 @@ public class PurchaseManagementService {
         return (float) price;
     }
 
+    /**
+     * Get price of a game with promotion
+     *
+     * @param gameId
+     * @return float
+     *
+     * @author
+     */
     @Transactional
     public float getPromotionalPrice(int gameId) {
 
@@ -279,7 +420,14 @@ public class PurchaseManagementService {
     }
 
 
-
+    /**
+     * Get credit card of a customer
+     *
+     * @param email
+     * @return Set<CreditCard>
+     *
+     * @author
+     */
     @Transactional
     public Set<CreditCard> viewCustomerCreditCards(String email) {
         Customer customer = findCustomerByEmail(email);
@@ -287,7 +435,14 @@ public class PurchaseManagementService {
     }
 
 
-
+    /**
+     * Remove a credit card from a customer wallet
+     *
+     * @param customerEmail
+     * @param creditCardId
+     *
+     * @author
+     */
     @Transactional
     public void removeCreditCardFromWallet(String customerEmail, int creditCardId) {
         Customer customer = findCustomerByEmail(customerEmail);
@@ -304,12 +459,29 @@ public class PurchaseManagementService {
         customerRepository.save(customer);
     }
 
+    /**
+     * Get a customer's list of purchase
+     *
+     * @param email
+     * @return Set<Purchase>
+     *
+     * @author
+     */
     @Transactional
     public Set<Purchase> viewCustomerPurchaseHistory(String email) {
         Customer customer = findCustomerByEmail(email);
         return customer.getCopyPurchases();
     }
 
+    /**
+     * Get a customer's list of purchase only if user connected is an employee
+     *
+     * @param customerEmail
+     * @param requestingEmployee
+     * @return Set<Purchase>
+     *
+     * @author
+     */
     @Transactional
     public Set<Purchase> requestCustomersPurchaseHistory(String customerEmail, String requestingEmployee) {
         // Ensures requestor is actually an employee by fetching them
@@ -319,6 +491,15 @@ public class PurchaseManagementService {
         return viewCustomerPurchaseHistory(customerEmail);
     }
 
+    /**
+     * Create a refund request
+     *
+     * @param purchaseId
+     * @param reason
+     * @return RefundRequest
+     *
+     * @author
+     */
     @Transactional
     public RefundRequest requestRefund(int purchaseId, String reason) {
         Purchase purchase = findPurchaseById(purchaseId);
@@ -335,6 +516,13 @@ public class PurchaseManagementService {
         return request;
     }
 
+    /**
+     * Approve a refund request
+     *
+     * @param refundId
+     *
+     * @author
+     */
     @Transactional
     public void approveRefund(int refundId) {
         RefundRequest refund = findRefundById(refundId);
@@ -347,6 +535,13 @@ public class PurchaseManagementService {
         refundRepository.save(refund);
     }
 
+    /**
+     * Deny a refund request
+     *
+     * @param refundId
+     *
+     * @author
+     */
     @Transactional
     public void denyRefund(int refundId) {
         RefundRequest refund = findRefundById(refundId);
@@ -359,6 +554,14 @@ public class PurchaseManagementService {
         refundRepository.save(refund);
     }
 
+    /**
+     * Assign an employee to review a refund request
+     *
+     * @param refundId
+     * @param reviewerUsername
+     *
+     * @author
+     */
     @Transactional
     public void addReviewerToRefundRequest(int refundId, String reviewerUsername) {
         Employee reviewer = findEmployeeByUsername(reviewerUsername);
@@ -378,6 +581,14 @@ public class PurchaseManagementService {
         employeeRepository.save(reviewer);
     }
 
+    /**
+     * Remove the employee assigned to review the refund request
+     *
+     * @param refundId
+     * @param reviewerUsername
+     *
+     * @author
+     */
     @Transactional
     public void removeReviewerFromRefundRequest(int refundId, String reviewerUsername) {
         Employee reviewer = findEmployeeByUsername(reviewerUsername);

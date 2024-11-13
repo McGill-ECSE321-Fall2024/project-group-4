@@ -17,6 +17,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Methods for GameManagementService
+ *
+ * @author Camille Pouliot,
+ */
 @Service
 public class GameManagementService {
     @Autowired
@@ -40,6 +45,14 @@ public class GameManagementService {
     @Autowired
     private PromotionRepository promotionRepository;
 
+    /**
+     * Add a game to a customer cart
+     *
+     * @param customerId
+     * @param gameId
+     *
+     * @author
+     */
     @Transactional
     public void addGameToCart(int customerId, int gameId){
         Game gameToAdd = gameRepository.findById(gameId).orElseThrow(()-> new EntityNotFoundException("Game to add to cart not found"));
@@ -58,6 +71,14 @@ public class GameManagementService {
 
     }
 
+    /**
+     * Get games in a customer cart
+     *
+     * @param customerId
+     * @return Set<Game>
+     *
+     * @author
+     */
     public Set<Game> viewGamesInCart(int customerId){
         if(!customerRepository.existsById(customerId)){
             throw new EntityNotFoundException("Customer to add game to cart of not found");
@@ -65,6 +86,15 @@ public class GameManagementService {
         Set<CartItem> itemsInCart = cartItemRepository.findByCartItemId_Customer_Id(customerId);
         return itemsInCart.stream().map((CartItem::getGame)).collect(Collectors.toSet());
     }
+
+    /**
+     * Remove a game from a customer cart
+     *
+     * @param customerId
+     * @param gameId
+     *
+     * @author
+     */
     @Transactional
     public void removeGameFromCart(int customerId, int gameId){
         if(!gameRepository.existsById(gameId) || !customerRepository.existsById(customerId)){
@@ -76,6 +106,14 @@ public class GameManagementService {
 
         cartItemRepository.delete(existingCartItem);
     }
+
+    /**
+     * Create a category
+     *
+     * @param name
+     *
+     * @author
+     */
     @Transactional
     public void createCategory(String name){
         if(categoryRepo.findByName(name).isPresent()){
@@ -84,6 +122,14 @@ public class GameManagementService {
         Category category = new Category(name);
         categoryRepo.save(category);
     }
+
+    /**
+     * Delete a category
+     *
+     * @param name
+     *
+     * @author
+     */
     @Transactional
     public void deleteCategory(String name){
         var category = categoryRepo.findByName(name).orElseThrow(()-> new EntityNotFoundException("Category to delete was not found"));
@@ -97,12 +143,29 @@ public class GameManagementService {
         categoryRepo.delete(category);
     }
 
+    /**
+     * Get the games in a category
+     *
+     * @param name
+     * @return Set<Game>
+     *
+     * @author
+     */
+    @Transactional
     public Set<Game> getGamesInCategory(String name){
         var category = categoryRepo.findByName(name).orElseThrow(()-> new EntityNotFoundException("Category to get games in was not found"));
         return category.getCopyInCategory();
 
     }
 
+    /**
+     * Add a game to a category
+     *
+     * @param categoryName
+     * @param gameId
+     *
+     * @author
+     */
     @Transactional
     public void addGameToCategory(String categoryName, int gameId){
         var category = categoryRepo.findByName(categoryName).orElseThrow(()-> new EntityNotFoundException("Category to add game to was not found"));
@@ -116,6 +179,14 @@ public class GameManagementService {
         gameRepository.save(game);
     }
 
+    /**
+     * Remove a game from a category
+     *
+     * @param categoryName
+     * @param gameId
+     *
+     * @author
+     */
     @Transactional
     public void removeGameFromCategory(String categoryName, int gameId){
         var category = categoryRepo.findByName(categoryName).orElseThrow(()-> new EntityNotFoundException("Category to remove game from was not found"));
@@ -129,6 +200,13 @@ public class GameManagementService {
         gameRepository.save(game);
     }
 
+    /**
+     * Get all games from inventory
+     *
+     * @return Set<Game>
+     *
+     * @author
+     */
     public Set<Game> viewInventory() {
         // Convert Iterable<Game> to HashSet<Game>
         Iterable<Game> games = gameRepository.findAll();
@@ -137,6 +215,20 @@ public class GameManagementService {
         return gameSet;
     }
 
+    /**
+     * Add a new game
+     *
+     * @param name
+     * @param description
+     * @param cover
+     * @param price
+     * @param isActive
+     * @param stock
+     * @param categoryNames
+     * @return Game
+     *
+     * @author
+     */
     @Transactional
     public Game addNewGame(String name, String description, String cover, float price, boolean isActive, int stock, List<String> categoryNames) {
         // Create a new game
@@ -154,7 +246,13 @@ public class GameManagementService {
         return newGame;
     }
 
-
+    /**
+     * Remove a game (set to inactive)
+     *
+     * @param gameId
+     *
+     * @author
+     */
     @Transactional
     public void removeGame(int gameId) {
         Game game = gameRepository.findById(gameId).orElseThrow(() -> new EntityNotFoundException("Game not found"));
@@ -162,6 +260,14 @@ public class GameManagementService {
         gameRepository.save(game);
     }
 
+    /**
+     * Update stock of a game
+     *
+     * @param gameId
+     * @param newStock
+     *
+     * @author
+     */
     @Transactional
     public void updateStock(int gameId, int newStock) {
         Game game = gameRepository.findById(gameId).orElseThrow(() -> new EntityNotFoundException("Game not found"));
