@@ -330,6 +330,8 @@ public class TestAccountManagementIntegration {
     @Test
     @Order(12)
     public void testGetAllEmployeeAccounts() {
+
+        //create employee account
         Employee employee = new Employee(USERNAME, PASSWORD, true);
         employeeRepository.save(employee);
 
