@@ -177,6 +177,7 @@ public class testPurchaseIntegration {
 
     @Test
     @Order(6)
+    @Transactional
     public void testCreateAddress() throws JSONException {
         //Arrange
         AddressDTO customerAddress = new AddressDTO(validCustomerAddress);
