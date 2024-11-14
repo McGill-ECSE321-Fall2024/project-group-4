@@ -2,13 +2,11 @@ package ca.mcgill.ecse321.gameshop.integration;
 
 
 import ca.mcgill.ecse321.gameshop.DAO.*;
-import ca.mcgill.ecse321.gameshop.dto.AddressDTO;
-import ca.mcgill.ecse321.gameshop.dto.CreditCardDTO;
-import ca.mcgill.ecse321.gameshop.dto.CustomerDTO;
-import ca.mcgill.ecse321.gameshop.dto.GameInputDTO;
+import ca.mcgill.ecse321.gameshop.dto.*;
 import ca.mcgill.ecse321.gameshop.model.Address;
 import ca.mcgill.ecse321.gameshop.model.CreditCard;
 import ca.mcgill.ecse321.gameshop.model.Customer;
+import ca.mcgill.ecse321.gameshop.model.Promotion;
 import ca.mcgill.ecse321.gameshop.serviceClasses.GameManagementService;
 import jakarta.transaction.Transactional;
 import org.json.JSONArray;
@@ -142,7 +140,7 @@ public class testPurchaseIntegration {
         ResponseEntity<String> response = client.postForEntity("/games", gameInputDTO, String.class);
 
         //Assert
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         JSONObject gameParams = new JSONObject(response.getBody());
         assertEquals(gameName, gameParams.getString("name"));
         assertEquals(String.valueOf(gamePrice), gameParams.getString("price")); //cannot getFloat from a json, convert ref to string instead
@@ -555,6 +553,29 @@ public class testPurchaseIntegration {
     public void testRemoveCreditCardFromWallet() {
         //Arrange
         String url = "/customers/"+customerEmail+"/credit-cards/" + expiredCreditCardId;
+
+        //Act
+        client.exchange(url, HttpMethod.DELETE, null, void.class);
+
+
+        //Assert
+        assertEquals(1,customerRepository.findByEmail(customerEmail).get().getCopyofCreditCards().size());
+
+    }
+
+    /**
+     * @author Tarek Namani
+     * Tests creating a promotion
+     */
+    @Order(21)
+    @Test
+    @Transactional
+    public void testCreatePromotion() {
+        //Arrange
+        String url = "/promotions?startDate={startDate}&endDate={endDate}";
+        Promotion promotion = new Promotion(25);
+        PromotionDTO promotionDTO = new PromotionDTO(promotion);
+        HttpEntity<PromotionDTO> requestEntity = new HttpEntity<>(promotionDTO);
 
         //Act
         client.exchange(url, HttpMethod.DELETE, null, void.class);

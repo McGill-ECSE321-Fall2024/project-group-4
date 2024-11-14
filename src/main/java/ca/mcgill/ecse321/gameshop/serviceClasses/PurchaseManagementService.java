@@ -445,7 +445,7 @@ public class PurchaseManagementService {
             throw new IllegalStateException("Failed to delete credit card from customer");
         }
         customerRepository.save(customer);
-       //creditCardRepository.delete(creditCardToRemove);
+        //creditCardRepository.delete(creditCardToRemove);
     }
 
     /**

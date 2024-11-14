@@ -286,12 +286,8 @@ public class AccountManagementController {
     /**
      * Create an address into a customer account
      *
-     * @param customerEmail
-     * @param zipCode
-     * @param city
-     * @param province
-     * @param country
-     * @param street
+     * @param customerEmail of customer
+     * @param address address to add
      * @return AddressDTO
      *
      * @author Tarek Namani

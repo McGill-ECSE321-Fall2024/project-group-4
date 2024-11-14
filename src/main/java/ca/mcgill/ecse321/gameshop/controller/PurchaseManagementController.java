@@ -29,13 +29,13 @@ public class PurchaseManagementController {
 //        return new GameDTO(purchaseManagementService.findGameById(gameId));
 //    }
 
-    @GetMapping("games/promotions/{gameId}")
+    @GetMapping("/games/{gameId}/price")
     @ResponseStatus(HttpStatus.FOUND)
     public float getPromotionalPrice(@PathVariable int gameId) {
         return purchaseManagementService.getPromotionalPrice(gameId);
     }
 
-    @GetMapping("reviews/{reviewId}")
+    @GetMapping("/reviews/{reviewId}")
     @ResponseStatus(HttpStatus.FOUND)
     public ReviewDTO getReviewById(@PathVariable int reviewId) {
         return new ReviewDTO(purchaseManagementService.findReviewById(reviewId));
@@ -49,7 +49,7 @@ public class PurchaseManagementController {
      *
      * @author
      */
-    @PutMapping("customers/{customerEmail}/reviews/{reviewId}/likes")
+    @PutMapping("/customers/{customerEmail}/reviews/{reviewId}/likes")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void likeReview(@PathVariable int reviewId, @PathVariable String customerEmail) {
         purchaseManagementService.likeReview(customerEmail, reviewId);
@@ -65,7 +65,7 @@ public class PurchaseManagementController {
      *
      * @author
      */
-    @PostMapping("customers/{customerEmail}/reviews")
+    @PostMapping("/customers/{customerEmail}/reviews")
     @ResponseStatus(HttpStatus.CREATED)
     public void postReview(@PathVariable String customerEmail, @RequestParam int purchaseId, @RequestParam int rating, @RequestBody String text) {
         purchaseManagementService.postReview(customerEmail,rating,text, purchaseId);
@@ -80,7 +80,7 @@ public class PurchaseManagementController {
      *
      * @author
      */
-    @PostMapping("reviews/{reviewId}/reply")
+    @PostMapping("/reviews/{reviewId}/reply")
     @ResponseStatus(HttpStatus.CREATED)
     public void replyToReview(@PathVariable int reviewId, @RequestParam int managerId, @RequestBody String replyText) {
         purchaseManagementService.replyToReview(reviewId, replyText,managerId);
@@ -183,7 +183,7 @@ public class PurchaseManagementController {
 
     @PostMapping("customers/{customerEmail}/cart")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void checkout(@PathVariable String customerEmail, @RequestBody int billingAddressId, @RequestBody int creditCardId) {
+    public void checkout(@PathVariable String customerEmail, @RequestParam int billingAddressId, @RequestParam int creditCardId) {
         purchaseManagementService.checkout(customerEmail, billingAddressId, creditCardId);
     }
 
