@@ -8,9 +8,6 @@ public class Manager extends Account {
         super(username, password);
     }
 
-
-
-
     public Manager() {
         super();
     }

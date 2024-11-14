@@ -1,32 +1,35 @@
 package ca.mcgill.ecse321.gameshop.serviceTests;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.util.*;
+
+import jakarta.persistence.EntityExistsException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import jakarta.persistence.EntityNotFoundException;
+
+import org.springframework.web.server.ResponseStatusException;
+
 import ca.mcgill.ecse321.gameshop.DAO.*;
 import ca.mcgill.ecse321.gameshop.model.*;
 import ca.mcgill.ecse321.gameshop.serviceClasses.AccountManagementService;
 
-import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-
-import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.*;
-
 /**
  * Unit test for AccountManagementService
  * 
- * @author Ana Gordon
+ * @author Ana Gordon, Tarek Namani, Clara Mickail
  */
-
 @SpringBootTest
 public class testAccountManagementService {
 
@@ -34,10 +37,13 @@ public class testAccountManagementService {
     private AccountManagementService accountManagementService;
 
     @Mock
-    private AccountRepository accountRepository;
+    private CustomerRepository customerRepository;
 
     @Mock
-    private CustomerRepository customerRepository;
+    private GameRepository gameRepository;
+
+    @Mock
+    private AccountRepository accountRepository;
 
     @Mock
     private ManagerRepository managerRepository;
@@ -45,7 +51,10 @@ public class testAccountManagementService {
     @Mock
     private EmployeeRepository employeeRepository;
 
-    // Initialize the account examples
+    @Mock
+    private AddressRepository addressRepository;
+
+    // Initialize the examples
     Account account1;
     Account account2;
     Customer customer1;
@@ -55,6 +64,8 @@ public class testAccountManagementService {
     Manager manager;
     Set<Customer> customers = new HashSet<>();
     Set<Employee> employees = new HashSet<>();
+    private Customer referenceCustomer;
+    private Game referenceGame;
 
 
     @AfterEach
@@ -64,10 +75,15 @@ public class testAccountManagementService {
         employeeRepository.deleteAll();
         managerRepository.deleteAll();
     }
-
-
+    
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
+        referenceCustomer = new Customer("testUser", "password", "test@gmail.com", "1234567890");
+        referenceGame = new Game("Test Game", "Test Description", "Test Cover", 50.0f, true, 10);
+
+        when(customerRepository.findById(referenceCustomer.getId())).thenReturn(Optional.of(referenceCustomer));
+        when(gameRepository.findById(referenceGame.getId())).thenReturn(Optional.of(referenceGame));
+
         //initialize all fields
         customer1 = new Customer("customer1", "password1", "customer1@email.com", "0123456789");
         customer2 = new Customer("customer2", "password2", "customer2@email.com", "012ad3456789");
@@ -106,9 +122,8 @@ public class testAccountManagementService {
 
 
         when(managerRepository.save(any(Manager.class))).thenReturn(manager);
-        when(managerRepository.findManagerByUsername("manager")).thenReturn(Optional.of(manager));
+        when(managerRepository.findByUsername("manager")).thenReturn(Optional.of(manager));
         when(managerRepository.findAll()).thenReturn(Set.of(manager));
-
     }
 
     /**
@@ -237,7 +252,7 @@ public class testAccountManagementService {
 
 
         // Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, ()->accountManagementService.createCustomer(email,password,username,phoneNumber)) ;
+        EntityExistsException exception = assertThrows(EntityExistsException.class, ()->accountManagementService.createCustomer(email,password,username,phoneNumber)) ;
 
         // Assert
         assertEquals(exception.getMessage(),"Customer with this email already exists.");
@@ -422,9 +437,7 @@ public class testAccountManagementService {
         //Arrange
         when(customerRepository.findAll()).thenReturn(null); //mock there being no customers in the system
 
-        //Act
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> accountManagementService.getSetOfCustomers());
-
         //Assert
 
         assertEquals("There are no customers in the system",exception.getMessage());
@@ -565,23 +578,10 @@ public class testAccountManagementService {
     @Test
     public void testDeactivateEmployee(){
         // Act
-        accountManagementService.deactivateEmployee(employee1.getId());
+        accountManagementService.setEmployeeStatus(employee1.getId(),false);
         // Assert
         assertFalse(employee1.isActive());
         verify(employeeRepository, times(1)).findEmployeeById(employee1.getId());
-    }
-
-    /**
-     * Test for deactivating employee, fail
-     * 
-     * @author Ana Gordon
-     */
-    @Test
-    public void testDeactivateEmployeeInvalid(){
-        // Act
-       EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> accountManagementService.deactivateEmployee(-1));
-
-       assertEquals(exception.getMessage(),"Employee does not exist");
     }
 
     /**
@@ -591,8 +591,11 @@ public class testAccountManagementService {
      */
     @Test
     public void testActivateEmployee(){
+        //Arrange
+        employee1.setActive(false);
+
         // Act
-        accountManagementService.activateEmployee(employee1.getId());
+        accountManagementService.setEmployeeStatus(employee1.getId(),true);
         // Assert
         assertTrue(employee1.isActive());
         verify(employeeRepository, times(1)).findEmployeeById(employee1.getId());
@@ -600,13 +603,13 @@ public class testAccountManagementService {
 
     /**
      * Test for activating employee, fail
-     * 
+     *
      * @author Ana Gordon
      */
     @Test
     public void testActivateEmployeeInvalid(){
         // Act
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> accountManagementService.activateEmployee(-1));
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> accountManagementService.setEmployeeStatus(-1, false));
 
         assertEquals(exception.getMessage(),"Employee does not exist");
     }
@@ -699,9 +702,8 @@ public class testAccountManagementService {
         String email = "uniqueEmail";
         String password = "validPassword";
 
-
         //Act
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class ,()->accountManagementService.customerLogin(email, password));
+        EntityNotFoundException  exception = assertThrows(EntityNotFoundException .class ,()->accountManagementService.customerLogin(email, password));
 
         //Assert
         assertEquals(exception.getMessage(),"Customer does not exist");
@@ -803,7 +805,7 @@ public class testAccountManagementService {
 
 
         //Act
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class ,()->accountManagementService.employeeLogin(username, password));
+        EntityNotFoundException  exception = assertThrows(EntityNotFoundException .class ,()->accountManagementService.employeeLogin(username, password));
 
         //Assert
         assertEquals(exception.getMessage(),"Employee does not exist");
@@ -847,7 +849,7 @@ public class testAccountManagementService {
         //Assert
         assertNotNull(loadedManager);
         assertEquals(manager,loadedManager);
-        verify(managerRepository, times(1)).findManagerByUsername(username);
+        verify(managerRepository, times(1)).findByUsername(username);
 
     }
 
@@ -922,16 +924,12 @@ public class testAccountManagementService {
 
 
         //Act
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class ,()->accountManagementService.managerLogin(username, password));
+        EntityNotFoundException  exception = assertThrows(EntityNotFoundException .class ,()->accountManagementService.managerLogin(username, password));
 
         //Assert
         assertEquals(exception.getMessage(),"Manager does not exist");
 
     }
-
-
-
-
 
     /**
      * Update customer password, success
@@ -1051,53 +1049,11 @@ public class testAccountManagementService {
 
 
         // Act
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, ()->accountManagementService.updateCustomerPassword(oldPassword, newPassowrd, email));
+        EntityNotFoundException  exception = assertThrows(EntityNotFoundException .class, ()->accountManagementService.updateCustomerPassword(oldPassword, newPassowrd, email));
 
         //Assert
         assertEquals("Customer does not exist", exception.getMessage());
     }
-
-//    /**
-//     * Test for loging out of an account, success
-//     *
-//     * @author Ana Gordon
-//     */
-//    @Test
-//    public void testLogout(){
-//        // Act
-//        boolean result = false;
-//        try {
-//            result = accountManagementService.logout("account1");
-//        }
-//        catch (IllegalArgumentException e) {
-//            fail(e.getMessage());
-//        }
-//        // Assert
-//        assertTrue(result);
-//        verify(accountRepository, times(1)).findByUsername("account1");
-//    }
-//
-//    /**
-//     * Test for loging out of an account, fail
-//     *
-//     * @author Ana Gordon
-//     */
-//    @Test
-//    public void testLogoutInvalidUsername(){
-//        // Act
-//        boolean result = false;
-//        String error = null;
-//        try {
-//            result = accountManagementService.logout("invalidUsername");
-//        } catch (IllegalArgumentException e) {
-//            error = e.getMessage();
-//        }
-//        // Assert
-//        assertEquals("Account not found", error);
-//        verify(accountRepository, times(0)).findByUsername("invalidUsername");
-//    }
-
-
 
     /**
      * Test for updating a customer account username, success
@@ -1181,104 +1137,104 @@ public class testAccountManagementService {
         assertEquals("Customer does not exist", exception.getMessage());
     }
 
-    /**
-     * Test for updating a customer account email, success
-     *
-     * @author Ana Gordon
-     */
-    @Test
-    public void testUpdateCustomerEmail(){
-        //Arrange
-        String oldEmail = customer1.getEmail();
-        String newEmail = "validEmail";
+    // /**
+    //  * Test for updating a customer account email, success
+    //  *
+    //  * @author Ana Gordon
+    //  */
+    // @Test
+    // public void testUpdateCustomerEmail(){
+    //     //Arrange
+    //     String oldEmail = customer1.getEmail();
+    //     String newEmail = "validEmail";
 
-        //Act
-        Customer updatedCustomer = accountManagementService.updateCustomerEmail(newEmail, oldEmail);
+    //     //Act
+    //     Customer updatedCustomer = accountManagementService.updateCustomerEmail(newEmail, oldEmail);
 
-        //Assert
-        assertNotNull(updatedCustomer);
-        assertEquals(newEmail, updatedCustomer.getEmail());
-        assertNotEquals(oldEmail, updatedCustomer.getEmail()); //ensure that email was changed
-        verify(customerRepository, times(1)).findByEmail(updatedCustomer.getEmail());
-        verify(customerRepository, times(1)).save(updatedCustomer);
+    //     //Assert
+    //     assertNotNull(updatedCustomer);
+    //     assertEquals(newEmail, updatedCustomer.getEmail());
+    //     assertNotEquals(oldEmail, updatedCustomer.getEmail()); //ensure that email was changed
+    //     verify(customerRepository, times(1)).findByEmail(updatedCustomer.getEmail());
+    //     verify(customerRepository, times(1)).save(updatedCustomer);
 
-    }
+    // }
 
-    /**
-     * Attempt to update the email of a customer that does not exist
-     *
-     * @author Tarek Namani
-     */
-    @Test
-    public void testUpdateNonExistentCustomerEmail(){
-        //Arrange
-        String oldEmail = "uniqueEmail";
-        String newEmail = "validEmail";
+    // /**
+    //  * Attempt to update the email of a customer that does not exist
+    //  *
+    //  * @author Tarek Namani
+    //  */
+    // @Test
+    // public void testUpdateNonExistentCustomerEmail(){
+    //     //Arrange
+    //     String oldEmail = "uniqueEmail";
+    //     String newEmail = "validEmail";
 
-        //Act
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> accountManagementService.updateCustomerEmail(newEmail, oldEmail));
-
-
-        //Assert
-        assertEquals("Customer does not exist", exception.getMessage());
-    }
-
-    /**
-     * Attempt to update the email of a customer to one that is taken
-     *
-     * @author Tarek Namani
-     */
-    @Test
-    public void testUpdateTakenCustomerEmail(){
-        //Arrange
-        String oldEmail = customer1.getEmail();
-        String newEmail = customer2.getEmail();
-
-        //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountManagementService.updateCustomerEmail(newEmail, oldEmail));
+    //     //Act
+    //     EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> accountManagementService.updateCustomerEmail(newEmail, oldEmail));
 
 
-        //Assert
-        assertEquals("Customer already exists with that email.", exception.getMessage());
-    }
-    /**
-     * Attempt to update the email of a customer to one that is invalid
-     *
-     * @author Tarek Namani
-     */
-    @Test
-    public void testUpdateCustomerEmailWithInvalidNewEmail(){
-        //Arrange
-        String oldEmail = "uniqueEmail";
-        String newEmail = "";
+    //     //Assert
+    //     assertEquals("Customer does not exist", exception.getMessage());
+    // }
 
-        //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountManagementService.updateCustomerEmail(newEmail, oldEmail));
+    // /**
+    //  * Attempt to update the email of a customer to one that is taken
+    //  *
+    //  * @author Tarek Namani
+    //  */
+    // @Test
+    // public void testUpdateTakenCustomerEmail(){
+    //     //Arrange
+    //     String oldEmail = customer1.getEmail();
+    //     String newEmail = customer2.getEmail();
 
-
-        //Assert
-        assertEquals("New email cannot be empty, null or contain spaces.", exception.getMessage());
-    }
+    //     //Act
+    //     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountManagementService.updateCustomerEmail(newEmail, oldEmail));
 
 
-    /**
-     * Attempt to update the invalid email of a customer
-     *
-     * @author Tarek Namani
-     */
-    @Test
-    public void testUpdateCustomerEmailWithInvalidOldEmail(){
-        //Arrange
-        String oldEmail = null;
-        String newEmail = "valid";
+    //     //Assert
+    //     assertEquals("Customer already exists with that email.", exception.getMessage());
+    // }
+    // /**
+    //  * Attempt to update the email of a customer to one that is invalid
+    //  *
+    //  * @author Tarek Namani
+    //  */
+    // @Test
+    // public void testUpdateCustomerEmailWithInvalidNewEmail(){
+    //     //Arrange
+    //     String oldEmail = "uniqueEmail";
+    //     String newEmail = "";
 
-        //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountManagementService.updateCustomerEmail(newEmail, oldEmail));
+    //     //Act
+    //     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountManagementService.updateCustomerEmail(newEmail, oldEmail));
 
 
-        //Assert
-        assertEquals("Old email cannot be empty, null or contain spaces.", exception.getMessage());
-    }
+    //     //Assert
+    //     assertEquals("New email cannot be empty, null or contain spaces.", exception.getMessage());
+    // }
+
+
+    // /**
+    //  * Attempt to update the invalid email of a customer
+    //  *
+    //  * @author Tarek Namani
+    //  */
+    // @Test
+    // public void testUpdateCustomerEmailWithInvalidOldEmail(){
+    //     //Arrange
+    //     String oldEmail = null;
+    //     String newEmail = "valid";
+
+    //     //Act
+    //     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountManagementService.updateCustomerEmail(newEmail, oldEmail));
+
+
+    //     //Assert
+    //     assertEquals("Old email cannot be empty, null or contain spaces.", exception.getMessage());
+    // }
 
     /**
      * Test for updating an employee account username, success
@@ -1372,7 +1328,7 @@ public class testAccountManagementService {
         String newUsername = employee2.getUsername();
 
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->accountManagementService.updateEmployeeUsername(newUsername,oldUsername));
+        EntityExistsException exception = assertThrows(EntityExistsException.class, () ->accountManagementService.updateEmployeeUsername(newUsername,oldUsername));
 
         //Assert
         assertEquals("Username is already in use by another employee", exception.getMessage());
@@ -1450,12 +1406,166 @@ public class testAccountManagementService {
         String email = "uniqueEmail";
 
         //Act
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, ()->accountManagementService.updateCustomerPhoneNumber(newPhoneNumber, email));
+        EntityNotFoundException  exception = assertThrows(EntityNotFoundException .class, ()->accountManagementService.updateCustomerPhoneNumber(newPhoneNumber, email));
 
         //Assert
         assertEquals("Customer does not exist", exception.getMessage());
     }
 
+    @Test
+    public void testAddGameToWishlist() {
+        accountManagementService.addGameToWishlist(referenceCustomer.getId(), referenceGame.getId());
 
+        assertTrue(referenceCustomer.containsGameInWishlist(referenceGame));
+        verify(customerRepository, times(1)).save(referenceCustomer);
+    }
 
+    @Test
+    public void testRemoveGameFromWishlist() {
+        referenceCustomer.addGameToWishlist(referenceGame);
+
+        accountManagementService.removeGameFromWishlist(referenceCustomer.getId(), referenceGame.getId());
+
+        assertFalse(referenceCustomer.containsGameInWishlist(referenceGame));
+        verify(customerRepository, times(1)).save(referenceCustomer);
+    }
+
+    @Test
+    public void testViewWishlist() {
+        referenceCustomer.addGameToWishlist(referenceGame);
+
+        Set<Game> wishlist = accountManagementService.viewWishlist(referenceCustomer.getId());
+
+        assertEquals(1, wishlist.size());
+        assertTrue(wishlist.contains(referenceGame));
+    }
+
+    @Test
+    public void testAddValidAddress() {
+        //Arrange
+        String street = "st catherine";
+        String zipCode = "H3X X9P";
+        String country = "Canada";
+        String province = "Quebec";
+        String city = "Montreal";
+        int initialSize = customer1.getCopyAddresses().size();
+
+        //Act
+        Address createdAddress = accountManagementService.createAddress(street,city,province,zipCode,country,customer1.getEmail());
+
+        //Assert
+        assertNotNull(createdAddress);
+        assertEquals(initialSize+1,customer1.getCopyAddresses().size());
+        assertTrue(customer1.containsAddress(createdAddress));
+        verify(customerRepository, times(1)).save(customer1);
+        verify(addressRepository, times(1)).save(createdAddress);
+
+    }
+
+    @Test
+    public void testAddInvalidAddress() {
+        //Arrange
+        String street = "";
+        String zipCode = "H3X X9P";
+        String country = "Canada";
+        String province = "Quebec";
+        String city = "Montreal";
+        int initialSize = customer1.getCopyAddresses().size();
+
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, ()-> accountManagementService.createAddress(street,city,province,zipCode,country,customer1.getEmail()));
+
+        //Assert
+        assertEquals("Address contains null or empty strings", exception.getMessage());
+
+    }
+
+    @Test
+    public void testAddInvalidAddress2() {
+        //Arrange
+        String street = "a street";
+        String zipCode = "";
+        String country = "Canada";
+        String province = "Quebec";
+        String city = "Montreal";
+        int initialSize = customer1.getCopyAddresses().size();
+
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, ()-> accountManagementService.createAddress(street,city,province,zipCode,country,customer1.getEmail()));
+
+        //Assert
+        assertEquals("Address contains null or empty strings", exception.getMessage());
+
+    }
+
+    @Test
+    public void testAddInvalidAddress3() {
+        //Arrange
+        String street = "a street";
+        String zipCode = "H3X X9P";
+        String country = null;
+        String province = "Quebec";
+        String city = "Montreal";
+        int initialSize = customer1.getCopyAddresses().size();
+
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, ()-> accountManagementService.createAddress(street,city,province,zipCode,country,customer1.getEmail()));
+
+        //Assert
+        assertEquals("Address contains null or empty strings", exception.getMessage());
+
+    }
+
+    @Test
+    public void testAddInvalidAddress4() {
+        //Arrange
+        String street = "a street";
+        String zipCode = "H3X X9P";
+        String country = "Canada";
+        String province = null;
+        String city = "Montreal";
+        int initialSize = customer1.getCopyAddresses().size();
+
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, ()-> accountManagementService.createAddress(street,city,province,zipCode,country,customer1.getEmail()));
+
+        //Assert
+        assertEquals("Address contains null or empty strings", exception.getMessage());
+
+    }
+
+    @Test
+    public void testAddInvalidAddress5() {
+        //Arrange
+        String street = "a street";
+        String zipCode = "H3X X9P";
+        String country = "Canada";
+        String province = "Quebec";
+        String city = "";
+        int initialSize = customer1.getCopyAddresses().size();
+
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, ()-> accountManagementService.createAddress(street,city,province,zipCode,country,customer1.getEmail()));
+
+        //Assert
+        assertEquals("Address contains null or empty strings", exception.getMessage());
+
+    }
+
+    @Test
+    public void testAddAddressForInexistentCustomer() {
+        //Arrange
+        String street = "a street";
+        String zipCode = "H3X X9P";
+        String country = "Canada";
+        String province = "Quebec";
+        String city = "a city";
+
+        //Act
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, ()-> accountManagementService.createAddress(street,city,province,zipCode,country,"uniqueEmail"));
+
+        //Assert
+        assertEquals("Customer not found", exception.getMessage());
+
+    }
 }

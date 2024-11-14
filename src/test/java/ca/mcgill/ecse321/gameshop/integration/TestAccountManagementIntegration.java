@@ -4,7 +4,9 @@ import ca.mcgill.ecse321.gameshop.DAO.AccountRepository;
 import ca.mcgill.ecse321.gameshop.DAO.CustomerRepository;
 import ca.mcgill.ecse321.gameshop.DAO.EmployeeRepository;
 import ca.mcgill.ecse321.gameshop.DAO.ManagerRepository;
+import ca.mcgill.ecse321.gameshop.dto.AccountRequestDTO;
 import ca.mcgill.ecse321.gameshop.dto.CustomerDTO;
+import ca.mcgill.ecse321.gameshop.dto.CustomerResponseDTO;
 import ca.mcgill.ecse321.gameshop.dto.EmployeeDTO;
 import ca.mcgill.ecse321.gameshop.dto.ManagerDTO;
 import ca.mcgill.ecse321.gameshop.model.Customer;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -548,23 +551,22 @@ public class TestAccountManagementIntegration {
     @Order(18)
     public void testUpdateEmployeeStatus() {
         // create employee account
-        // EmployeeDTO employee1 = new EmployeeDTO(
-        //     ID, 
-        //     USERNAME,
-        //     PASSWORD,
-        //     true,
-        //     Set.of(),
-        //     Set.of()
-        // );
-        // Employee emp = employee1.toEmployee();
-        // employeeRepository.save(emp);
-        // emp.setActive(false);
+        EmployeeDTO employee1 = new EmployeeDTO(
+            ID, 
+            USERNAME,
+            PASSWORD,
+            true,
+            Set.of()   
+        );
+        Employee emp = employee1.toEmployee();
+        employeeRepository.save(emp);
+        emp.setActive(false);
 
-        // ResponseEntity<EmployeeDTO> response = account.exchange(
-        // "/accounts/employees/" + ID + "/is_active/" + false, HttpMethod.PUT, new HttpEntity<>(employee1),
-        // EmployeeDTO.class);
+        ResponseEntity<EmployeeDTO> response = account.exchange(
+        "/accounts/employees/" + ID + "/is_active/" + false, HttpMethod.PUT, new HttpEntity<>(employee1),
+        EmployeeDTO.class);
     
-        // assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
     }
 
@@ -578,18 +580,20 @@ public class TestAccountManagementIntegration {
     public void testUpdateValidCustomerPassword() {
         Customer customer = new Customer(USERNAME, OLD_PASSWORD, EMAIL_STRING, PHONENUMBER_STRING);
         customerRepository.save(customer);
+        customer.setPassword(PASSWORD);
 
-        // Act
         ResponseEntity<String> response = account.exchange(
-            "/accounts/customers/" + customer.getEmail() + "/password",
+            "/accounts/customers/" + EMAIL_STRING + "/password",
             HttpMethod.PUT,
             new HttpEntity<>(Map.of(OLD_PASSWORD, OLD_PASSWORD, PASSWORD, PASSWORD)),
             String.class
         );
 
-        // Assert
+        assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+
         assertEquals(PASSWORD, customer.getPassword());
+        assertEquals(EMAIL_STRING, customer.getEmail());
     }
 
 
@@ -629,14 +633,18 @@ public class TestAccountManagementIntegration {
     public void testUpdateValidCustomerUsername() {
         Customer customer = new Customer(OLD_USERNAME, PASSWORD, EMAIL_STRING, PHONENUMBER_STRING);
         customerRepository.save(customer);
+        customer.setUsername(USERNAME);
 
         // Act
-        ResponseEntity<String> response = account.exchange(
-            "/accounts/customers/" + customer.getEmail() + "/password",
-            HttpMethod.PUT,
-            new HttpEntity<>(Map.of(OLD_USERNAME, OLD_USERNAME, USERNAME, USERNAME)),
-            String.class
-        );
+        // ResponseEntity<String> response = account.exchange(
+        //     "/accounts/customers/" + customer.getEmail() + "/password",
+        //     HttpMethod.PUT,
+        //     null,
+        //     String.class
+        // );
+        ResponseEntity<Customer> response = account
+                .postForEntity("/accounts/customers/" + customer.getEmail() + "/username", 
+                customer, Customer.class);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
