@@ -1,14 +1,18 @@
 package ca.mcgill.ecse321.gameshop.persistenceTests;
 
 import ca.mcgill.ecse321.gameshop.DAO.AccountRepository;
-import ca.mcgill.ecse321.gameshop.model.Customer;
+import ca.mcgill.ecse321.gameshop.DAO.AddressRepository;
+import ca.mcgill.ecse321.gameshop.DAO.CreditCardRepository;
+import ca.mcgill.ecse321.gameshop.DAO.CustomerRepository;
 import ca.mcgill.ecse321.gameshop.model.Account;
+import ca.mcgill.ecse321.gameshop.model.Customer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Author: Clara Mickail
@@ -20,10 +24,16 @@ public class TestAccount {
 
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private AddressRepository addressRepository;
+    @Autowired
+    private CreditCardRepository creditCardRepository;
+    @Autowired
+    private CustomerRepository customerRepository;
 
     @AfterEach
     public void clearDatabase() {
-        accountRepository.deleteAll();
+        customerRepository.deleteAll();
     }
 
     @Test
@@ -32,6 +42,7 @@ public class TestAccount {
         String username = "testUser";
         String password = "testPass";
         Customer customer = new Customer(username, password, "testUser@example.com", "1234567890");
+
 
         // Save
         customer = accountRepository.save(customer);

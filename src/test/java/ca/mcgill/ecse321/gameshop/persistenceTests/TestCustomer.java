@@ -1,8 +1,6 @@
 package ca.mcgill.ecse321.gameshop.persistenceTests;
 
-import ca.mcgill.ecse321.gameshop.DAO.CartItemRepository;
-import ca.mcgill.ecse321.gameshop.DAO.CustomerRepository;
-import ca.mcgill.ecse321.gameshop.DAO.GameRepository;
+import ca.mcgill.ecse321.gameshop.DAO.*;
 import ca.mcgill.ecse321.gameshop.model.CartItem;
 import ca.mcgill.ecse321.gameshop.model.Customer;
 import ca.mcgill.ecse321.gameshop.model.Game;
@@ -12,12 +10,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Author: Clara Mickail
@@ -32,12 +29,21 @@ public class TestCustomer {
     private GameRepository gameRepository;
     @Autowired
     private CartItemRepository cartItemRepository;
+    @Autowired
+    private CreditCardRepository creditCardRepository;
+    @Autowired
+    private AddressRepository addressRepository;
+    @Autowired
+    private PurchaseRepository purchaseRepository;
 
     @AfterEach
     public void clearDatabase() {
+        cartItemRepository.deleteAll();
+        purchaseRepository.deleteAll();
+        creditCardRepository.deleteAll();
+        addressRepository.deleteAll();
         customerRepository.deleteAll();
         gameRepository.deleteAll();
-        cartItemRepository.deleteAll();
     }
 
 
