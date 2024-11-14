@@ -6,7 +6,7 @@ plugins {
 }
 
 
-group = 'com.ecse321'
+group = 'ca.mcgill.ecse321'
 version = '0.0.1-SNAPSHOT'
 
 java {
