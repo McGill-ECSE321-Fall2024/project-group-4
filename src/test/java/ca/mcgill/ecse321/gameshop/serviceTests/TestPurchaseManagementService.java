@@ -591,7 +591,7 @@ public class TestPurchaseManagementService {
     @Test
     public void testAddCreditCardToCustomerWallet() {
         //Act
-        CreditCard createdCreditCard = purchaseManagementService.addCreditCardToCustomerWallet(creditCard.getCardNumber(), creditCard.getCvv(), "10/25", creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId());
+        CreditCard createdCreditCard = purchaseManagementService.addCreditCardToCustomerWallet(creditCard.getCardNumber(), creditCard.getCvv(), "2025-10-01", creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId());
 
         //Assert
         assertNotNull(createdCreditCard);
@@ -609,7 +609,7 @@ public class TestPurchaseManagementService {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->purchaseManagementService.addCreditCardToCustomerWallet(creditCard.getCardNumber(), creditCard.getCvv(), "10/a", creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId()));
 
         //Assert
-        assertEquals("Invalid expiry date, format is MM/YY", exception.getMessage());
+        assertEquals("Invalid expiry date", exception.getMessage());
     }
 
     @Test
@@ -618,7 +618,7 @@ public class TestPurchaseManagementService {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->purchaseManagementService.addCreditCardToCustomerWallet(creditCard.getCardNumber(), creditCard.getCvv(), "a/10", creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId()));
 
         //Assert
-        assertEquals("Invalid expiry date, format is MM/YY", exception.getMessage());
+        assertEquals("Invalid expiry date", exception.getMessage());
     }
 
     @Test
@@ -627,7 +627,7 @@ public class TestPurchaseManagementService {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->purchaseManagementService.addCreditCardToCustomerWallet(creditCard.getCardNumber(), creditCard.getCvv(), "10123", creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId()));
 
         //Assert
-        assertEquals("Invalid expiry date, format is MM/YY", exception.getMessage());
+        assertEquals("Invalid expiry date", exception.getMessage());
     }
 
     @Test
@@ -636,7 +636,7 @@ public class TestPurchaseManagementService {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->purchaseManagementService.addCreditCardToCustomerWallet(creditCard.getCardNumber(), creditCard.getCvv(), "0/0", creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId()));
 
         //Assert
-        assertEquals("Invalid expiry date, format is MM/YY", exception.getMessage());
+        assertEquals("Invalid expiry date", exception.getMessage());
     }
 
     @Test
