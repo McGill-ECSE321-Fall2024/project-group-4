@@ -3,10 +3,7 @@ package ca.mcgill.ecse321.gameshop.integration;
 
 import ca.mcgill.ecse321.gameshop.DAO.*;
 import ca.mcgill.ecse321.gameshop.dto.*;
-import ca.mcgill.ecse321.gameshop.model.Address;
-import ca.mcgill.ecse321.gameshop.model.CreditCard;
-import ca.mcgill.ecse321.gameshop.model.Customer;
-import ca.mcgill.ecse321.gameshop.model.Promotion;
+import ca.mcgill.ecse321.gameshop.model.*;
 import ca.mcgill.ecse321.gameshop.serviceClasses.GameManagementService;
 import jakarta.transaction.Transactional;
 import org.json.JSONArray;
@@ -71,6 +68,12 @@ public class testPurchaseIntegration {
 
     private int promotionID = 0;
 
+    private int purchaseID = 0;
+
+    private int reviewId = 0;
+
+
+
     private GameManagementService gameManagementService;
     @Autowired
     private GameRepository gameRepository;
@@ -88,6 +91,12 @@ public class testPurchaseIntegration {
     private ReviewRepository reviewRepository;
     @Autowired
     private PurchaseRepository purchaseRepository;
+    @Autowired
+    private PromotionRepository promotionRepository;
+    @Autowired
+    private ManagerRepository managerRepository;
+    @Autowired
+    private ReplyRepository replyRepository;
 
 
     /**
@@ -588,7 +597,8 @@ public class testPurchaseIntegration {
         //Assert
         assertNotNull(response.getBody());
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(promotionDTO, response.getBody());
+        assertEquals("2000-10-09", response.getBody().startDate().toString());
+        assertEquals("2050-10-09", response.getBody().endDate().toString());
         assertEquals(25,response.getBody().discount());
         promotionID = response.getBody().id();
 
@@ -603,7 +613,7 @@ public class testPurchaseIntegration {
     @Transactional
     public void testAddGameToPromotion() {
         //Arrange
-        client.exchange("/games/"+gameId+"/"+promotionID, HttpMethod.PUT, null ,void.class);
+        ResponseEntity<Void> addedPromotion = client.exchange("/games/"+gameId+"/"+promotionID, HttpMethod.PUT, null ,void.class);
         String url = "/customers/"+customerEmail+"/cart/price";
 
         //Act
@@ -612,7 +622,106 @@ public class testPurchaseIntegration {
 
         //Assert
         assertNotNull(response.getBody());
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.FOUND, response.getStatusCode());
+        assertEquals(gamePrice*0.75*2, Float.parseFloat(response.getBody()));
+
+    }
+
+    /**
+     * @author Tarek Namani
+     * Tests asserting checkout of multiple games in cart
+     */
+    @Order(23)
+    @Test
+    @Transactional
+    public void testCheckout(){
+        //Arrange
+        String url = "/customers/"+customerEmail+"/cart?billingAddressId={addressId}&creditCardId={cardId}";
+
+        //Act
+        ResponseEntity<Void> response = client.exchange(url,HttpMethod.POST, null,void.class, addressId,creditCardid);
+
+        //Assert
+        assertNull(response.getBody());
+        assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
+        assertEquals(2, customerRepository.findByEmail(customerEmail).get().getCopyPurchases().size());
+        assertEquals(gameName,customerRepository.findByEmail(customerEmail).get().getCopyPurchases().iterator().next().getGamePurchased().getName());
+        purchaseID = customerRepository.findByEmail(customerEmail).get().getCopyPurchases().iterator().next().getId();
+
+    }
+
+
+    /**
+     * @author Tarek Namani
+     * Test posting a review to a purchased game
+     */
+    @Order(24)
+    @Test
+    @Transactional
+    public void testPostReview() {
+        //Arrange
+        String url = "/customers/"+customerEmail+"/reviews?rating={rating}&purchaseId={purchaseId}";
+        HttpEntity<String> requestEntity = new HttpEntity<>("I quite liked this game!");
+
+        //Act
+        ResponseEntity<Void> response = client.exchange(url,HttpMethod.POST, requestEntity,void.class,5,purchaseID);
+
+        //Assert
+        assertNull(response.getBody());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        Review review = purchaseRepository.findById(purchaseID).get().getReview();
+        assertEquals("I quite liked this game!", review.getText());
+        assertEquals(5, review.getRating());
+        reviewId = review.getId();
+
+    }
+
+    /**
+     * @author Tarek Namani
+     * Test liking a posted review
+     */
+    @Order(25)
+    @Test
+    @Transactional
+    public void testLikeReview() {
+        //Arrange
+        String url = "/customers/"+customerEmail+"/reviews/"+reviewId+"/likes";
+        HttpEntity<String> requestEntity = new HttpEntity<>("I quite liked this game!");
+
+        //Act
+        ResponseEntity<Void> response = client.exchange(url,HttpMethod.PUT, requestEntity,void.class);
+
+        //Assert
+        assertNull(response.getBody());
+        assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
+        Review review = purchaseRepository.findById(purchaseID).get().getReview();
+        assertEquals(1, review.getCopyLikedBy().size());
+
+    }
+
+
+    /**
+     * @author Tarek Namani
+     * Test replying to a posted review
+     */
+    @Order(26)
+    @Test
+    @Transactional
+    public void testReplyToReview() {
+        //Arrange
+        Manager manager = new Manager("manager", "manager");
+        managerRepository.save(manager);
+        String url = "/reviews/"+reviewId+"/reply?managerId={managerId}";
+        HttpEntity<String> requestEntity = new HttpEntity<>("Thank you for the review!");
+
+        //Act
+        ResponseEntity<Void> response = client.exchange(url,HttpMethod.POST, requestEntity,void.class,manager.getId());
+
+        //Assert
+        assertNull(response.getBody());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        Review review = purchaseRepository.findById(purchaseID).get().getReview();
+        assertEquals("Thank you for the review!", review.getReply().getText());
 
     }
 
@@ -620,8 +729,12 @@ public class testPurchaseIntegration {
 
 
 
+
     @BeforeAll
     public void cleanUp() {
+        replyRepository.deleteAll();
+        managerRepository.deleteAll();
+        promotionRepository.deleteAll();
         purchaseRepository.deleteAll();
         reviewRepository.deleteAll();
         cartItemRepository.deleteAll();

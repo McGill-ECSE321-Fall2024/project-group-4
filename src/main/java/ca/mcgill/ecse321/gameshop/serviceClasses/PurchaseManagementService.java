@@ -357,9 +357,15 @@ public class PurchaseManagementService {
             game.setStock(game.getStock() - cartItem.getQuantity());
 
         });
-        cartItemRepository.deleteAll(itemsInCart); //remove the game from the customers cart
         gameRepository.saveAll(gamesInCart);
-        gamesInCart.stream().map(game -> new Purchase(dateOfPurchase, getPromotionalPrice(game.getId()), game, customer, address, creditCard)).collect(Collectors.toSet()).forEach(purchaseRepository::save);
+        itemsInCart.stream().forEach(item -> {
+            while (item.getQuantity()>0) {
+                Purchase purchase = new Purchase(dateOfPurchase,getPromotionalPrice(item.getGame().getId()),item.getGame(),customer,address,creditCard);
+                purchaseRepository.save(purchase);
+                item.setQuantity(item.getQuantity()-1);
+            }
+        });
+        cartItemRepository.deleteAll(itemsInCart); //remove the game from the customers cart
         customerRepository.save(customer);
     }
 
@@ -375,7 +381,7 @@ public class PurchaseManagementService {
     public float getCartPrice(String customerEmail) {
 
         Customer customer = findCustomerByEmail(customerEmail);
-        long price = cartItemRepository.findByCartItemId_Customer_Id(customer.getId()).stream().map(CartItem::getGame).mapToLong(game -> (long) getPromotionalPrice(game.getId())).sum();
+        long price = cartItemRepository.findByCartItemId_Customer_Id(customer.getId()).stream().mapToLong(game -> (long) ((long) game.getQuantity()*getPromotionalPrice(game.getGame().getId()))).sum();
         return (float) price;
     }
     /**

@@ -6,7 +6,6 @@ import ca.mcgill.ecse321.gameshop.model.GameRequest;
 import ca.mcgill.ecse321.gameshop.model.Promotion;
 import ca.mcgill.ecse321.gameshop.serviceClasses.GameManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
@@ -329,7 +328,7 @@ public class GameManagementController {
      */
     @PutMapping("/games/{gameId}/{promotionId}")
     public void addPromotionToGame(@PathVariable int gameId, @PathVariable int promotionId) {
-        gameManagementService.addPromotionToGame(promotionId, gameId);
+        gameManagementService.addPromotionToGame(promotionId,gameId);
     }
 
     /**
