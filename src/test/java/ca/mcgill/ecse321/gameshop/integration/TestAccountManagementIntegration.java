@@ -16,8 +16,14 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -335,21 +341,23 @@ public class TestAccountManagementIntegration {
     /**
      * Create an invalid manager account
      * 
-     * @Author Ana Gordon
+     * @Author Clara Mickail
      */
     @Test
     @Order(11)
     public void testCreateInvalidManagerAccount() {
-        ManagerDTO managerDTO = new ManagerDTO(
-                1, 
-                INVALID_USERNAME,
-                "manager"
-        );
-
+        // Arrange
+        // No need to send ManagerDTO since `createManager` doesn't take any input in the controller
+        account.postForEntity("/accounts/manager/", null, ManagerDTO.class); // Creating the first (valid) manager
+    
+        // Act: Attempt to create another manager (which is invalid cuz only one manager is allowed)
         ResponseEntity<ManagerDTO> response = account.postForEntity(
             "/accounts/manager/",
-            managerDTO, ManagerDTO.class);
-
+            null,
+            ManagerDTO.class
+        );
+    
+        // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
@@ -579,15 +587,32 @@ public class TestAccountManagementIntegration {
     public void testUpdateValidCustomerPassword() {
     }
 
+
+
     /**
      * Update invalid customer password
      * 
-     * @Author Ana Gordon
+     * @Author Clara Mickail
      */
     @Test
     @Order(20)
     public void testUpdateInvalidCustomerPassword() {
+        // Arrange
+        Customer customer = new Customer("Guy", "oldPassword", "guy@email.com", "1234567890");
+        customerRepository.save(customer);
+
+        // Act
+        ResponseEntity<String> response = account.exchange(
+            "/accounts/customers/" + customer.getEmail() + "/password",
+            HttpMethod.PUT,
+            new HttpEntity<>(Map.of("oldPassword", "wrongOldPassword", "newPassword", "newPassword1")),
+            String.class
+        );
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
+
 
     /**
      * Update valid customer username
@@ -598,6 +623,7 @@ public class TestAccountManagementIntegration {
     @Order(21)
     public void testUpdateValidCustomerUsername() {
     }
+    
 
     /**
      * Update invalid customer username
@@ -607,7 +633,22 @@ public class TestAccountManagementIntegration {
     @Test
     @Order(22)
     public void testUpdateInvalidCustomerUsername() {
+        // Arrange
+        Customer customer = new Customer("OldUsername", "password1", "guy@email.com", "1234567890");
+        customerRepository.save(customer);
+
+        // Act
+        ResponseEntity<String> response = account.exchange(
+            "/accounts/customers/" + customer.getEmail() + "/username",
+            HttpMethod.PUT,
+            new HttpEntity<>(""),
+            String.class
+        );
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
+
 
     /**
      * Update valid customer phone number
