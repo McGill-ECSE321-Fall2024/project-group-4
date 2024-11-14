@@ -132,16 +132,16 @@ public class PurchaseManagementController {
      */
     @GetMapping("credit-cards/{creditCardId}")
     @ResponseStatus(HttpStatus.FOUND)
-    public CreditCardDTO getCreditCardById(@PathVariable int creditCardId) {
-        return new CreditCardDTO(purchaseManagementService.findCreditCardById(creditCardId));
+    public CreditCardResponseDTO getCreditCardById(@PathVariable int creditCardId) {
+        return new CreditCardResponseDTO(purchaseManagementService.findCreditCardById(creditCardId));
     }
 
     @PostMapping("customers/{customerEmail}/credit-cards")
     @ResponseStatus(HttpStatus.CREATED)
-    public CreditCardDTO addCreditCardToCustomerWallet(@RequestBody CreditCardDTO creditCardDTO, @PathVariable String customerEmail) {
+    public CreditCardResponseDTO addCreditCardToCustomerWallet(@RequestBody CreditCardRequestDTO creditCardRequestDTO, @PathVariable String customerEmail) {
 
-        return new CreditCardDTO(purchaseManagementService.addCreditCardToCustomerWallet(creditCardDTO.cardNumber(),
-                creditCardDTO.cvv(), String.valueOf(creditCardDTO.expiryDate()),customerEmail,creditCardDTO.billingAddress().id()));
+        return new CreditCardResponseDTO(purchaseManagementService.addCreditCardToCustomerWallet(creditCardRequestDTO.cardNumber(),
+                creditCardRequestDTO.cvv(), String.valueOf(creditCardRequestDTO.expiryDate()),customerEmail, creditCardRequestDTO.billingAddress().id()));
     }
 
     /**
@@ -154,9 +154,9 @@ public class PurchaseManagementController {
      */
     @GetMapping("customers/{customerEmail}/credit-cards")
     @ResponseStatus(HttpStatus.FOUND)
-    public Set<CreditCardDTO> getCreditCardsByCustomer(@PathVariable String customerEmail) {
+    public Set<CreditCardResponseDTO> getCreditCardsByCustomer(@PathVariable String customerEmail) {
         Set<CreditCard> wallet = purchaseManagementService.viewCustomerCreditCards(customerEmail);
-        return wallet.stream().map(CreditCardDTO::new).collect(Collectors.toSet());
+        return wallet.stream().map(CreditCardResponseDTO::new).collect(Collectors.toSet());
     }
 
     /**

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -90,11 +91,7 @@ public class PurchaseManagementService {
      */
     @Transactional
     public Game findGameById(int gameId) {
-        Optional<Game> optGame = gameRepository.findById(gameId);
-        if (optGame.isPresent()) {
-            return optGame.get();
-        }
-        throw new EntityNotFoundException("No Game found with id " + gameId);
+        return gameRepository.findById(gameId).orElseThrow(() -> new EntityNotFoundException("No Game found with id " + gameId));
     }
 
     /**
@@ -197,7 +194,7 @@ public class PurchaseManagementService {
      *
      * @param cardNumber credit card number
      * @param cvv code of credit card
-     * @param expiryDate expiry date of credit card
+     * @param expiryDateString expiry date of credit card
      * @param customerEmail email of credit card's owner
      * @param addressId billing address of credit card
      * @return created credit card
@@ -206,7 +203,7 @@ public class PurchaseManagementService {
      * @author Tarek Namani
      */
     @Transactional
-    public CreditCard addCreditCardToCustomerWallet(int cardNumber, int cvv, String expiryDate, String customerEmail, int addressId) {
+    public CreditCard addCreditCardToCustomerWallet(int cardNumber, int cvv, String expiryDateString, String customerEmail, int addressId) {
 
         String stringCVV = String.valueOf(cvv); //
         Matcher cvvMatcher = Pattern.compile("^\\d{3}$").matcher(stringCVV); //create a Regex to identify and match valid CVV patterns
@@ -214,16 +211,17 @@ public class PurchaseManagementService {
             throw new IllegalArgumentException("Invalid cvv number, enter a 3 digit CVV");
         }
 
-        Matcher expiryDateMatcher = Pattern.compile("^(0[1-9]|1[0-2])/(\\d{2})$").matcher(expiryDate); //create a Regex to identify and match a valid Expiration date format
-        if (!expiryDateMatcher.matches()) {
-            throw new IllegalArgumentException("Invalid expiry date, format is MM/YY");
-        }
-
-        LocalDate date = LocalDate.of(2000 + Integer.parseInt(expiryDateMatcher.group(2)), Integer.parseInt(expiryDateMatcher.group(1)),1); //use the matchers to get positional arguments for month and date
+        LocalDate expiryDate;
+        try {
+            expiryDate = LocalDate.parse(expiryDateString);
+        } catch (DateTimeParseException e) {
+            //handle exception
+            throw new IllegalArgumentException("Invalid expiry date");
+        }//use the matchers to get positional arguments for month and date
 
         Customer customer = findCustomerByEmail(customerEmail);
         Address billingAddress = findAddressById(addressId);
-        CreditCard creditCard = new CreditCard(cardNumber, cvv, date, customer, billingAddress);
+        CreditCard creditCard = new CreditCard(cardNumber, cvv, expiryDate, customer, billingAddress);
 
         creditCardRepository.save(creditCard);
 
@@ -381,7 +379,13 @@ public class PurchaseManagementService {
     public float getCartPrice(String customerEmail) {
 
         Customer customer = findCustomerByEmail(customerEmail);
-        double price = cartItemRepository.findByCartItemId_Customer_Id(customer.getId()).stream().mapToDouble(game -> (game.getQuantity()*getPromotionalPrice(game.getGame().getId()))).sum();
+        double price = 0;
+
+        for(CartItem cartItem : cartItemRepository.findByCartItemId_Customer_Id(customer.getId())){
+            float gamePrice = getPromotionalPrice(cartItem.getGame().getId());
+            price += cartItem.getQuantity() * gamePrice;
+        }
+
         return (float) price;
     }
     /**

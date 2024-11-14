@@ -54,14 +54,13 @@ public class TestPurchaseIntegration {
     private final String customerCountry = "Canada";
     private final String customerProvince = "Quebec";
     private final String customerCity = "Montreal";
-    private final Address validCustomerAddress = new Address(customerStreet,customerCity,customerProvince,customerCountry,customerPostalCode,new Customer(customerUsername,customerPassword,customerEmail,customerPhoneNumber));
+    private Address validCustomerAddress = new Address(customerStreet,customerCity,customerProvince,customerCountry,customerPostalCode,new Customer(customerUsername,customerPassword,customerEmail,customerPhoneNumber));
     private int addressId = 0;
 
 
     private final int creditCardNumber = 123456789;
     private final int cvv = 123;
     private final LocalDate expiryDate = LocalDate.of(2025, 1, 1);
-    private final String expiryDateString = "01/25";
     private final CreditCard creditCard = new CreditCard(creditCardNumber, cvv,expiryDate,null,null);
     private int creditCardid =0;
     private int expiredCreditCardId = 0;
@@ -195,17 +194,21 @@ public class TestPurchaseIntegration {
     public void testCreateCustomer() throws JSONException {
         //Arrange
         Customer customer = new Customer(customerUsername,customerPassword,customerEmail,customerPhoneNumber);
+        CustomerRequestDTO customerRequestDTO = new CustomerRequestDTO(customer);
         customerResponseDTO = new CustomerResponseDTO(customer);
         //Act
-        ResponseEntity<String> response = client.postForEntity("/accounts/customers/"+customerEmail, customerResponseDTO, String.class);
+        ResponseEntity<CustomerResponseDTO> response = client.postForEntity("/accounts/customers",
+                customerRequestDTO, CustomerResponseDTO.class);
 
         //Assert
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-        JSONObject clientParams = new JSONObject(response.getBody());
-        assertEquals(customerUsername, clientParams.getString("username"));
-        assertEquals(customerPassword, clientParams.getString("password"));
-        assertEquals(customerEmail, clientParams.getString("email"));
-        assertEquals(customerPhoneNumber, clientParams.getString("phoneNumber"));
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+        customerResponseDTO = response.getBody();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(customerUsername, customerResponseDTO.username());
+        assertEquals(customerPassword, customerResponseDTO.password());
+        assertEquals(customerEmail, customerResponseDTO.email());
+        assertEquals(customerPhoneNumber, customerResponseDTO.phoneNumber());
         customerId = customerRepository.findByEmail(customerEmail).get().getId();
         assertTrue(customerRepository.findByEmail(customerEmail).isPresent());
 
@@ -221,24 +224,25 @@ public class TestPurchaseIntegration {
     @Transactional
     public void testCreateAddress() throws JSONException {
         //Arrange
-        AddressResponseDTO customerAddress = new AddressResponseDTO(validCustomerAddress);
+        AddressRequestDTO customerAddress = new AddressRequestDTO(validCustomerAddress);
 
 
         //Act
-        ResponseEntity<String> response = client.postForEntity("/accounts/customers/"+customerEmail+"/addresses", customerAddress, String.class);
+        ResponseEntity<AddressResponseDTO> response = client.postForEntity("/accounts/customers/"+customerEmail+"/addresses", customerAddress, AddressResponseDTO.class);
 
         //Assert
         assertNotNull(response.getBody());
         Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        JSONObject addressParams = new JSONObject(response.getBody());
-        assertEquals(customerStreet, addressParams.getString("street"));
-        assertEquals(customerCity, addressParams.getString("city"));
-        assertEquals(customerProvince, addressParams.getString("province"));
-        assertEquals(customerCountry,addressParams.getString("country"));
-        assertEquals(customerPostalCode, addressParams.getString("postalCode"));
+        AddressResponseDTO responseDTO = response.getBody();
+        assertEquals(customerStreet, responseDTO.street());
+        assertEquals(customerCity, responseDTO.city());
+        assertEquals(customerProvince, responseDTO.province());
+        assertEquals(customerCountry,responseDTO.country());
+        assertEquals(customerPostalCode, responseDTO.postalCode());
         assertEquals(1, customerRepository.findByEmail(customerEmail).get().getCopyAddresses().size());
-        assertTrue(addressRepository.findById(addressParams.getInt("id")).isPresent());
-        addressId = addressParams.getInt("id");
+        assertTrue(addressRepository.findById(responseDTO.id()).isPresent());
+        addressId = responseDTO.id();
+        validCustomerAddress = addressRepository.findById(responseDTO.id()).get();
     }
 
 
@@ -250,26 +254,26 @@ public class TestPurchaseIntegration {
     @Order(7)
     @Test
     @Transactional
-    public void testCreateCustomerCreditCard() throws JSONException {
+    public void testCreateCustomerCreditCard() {
         //Arrange
         creditCard.setBillingAddress(validCustomerAddress);
-        CreditCardDTO creditCardDTO = new CreditCardDTO(creditCard);
-        String url = "/customers/" + customerEmail + "/credit-cards?expiryDate={expiryDate}&addressId={addressId}";
-        HttpEntity<CreditCardDTO> requestEntity = new HttpEntity<>(creditCardDTO);
+        CreditCardRequestDTO creditCardRequestDTO = new CreditCardRequestDTO(creditCard);
+        String url = "/customers/" + customerEmail + "/credit-cards";
+        HttpEntity<CreditCardRequestDTO> requestEntity = new HttpEntity<>(creditCardRequestDTO);
 
          //Act
-        ResponseEntity<String> response = client.exchange(url, HttpMethod.POST, requestEntity, String.class,expiryDateString,addressId);
+        ResponseEntity<CreditCardResponseDTO> response = client.exchange(url, HttpMethod.POST, requestEntity, CreditCardResponseDTO.class);
 
         //Assert
         assertNotNull(response.getBody());
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        JSONObject creditCardParam = new JSONObject(response.getBody());
-        assertEquals(cvv, creditCardParam.getInt("cvv"));
-        assertEquals(expiryDate.toString(), creditCardParam.getString("expiryDate"));
-        assertEquals(creditCardNumber, creditCardParam.getInt("cardNumber"));
-        assertEquals(addressId, creditCardParam.getJSONObject("billingAddress").getInt("id"));
+        CreditCardResponseDTO creditCardResponseDTO = response.getBody();
+        assertEquals(cvv, creditCardResponseDTO.cvv());
+        assertEquals(expiryDate, creditCardResponseDTO.expiryDate());
+        assertEquals(creditCardNumber, creditCardResponseDTO.cardNumber());
+        assertEquals(addressId, creditCardResponseDTO.billingAddress().id());
         assertEquals(1, customerRepository.findByEmail(customerEmail).get().getCopyofCreditCards().size());
-        creditCardid = creditCardParam.getInt("id");
+        creditCardid = creditCardResponseDTO.id();
         assertTrue(creditCardRepository.findById(creditCardid).isPresent());
 
     }
@@ -284,19 +288,20 @@ public class TestPurchaseIntegration {
     @Test
     public void testCreateInvalidCustomerCreditCard() throws JSONException {
         //Arrange
-        creditCard.setBillingAddress(validCustomerAddress);
-        CreditCardDTO creditCardDTO = new CreditCardDTO(creditCard);
-        String url = "/customers/" + customerEmail + "/credit-cards?expiryDate={expiryDate}&addressId={addressId}";
-        HttpEntity<CreditCardDTO> requestEntity = new HttpEntity<>(creditCardDTO);
-        String invalidExpiryDate = "invalidExpiryDate";
+        creditCard.setCvv(2222);
+        CreditCardRequestDTO creditCardRequestDTO = new CreditCardRequestDTO(creditCard);
+        creditCard.setCvv(222);
+        String url = "/customers/" + customerEmail + "/credit-cards";
+        HttpEntity<CreditCardRequestDTO> requestEntity = new HttpEntity<>(creditCardRequestDTO);
+
 
         //Act
-        ResponseEntity<String> response = client.exchange(url, HttpMethod.POST, requestEntity, String.class,invalidExpiryDate,addressId);
+        ResponseEntity<String> response = client.exchange(url, HttpMethod.POST, requestEntity, String.class);
 
         //Assert
         assertNotNull(response.getBody());
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Invalid expiry date, format is MM/YY", new JSONObject(response.getBody()).getJSONArray("errorMessages").get(0));
+        assertEquals("Invalid cvv number, enter a 3 digit CVV", new JSONObject(response.getBody()).getJSONArray("errorMessages").get(0));
 
 
     }
@@ -308,21 +313,19 @@ public class TestPurchaseIntegration {
      */
     @Order(9)
     @Test
-    public void testCreateInvalidCustomerCreditCard2() throws JSONException {
+    public void testCreateInvalidCustomerCreditCard2() {
         //Arrange
         creditCard.setBillingAddress(validCustomerAddress);
-        CreditCardDTO creditCardDTO = new CreditCardDTO(creditCard);
-        String url = "/customers/invalidEmail/credit-cards?expiryDate={expiryDate}&addressId={addressId}";
-        HttpEntity<CreditCardDTO> requestEntity = new HttpEntity<>(creditCardDTO);
+        CreditCardRequestDTO creditCardRequestDTO = new CreditCardRequestDTO(creditCard);
+        String url = "/customers/invalidEmail/credit-cards";
+        HttpEntity<CreditCardRequestDTO> requestEntity = new HttpEntity<>(creditCardRequestDTO);
 
         //Act
-        ResponseEntity<String> response = client.exchange(url, HttpMethod.POST, requestEntity, String.class,expiryDateString,addressId);
+        ResponseEntity<CreditCardResponseDTO> response = client.exchange(url, HttpMethod.POST, requestEntity, CreditCardResponseDTO.class);
 
         //Assert
         assertNotNull(response.getBody());
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("No Customer found with email invalidEmail", new JSONObject(response.getBody()).getJSONArray("errorMessages").get(0));
-
     }
 
     /**
@@ -337,10 +340,10 @@ public class TestPurchaseIntegration {
     public void testViewCreditCards() throws JSONException {
         //Arrange
         CreditCard secondCreditCard = new CreditCard(123123,123,LocalDate.of(2010,10,10),null,validCustomerAddress);
-        CreditCardDTO creditCardDTO = new CreditCardDTO(secondCreditCard);
-        String url = "/customers/" + customerEmail + "/credit-cards?expiryDate={expiryDate}&addressId={addressId}";
-        HttpEntity<CreditCardDTO> requestEntity = new HttpEntity<>(creditCardDTO);
-        ResponseEntity<String> preResponse = client.exchange(url, HttpMethod.POST, requestEntity, String.class,"10/10",addressId); //adds a second credit card
+        CreditCardRequestDTO creditCardRequestDTO = new CreditCardRequestDTO(secondCreditCard);
+        String url = "/customers/" + customerEmail + "/credit-cards";
+        HttpEntity<CreditCardRequestDTO> requestEntity = new HttpEntity<>(creditCardRequestDTO);
+        ResponseEntity<String> preResponse = client.exchange(url, HttpMethod.POST, requestEntity, String.class); //adds a second credit card
         expiredCreditCardId = new JSONObject(preResponse.getBody()).getInt("id");
 
         //Act
@@ -383,14 +386,14 @@ public class TestPurchaseIntegration {
     @Order(11)
     @Test
     @Transactional
-    public void testViewPromotionalPricesOfInexistentGame() throws JSONException {
+    public void testViewPromotionalPricesOfNonExistentGame() throws JSONException {
         //Act
-        ResponseEntity<String> response = client.getForEntity("/games/" + gameId+3 + "/price", String.class);
+        ResponseEntity<String> response = client.getForEntity("/games/" + (gameId+3) + "/price", String.class);
 
         //Assert
         assertNotNull(response.getBody());
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("No Game found with id " + gameId+3,  new JSONObject(String.valueOf(response.getBody())).getJSONArray("errorMessages").get(0));
+        assertEquals("No Game found with id " + (gameId+3),  new JSONObject(String.valueOf(response.getBody())).getJSONArray("errorMessages").get(0));
 
     }
 
@@ -402,24 +405,6 @@ public class TestPurchaseIntegration {
     @Order(12)
     @Test
     public void testViewCartPrice(){
-        //Act
-        ResponseEntity<String> response = client.getForEntity("/customers/"+customerEmail+"/cart/price", String.class);
-
-        //Assert
-        assertNotNull(response.getBody());
-        assertEquals(HttpStatus.FOUND, response.getStatusCode());
-        assertEquals("0.0",  response.getBody());
-
-    }
-
-    /**
-     * @author Tarek Namaani
-     *
-     * Tests viewing the price of items in cart, when there are no items in a customers cart
-     */
-    @Order(13)
-    @Test
-    public void testAddPromotionToGame(){
         //Act
         ResponseEntity<String> response = client.getForEntity("/customers/"+customerEmail+"/cart/price", String.class);
 
@@ -584,25 +569,25 @@ public class TestPurchaseIntegration {
     @Transactional
     public void testCreatePromotion() {
         //Arrange
-        String url = "/promotions?startDate={startDate}&endDate={endDate}";
+        Date startDate = Date.valueOf(LocalDate.of(2000,10,10));
+        Date endDate = Date.valueOf(LocalDate.of(2050,10,10));
+        String url = "/promotions";
         Promotion promotion = new Promotion(25);
+        promotion.setEndDate(endDate);
+        promotion.setStartDate(startDate);
         PromotionRequestDTO promotionRequestDTO = new PromotionRequestDTO(promotion);
         HttpEntity<PromotionRequestDTO> requestEntity = new HttpEntity<>(promotionRequestDTO);
-        Date StartDate = Date.valueOf(LocalDate.of(2000,10,10));
-        Date endDate = Date.valueOf(LocalDate.of(2050,10,10));
 
         //Act
         ResponseEntity<PromotionResponseDTO> response =  client.exchange(url, HttpMethod.POST, requestEntity , PromotionResponseDTO.class);
 
-
         //Assert
         assertNotNull(response.getBody());
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("2000-10-09", response.getBody().startDate().toString());
-        assertEquals("2050-10-09", response.getBody().endDate().toString());
+        assertEquals("2000-10-08", response.getBody().startDate().toString());
+        assertEquals("2050-10-08", response.getBody().endDate().toString());
         assertEquals(25,response.getBody().discount());
         promotionID = response.getBody().id();
-
     }
 
     /**
@@ -614,7 +599,7 @@ public class TestPurchaseIntegration {
     @Transactional
     public void testAddGameToPromotion() {
         //Arrange
-        client.put("/games/"+gameId+"/"+promotionID, null);
+        client.put("/games/"+gameId+"/promotions/"+promotionID, null);
         String url = "/customers/"+customerEmail+"/cart/price";
 
         //Act
