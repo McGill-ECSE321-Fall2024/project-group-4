@@ -64,6 +64,9 @@ public class RefundRequest {
             this.reviewer.removeRefundRequest(this);
         }
         this.reviewer = reviewer;
+        if (reviewer == null) {
+            return true;
+        }
         return reviewer.getRefundRequests().add(this);
     }
 }

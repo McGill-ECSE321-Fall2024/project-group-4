@@ -1,8 +1,14 @@
 package ca.mcgill.ecse321.gameshop.serviceTests;
 
-import ca.mcgill.ecse321.gameshop.DAO.*;
-import ca.mcgill.ecse321.gameshop.model.*;
+import ca.mcgill.ecse321.gameshop.DAO.EmployeeRepository;
+import ca.mcgill.ecse321.gameshop.DAO.GameRepository;
+import ca.mcgill.ecse321.gameshop.DAO.GameRequestRepository;
+import ca.mcgill.ecse321.gameshop.model.Employee;
+import ca.mcgill.ecse321.gameshop.model.Game;
+import ca.mcgill.ecse321.gameshop.model.GameRequest;
+import ca.mcgill.ecse321.gameshop.model.RequestStatus;
 import ca.mcgill.ecse321.gameshop.serviceClasses.GameManagementService;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,8 +18,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 /**
@@ -139,7 +145,7 @@ public class TestGameRequestService {
     @Test
     public void testFindGameInvalid() {
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> gameRequestService.findGameById(-1));
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> gameRequestService.findGameById(-1));
 
         //Assert
         assertEquals(exception.getMessage(), "No Game found");
