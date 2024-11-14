@@ -1,10 +1,7 @@
 package ca.mcgill.ecse321.gameshop.dto;
 
-import ca.mcgill.ecse321.gameshop.model.Customer;
 import ca.mcgill.ecse321.gameshop.model.Employee;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
