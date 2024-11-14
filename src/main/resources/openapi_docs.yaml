@@ -6,6 +6,23 @@ info:
 servers:
   - url: "https://gameshop"
 paths:
+  /accounts/customers:
+    post:
+      summary: "POST accounts/customers"
+      operationId: "createCustomer"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerRequestDTO"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CustomerResponseDTO"
   /accounts/customers/:
     get:
       summary: "GET accounts/customers/"
@@ -18,7 +35,7 @@ paths:
               schema:
                 type: "array"
                 items:
-                  $ref: "#/components/schemas/CustomerDTO"
+                  $ref: "#/components/schemas/CustomerResponseDTO"
   /accounts/customers/{customerEmail}:
     get:
       summary: "GET accounts/customers/{customerEmail}"
@@ -35,7 +52,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/CustomerDTO"
+                $ref: "#/components/schemas/CustomerResponseDTO"
   /accounts/customers/{customerEmail}/addresses:
     post:
       summary: "POST accounts/customers/{customerEmail}/addresses"
@@ -50,7 +67,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AddressDTO"
+              $ref: "#/components/schemas/AddressRequestDTO"
         required: true
       responses:
         "201":
@@ -58,7 +75,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/AddressDTO"
+                $ref: "#/components/schemas/AddressResponseDTO"
   /accounts/customers/{customerEmail}/password:
     put:
       summary: "PUT accounts/customers/{customerEmail}/password"
@@ -73,7 +90,7 @@ paths:
         content:
           application/json:
             schema:
-              type: "string"
+              $ref: "#/components/schemas/ChangePasswordDTO"
         required: true
       responses:
         "200":
@@ -81,66 +98,119 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/CustomerDTO"
-  /accounts/customers/{customerEmail}/phoneNumber:
+                $ref: "#/components/schemas/CustomerResponseDTO"
+  /accounts/customers/{customerEmail}/phoneNumber/{newPhoneNumber}:
     put:
-      summary: "PUT accounts/customers/{customerEmail}/phoneNumber"
-      operationId: "changeCustomerPhonenumber"
+      summary: "PUT accounts/customers/{customerEmail}/phoneNumber/{newPhoneNumber}"
+      operationId: "changeCustomerPhoneNumber"
       parameters:
         - name: "customerEmail"
           in: "path"
           required: true
           schema:
             type: "string"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: "string"
-        required: true
+        - name: "newPhoneNumber"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
       responses:
         "200":
           description: "OK"
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/CustomerDTO"
-  /accounts/customers/{customerEmail}/username:
+                $ref: "#/components/schemas/CustomerResponseDTO"
+  /accounts/customers/{customerEmail}/username/{newUsername}:
     put:
-      summary: "PUT accounts/customers/{customerEmail}/username"
-      operationId: "changeCustomerUsername"
+      summary: "PUT accounts/customers/{customerEmail}/username/{newUsername}"
+      operationId: "updateCustomerUsername"
       parameters:
         - name: "customerEmail"
           in: "path"
           required: true
           schema:
             type: "string"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: "string"
-        required: true
+        - name: "newUsername"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
       responses:
         "200":
           description: "OK"
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/CustomerDTO"
-  /accounts/customers/{email}:
+                $ref: "#/components/schemas/CustomerResponseDTO"
+  /accounts/customers/{customerId}/wishlist:
+    get:
+      summary: "GET accounts/customers/{customerId}/wishlist"
+      operationId: "viewWishlist"
+      parameters:
+        - name: "customerId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int32"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/GameResponseDTO"
+  /accounts/customers/{customerId}/wishlist/{gameId}:
+    put:
+      summary: "PUT accounts/customers/{customerId}/wishlist/{gameId}"
+      operationId: "addGameToWishlist"
+      parameters:
+        - name: "customerId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int32"
+        - name: "gameId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int32"
+      responses:
+        "200":
+          description: "OK"
+    delete:
+      summary: "DELETE accounts/customers/{customerId}/wishlist/{gameId}"
+      operationId: "removeGameFromWishlist"
+      parameters:
+        - name: "customerId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int32"
+        - name: "gameId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int32"
+      responses:
+        "200":
+          description: "OK"
+  /accounts/employees:
     post:
-      summary: "POST accounts/customers/{email}"
-      operationId: "createCustomer"
-      parameters:
-        - name: "email"
-          in: "path"
-          required: false
+      summary: "POST accounts/employees"
+      operationId: "createEmployee"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CustomerDTO"
+              $ref: "#/components/schemas/EmployeeRequestDTO"
         required: true
       responses:
         "200":
@@ -148,7 +218,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/CustomerDTO"
+                $ref: "#/components/schemas/EmployeeResponseDTO"
   /accounts/employees/:
     get:
       summary: "GET accounts/employees/"
@@ -161,7 +231,42 @@ paths:
               schema:
                 type: "array"
                 items:
-                  $ref: "#/components/schemas/EmployeeDTO"
+                  $ref: "#/components/schemas/EmployeeResponseDTO"
+  /accounts/employees/id/{employeeId}:
+    get:
+      summary: "GET accounts/employees/id/{employeeId}"
+      operationId: "getEmployeeById"
+      parameters:
+        - name: "employeeId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int32"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/EmployeeResponseDTO"
+  /accounts/employees/username/{username}:
+    get:
+      summary: "GET accounts/employees/username/{username}"
+      operationId: "getEmployeeByUsername"
+      parameters:
+        - name: "username"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/EmployeeResponseDTO"
   /accounts/employees/{id}/is_active/{status}:
     put:
       summary: "PUT accounts/employees/{id}/is_active/{status}"
@@ -181,9 +286,9 @@ paths:
       responses:
         "200":
           description: "OK"
-  /accounts/employees/{oldUsername}:
+  /accounts/employees/{oldUsername}/username/{newUsername}:
     put:
-      summary: "PUT accounts/employees/{oldUsername}"
+      summary: "PUT accounts/employees/{oldUsername}/username/{newUsername}"
       operationId: "updateEmployeeUsername"
       parameters:
         - name: "oldUsername"
@@ -191,25 +296,7 @@ paths:
           required: true
           schema:
             type: "string"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: "string"
-        required: true
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/EmployeeDTO"
-  /accounts/employees/{username}:
-    get:
-      summary: "GET accounts/employees/{username}"
-      operationId: "getEmployeeByUsername"
-      parameters:
-        - name: "username"
+        - name: "newUsername"
           in: "path"
           required: true
           schema:
@@ -220,27 +307,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/EmployeeDTO"
-    post:
-      summary: "POST accounts/employees/{username}"
-      operationId: "createEmployee"
-      parameters:
-        - name: "username"
-          in: "path"
-          required: false
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/EmployeeDTO"
-        required: true
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/EmployeeDTO"
+                $ref: "#/components/schemas/EmployeeResponseDTO"
   /accounts/login/customers/{customerEmail}:
     post:
       summary: "POST accounts/login/customers/{customerEmail}"
@@ -263,7 +330,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/CustomerDTO"
+                $ref: "#/components/schemas/CustomerResponseDTO"
   /accounts/login/employees/{username}:
     post:
       summary: "POST accounts/login/employees/{username}"
@@ -286,7 +353,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/EmployeeDTO"
+                $ref: "#/components/schemas/EmployeeResponseDTO"
   /accounts/login/manager/{username}:
     post:
       summary: "POST accounts/login/manager/{username}"
@@ -329,7 +396,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PolicyDTO"
+              type: "string"
         required: true
       responses:
         "200":
@@ -356,22 +423,8 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/PolicyDTO"
-    delete:
-      summary: "DELETE accounts/policies/{policyId}"
-      operationId: "deletePolicy"
-      parameters:
-        - name: "policyId"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int32"
-      responses:
-        "200":
-          description: "OK"
-  /accounts/policies/{policyId}/{description}:
     put:
-      summary: "PUT accounts/policies/{policyId}/{description}"
+      summary: "PUT accounts/policies/{policyId}"
       operationId: "updatePolicy"
       parameters:
         - name: "policyId"
@@ -380,11 +433,12 @@ paths:
           schema:
             type: "integer"
             format: "int32"
-        - name: "description"
-          in: "path"
-          required: true
-          schema:
-            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "string"
+        required: true
       responses:
         "200":
           description: "OK"
@@ -392,57 +446,11 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/PolicyDTO"
-  /accounts/{customerId}/wishlist:
-    get:
-      summary: "GET accounts/{customerId}/wishlist"
-      operationId: "viewWishlist"
-      parameters:
-        - name: "customerId"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int32"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "array"
-                items:
-                  $ref: "#/components/schemas/GameResponseDTO"
-  /accounts/{customerId}/wishlist/{gameId}:
-    put:
-      summary: "PUT accounts/{customerId}/wishlist/{gameId}"
-      operationId: "addGameToWishlist"
-      parameters:
-        - name: "customerId"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int32"
-        - name: "gameId"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int32"
-      responses:
-        "200":
-          description: "OK"
     delete:
-      summary: "DELETE accounts/{customerId}/wishlist/{gameId}"
-      operationId: "removeGameFromWishlist"
+      summary: "DELETE accounts/policies/{policyId}"
+      operationId: "deletePolicy"
       parameters:
-        - name: "customerId"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int32"
-        - name: "gameId"
+        - name: "policyId"
           in: "path"
           required: true
           schema:
@@ -468,7 +476,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/AddressDTO"
+                $ref: "#/components/schemas/AddressResponseDTO"
   /credit-cards/{creditCardId}:
     get:
       summary: "GET credit-cards/{creditCardId}"
@@ -486,7 +494,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/CreditCardDTO"
+                $ref: "#/components/schemas/CreditCardResponseDTO"
   /customers/{customerEmail}:
     get:
       summary: "GET customers/{customerEmail}"
@@ -503,7 +511,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/CustomerDTO"
+                $ref: "#/components/schemas/CustomerResponseDTO"
   /customers/{customerEmail}/cart:
     post:
       summary: "POST customers/{customerEmail}/cart"
@@ -565,7 +573,7 @@ paths:
               schema:
                 type: "array"
                 items:
-                  $ref: "#/components/schemas/CreditCardDTO"
+                  $ref: "#/components/schemas/CreditCardResponseDTO"
     post:
       summary: "POST customers/{customerEmail}/credit-cards"
       operationId: "addCreditCardToCustomerWallet"
@@ -575,22 +583,11 @@ paths:
           required: true
           schema:
             type: "string"
-        - name: "expiryDate"
-          in: "query"
-          required: true
-          schema:
-            type: "string"
-        - name: "addressId"
-          in: "query"
-          required: true
-          schema:
-            type: "integer"
-            format: "int32"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreditCardDTO"
+              $ref: "#/components/schemas/CreditCardRequestDTO"
         required: true
       responses:
         "201":
@@ -598,7 +595,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/CreditCardDTO"
+                $ref: "#/components/schemas/CreditCardResponseDTO"
   /customers/{customerEmail}/credit-cards/{creditCardId}:
     delete:
       summary: "DELETE customers/{customerEmail}/credit-cards/{creditCardId}"
@@ -618,30 +615,6 @@ paths:
       responses:
         "200":
           description: "OK"
-  /customers/{customerEmail}/purchaseHistory:
-    get:
-      summary: "GET customers/{customerEmail}/purchaseHistory"
-      operationId: "requestCustomerPurchaseHistory"
-      parameters:
-        - name: "customerEmail"
-          in: "path"
-          required: true
-          schema:
-            type: "string"
-        - name: "requestor"
-          in: "query"
-          required: true
-          schema:
-            type: "string"
-      responses:
-        "302":
-          description: "Found"
-          content:
-            '*/*':
-              schema:
-                type: "array"
-                items:
-                  $ref: "#/components/schemas/PurchaseDTO"
   /customers/{customerEmail}/reviews:
     post:
       summary: "POST customers/{customerEmail}/reviews"
@@ -692,23 +665,6 @@ paths:
       responses:
         "202":
           description: "Accepted"
-  /employees/{employeeUsername}:
-    get:
-      summary: "GET employees/{employeeUsername}"
-      operationId: "getEmployeeByUsername"
-      parameters:
-        - name: "employeeUsername"
-          in: "path"
-          required: true
-          schema:
-            type: "string"
-      responses:
-        "302":
-          description: "Found"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/EmployeeDTO"
   /games/{gameId}/price:
     get:
       summary: "GET games/{gameId}/price"
@@ -746,94 +702,6 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/PurchaseDTO"
-  /refunds:
-    post:
-      summary: "POST refunds"
-      operationId: "requestRefund"
-      parameters:
-        - name: "purchaseId"
-          in: "query"
-          required: true
-          schema:
-            type: "integer"
-            format: "int32"
-        - name: "reason"
-          in: "query"
-          required: true
-          schema:
-            type: "string"
-      responses:
-        "202":
-          description: "Accepted"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/RefundRequestDTO"
-  /refunds/{refundId}:
-    get:
-      summary: "GET refunds/{refundId}"
-      operationId: "getRefundById"
-      parameters:
-        - name: "refundId"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int32"
-      responses:
-        "302":
-          description: "Found"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/RefundRequestDTO"
-    put:
-      summary: "PUT refunds/{refundId}"
-      operationId: "processRefund"
-      parameters:
-        - name: "refundId"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int32"
-        - name: "employeeUsername"
-          in: "query"
-          required: true
-          schema:
-            type: "string"
-        - name: "approve"
-          in: "query"
-          required: true
-          schema:
-            type: "boolean"
-      responses:
-        "202":
-          description: "Accepted"
-  /refunds/{refundId}/reviewer:
-    put:
-      summary: "PUT refunds/{refundId}/reviewer"
-      operationId: "updateRefundReviewer"
-      parameters:
-        - name: "refundId"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int32"
-        - name: "reviewerUsername"
-          in: "query"
-          required: true
-          schema:
-            type: "string"
-        - name: "add"
-          in: "query"
-          required: true
-          schema:
-            type: "boolean"
-      responses:
-        "202":
-          description: "Accepted"
   /reviews/{reviewId}:
     get:
       summary: "GET reviews/{reviewId}"
@@ -1037,24 +905,6 @@ paths:
       responses:
         "200":
           description: "OK"
-  /employees/{employeeId}:
-    get:
-      summary: "GET employees/{employeeId}"
-      operationId: "getEmployeeById"
-      parameters:
-        - name: "employeeId"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int32"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/EmployeeDTO"
   /gameRequests:
     post:
       summary: "POST gameRequests"
@@ -1090,9 +940,9 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/GameRequestDTO"
-  /gameRequests/{gameRequestId}/{status}:
-    get:
-      summary: "GET gameRequests/{gameRequestId}/{status}"
+  /gameRequests/{gameRequestId}/requestStatus:
+    put:
+      summary: "PUT gameRequests/{gameRequestId}/requestStatus"
       operationId: "setGameRequestStatus"
       parameters:
         - name: "gameRequestId"
@@ -1102,7 +952,7 @@ paths:
             type: "integer"
             format: "int32"
         - name: "status"
-          in: "path"
+          in: "query"
           required: true
           schema:
             type: "string"
@@ -1192,6 +1042,45 @@ paths:
       responses:
         "200":
           description: "OK"
+  /games/{gameId}/promotions/{promotionId}:
+    put:
+      summary: "PUT games/{gameId}/promotions/{promotionId}"
+      operationId: "addPromotionToGame"
+      parameters:
+        - name: "gameId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int32"
+        - name: "promotionId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int32"
+      responses:
+        "200":
+          description: "OK"
+    delete:
+      summary: "DELETE games/{gameId}/promotions/{promotionId}"
+      operationId: "removePromotionFromGame"
+      parameters:
+        - name: "gameId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int32"
+        - name: "promotionId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int32"
+      responses:
+        "200":
+          description: "OK"
   /games/{gameId}/stock:
     put:
       summary: "PUT games/{gameId}/stock"
@@ -1212,66 +1101,15 @@ paths:
       responses:
         "200":
           description: "OK"
-  /games/{gameId}/{promotionId}:
-    put:
-      summary: "PUT games/{gameId}/{promotionId}"
-      operationId: "addPromotionToGame"
-      parameters:
-        - name: "gameId"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int32"
-        - name: "promotionId"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int32"
-      responses:
-        "200":
-          description: "OK"
-  /games/{promotionId}/{gameId}:
-    put:
-      summary: "PUT games/{promotionId}/{gameId}"
-      operationId: "removePromotionFromGame"
-      parameters:
-        - name: "promotionId"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int32"
-        - name: "gameId"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int32"
-      responses:
-        "200":
-          description: "OK"
   /promotions:
     post:
       summary: "POST promotions"
       operationId: "createPromotion"
-      parameters:
-        - name: "startDate"
-          in: "query"
-          required: true
-          schema:
-            $ref: "#/components/schemas/Date"
-        - name: "endDate"
-          in: "query"
-          required: true
-          schema:
-            $ref: "#/components/schemas/Date"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PromotionDTO"
+              $ref: "#/components/schemas/PromotionRequestDTO"
         required: true
       responses:
         "200":
@@ -1279,7 +1117,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/PromotionDTO"
+                $ref: "#/components/schemas/PromotionResponseDTO"
   /promotions/{promotionId}:
     get:
       summary: "GET promotions/{promotionId}"
@@ -1297,7 +1135,26 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/PromotionDTO"
+                $ref: "#/components/schemas/PromotionResponseDTO"
+    put:
+      summary: "PUT promotions/{promotionId}"
+      operationId: "updatePromotion"
+      parameters:
+        - name: "promotionId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int32"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PromotionRequestDTO"
+        required: true
+      responses:
+        "200":
+          description: "OK"
     delete:
       summary: "DELETE promotions/{promotionId}"
       operationId: "deletePromotion"
@@ -1311,39 +1168,9 @@ paths:
       responses:
         "200":
           description: "OK"
-  /promotions/{promotionId}/{discount}:
-    put:
-      summary: "PUT promotions/{promotionId}/{discount}"
-      operationId: "updatePromotion"
-      parameters:
-        - name: "promotionId"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int32"
-        - name: "discount"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int32"
-        - name: "startDate"
-          in: "query"
-          required: true
-          schema:
-            $ref: "#/components/schemas/Date"
-        - name: "endDate"
-          in: "query"
-          required: true
-          schema:
-            $ref: "#/components/schemas/Date"
-      responses:
-        "200":
-          description: "OK"
 components:
   schemas:
-    AddressDTO:
+    AddressResponseDTO:
       type: "object"
       properties:
         id:
@@ -1359,7 +1186,7 @@ components:
           type: "string"
         postalCode:
           type: "string"
-    CreditCardDTO:
+    CreditCardResponseDTO:
       type: "object"
       properties:
         id:
@@ -1375,7 +1202,7 @@ components:
           type: "string"
           format: "date"
         billingAddress:
-          $ref: "#/components/schemas/AddressDTO"
+          $ref: "#/components/schemas/AddressResponseDTO"
     ReplyDTO:
       type: "object"
       properties:
@@ -1418,25 +1245,37 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/CategoryResponseDTO"
-    GameRequestDTO:
+    CustomerResponseDTO:
       type: "object"
       properties:
+        username:
+          type: "string"
+        password:
+          type: "string"
+        email:
+          type: "string"
+        phoneNumber:
+          type: "string"
+        addresses:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/AddressResponseDTO"
+        creditCards:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/CreditCardResponseDTO"
+        likedReviews:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ReviewDTO"
+        purchases:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/PurchaseDTO"
         id:
           type: "integer"
           format: "int32"
-        externalReview:
-          type: "string"
-        requestStatus:
-          type: "string"
-          enum:
-            - "APPROVED"
-            - "DENIED"
-            - "PENDING"
-        requestor:
-          $ref: "#/components/schemas/EmployeeDTO"
-        game:
-          $ref: "#/components/schemas/GameResponseDTO"
-    EmployeeDTO:
+    EmployeeResponseDTO:
       type: "object"
       properties:
         id:
@@ -1448,10 +1287,6 @@ components:
           type: "string"
         isActive:
           type: "boolean"
-        gameRequests:
-          type: "array"
-          items:
-            $ref: "#/components/schemas/GameRequestDTO"
         refundRequests:
           type: "array"
           items:
@@ -1473,7 +1308,7 @@ components:
         reason:
           type: "string"
         reviewer:
-          $ref: "#/components/schemas/EmployeeDTO"
+          $ref: "#/components/schemas/EmployeeResponseDTO"
     PurchaseDTO:
       type: "object"
       properties:
@@ -1489,11 +1324,11 @@ components:
         game:
           $ref: "#/components/schemas/GameResponseDTO"
         customer:
-          $ref: "#/components/schemas/CustomerDTO"
+          $ref: "#/components/schemas/CustomerResponseDTO"
         billingAddress:
-          $ref: "#/components/schemas/AddressDTO"
+          $ref: "#/components/schemas/AddressResponseDTO"
         creditCard:
-          $ref: "#/components/schemas/CreditCardDTO"
+          $ref: "#/components/schemas/CreditCardResponseDTO"
         review:
           $ref: "#/components/schemas/ReviewDTO"
         refundRequest:
@@ -1516,8 +1351,8 @@ components:
         likedBy:
           type: "array"
           items:
-            $ref: "#/components/schemas/CustomerDTO"
-    CustomerDTO:
+            $ref: "#/components/schemas/CustomerResponseDTO"
+    CustomerRequestDTO:
       type: "object"
       properties:
         username:
@@ -1531,11 +1366,11 @@ components:
         addresses:
           type: "array"
           items:
-            $ref: "#/components/schemas/AddressDTO"
+            $ref: "#/components/schemas/AddressResponseDTO"
         creditCards:
           type: "array"
           items:
-            $ref: "#/components/schemas/CreditCardDTO"
+            $ref: "#/components/schemas/CreditCardResponseDTO"
         likedReviews:
           type: "array"
           items:
@@ -1544,9 +1379,39 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/PurchaseDTO"
-        id:
-          type: "integer"
-          format: "int32"
+    AddressRequestDTO:
+      type: "object"
+      properties:
+        street:
+          type: "string"
+        city:
+          type: "string"
+        province:
+          type: "string"
+        country:
+          type: "string"
+        postalCode:
+          type: "string"
+    ChangePasswordDTO:
+      type: "object"
+      properties:
+        oldPassword:
+          type: "string"
+        newPassword:
+          type: "string"
+    EmployeeRequestDTO:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        password:
+          type: "string"
+        isActive:
+          type: "boolean"
+        refundRequests:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/RefundRequestDTO"
     ManagerDTO:
       type: "object"
       properties:
@@ -1565,6 +1430,38 @@ components:
           format: "int32"
         description:
           type: "string"
+    CreditCardRequestDTO:
+      type: "object"
+      properties:
+        cardNumber:
+          type: "integer"
+          format: "int32"
+        cvv:
+          type: "integer"
+          format: "int32"
+        expiryDate:
+          type: "string"
+          format: "date"
+        billingAddress:
+          $ref: "#/components/schemas/AddressResponseDTO"
+    GameRequestDTO:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        externalReview:
+          type: "string"
+        requestStatus:
+          type: "string"
+          enum:
+            - "APPROVED"
+            - "DENIED"
+            - "PENDING"
+        requestor:
+          $ref: "#/components/schemas/EmployeeResponseDTO"
+        game:
+          $ref: "#/components/schemas/GameResponseDTO"
     GameInputDTO:
       type: "object"
       properties:
@@ -1589,7 +1486,17 @@ components:
     Date:
       type: "object"
       properties: { }
-    PromotionDTO:
+    PromotionRequestDTO:
+      type: "object"
+      properties:
+        discount:
+          type: "integer"
+          format: "int32"
+        startDate:
+          $ref: "#/components/schemas/Date"
+        endDate:
+          $ref: "#/components/schemas/Date"
+    PromotionResponseDTO:
       type: "object"
       properties:
         id:
