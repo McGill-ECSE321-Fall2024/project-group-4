@@ -607,7 +607,7 @@ public class AccountManagementService {
         Customer customer = customerRepository.findByEmail(customerEmail).orElseThrow(() -> new EntityNotFoundException("Customer not found"));
         if (street == null || street == "" || city == null || city == "" || province == null || province == "" || zip == null || zip == "" || country == null || country == "") {
             throw new IllegalArgumentException("Address contains null or empty strings");}
-        Address customerAddress = new Address(street, city, province, zip, country,customer);
+        Address customerAddress = new Address(street, city, province, country,zip,customer);
 
         addressRepository.save(customerAddress);
         customerRepository.save(customer);

@@ -6,7 +6,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -79,12 +78,10 @@ public class PurchaseManagementService {
     }
 
     /**
-     * Get a game from id
-     *
-     * @param gameId
-     * @return Game
-     *
-     * @author
+     * @param gameId game id of the game to find
+     * @return The game with the associated id
+     * @throws EntityNotFoundException when no game is found
+     * @author Tarek Namani
      */
     @Transactional
     public Game findGameById(int gameId) {
@@ -96,29 +93,24 @@ public class PurchaseManagementService {
     }
 
     /**
-     * Get review from id
-     *
-     * @param id
-     * @return Review
-     *
-     * @author
+     * @param reviewId id of the review to find
+     * @return The review with the associated id
+     * @throws EntityNotFoundException when no review is found
+     * @author Tarek Namani
      */
     @Transactional
-    public Review findReviewById(int id) {
-        Optional<Review> optReview = reviewRepository.findById(id);
+    public Review findReviewById(int reviewId) {
+        Optional<Review> optReview = reviewRepository.findById(reviewId);
         if (optReview.isPresent()) {
             return optReview.get();
         }
-        throw new EntityNotFoundException("No Review found with id " + id);
+        throw new EntityNotFoundException("No Review found with id " + reviewId);
     }
-
     /**
-     * Get a customer from email
-     *
-     * @param email
-     * @return Customer
-     *
-     * @author
+     * @param email of the customer to find
+     * @return The customer with the associated email
+     * @throws EntityNotFoundException when no customer is found
+     * @author Tarek Namani
      */
     @Transactional
     public Customer findCustomerByEmail(String email) {
@@ -132,48 +124,43 @@ public class PurchaseManagementService {
 
     }
 
+
     /**
-     * Get the manager from id
-     *
-     * @param id
-     * @return Manager
-     *
-     * @author
+     * @param managerId of the manager account
+     * @return The manager if found
+     * @throws EntityNotFoundException when no manager is found
+     * @author Tarek Namani
      */
     @Transactional
-    public Manager findManagerById(int id) {
-        Optional<Manager> optManager = managerRepository.findById(id);
+    public Manager findManagerById(int managerId) {
+        Optional<Manager> optManager = managerRepository.findById(managerId);
         if (optManager.isPresent()) {
             return optManager.get();
         }
-        throw new EntityNotFoundException("No manager found with id " + id);
+        throw new EntityNotFoundException("No manager found with id " + managerId);
 
     }
 
     /**
-     * Get purchase from id
-     *
-     * @param id
-     * @return Purchase
-     *
-     * @author
+     * @param purchaseId of the purchase
+     * @return The purchase if found
+     * @throws EntityNotFoundException when no purchase is found
+     * @author Tarek Namani
      */
     @Transactional
-    public Purchase findPurchaseById(int id) {
-        Optional<Purchase> optPurchase = purchaseRepository.findById(id);
+    public Purchase findPurchaseById(int purchaseId) {
+        Optional<Purchase> optPurchase = purchaseRepository.findById(purchaseId);
         if (optPurchase.isPresent()) {
             return optPurchase.get();
         }
-        throw new EntityNotFoundException("No Purchase found with id " + id);
+        throw new EntityNotFoundException("No Purchase found with id " + purchaseId);
     }
 
     /**
-     * Get credit card from id
-     *
-     * @param creditCardId
-     * @return CreditCard
-     *
-     * @author
+     * @param creditCardId of the credit card
+     * @return The credit card if found
+     * @throws EntityNotFoundException when no credit card is found
+     * @author Tarek Namani
      */
     @Transactional
     public CreditCard findCreditCardById(int creditCardId) {
@@ -185,12 +172,10 @@ public class PurchaseManagementService {
     }
 
     /**
-     * Get address from id
-     *
-     * @param addressId
-     * @return Address
-     *
-     * @author
+     * @param addressId of the address
+     * @return The address if found
+     * @throws EntityNotFoundException when no address is found
+     * @author Tarek Namani
      */
     @Transactional
     public Address findAddressById(int addressId) {
@@ -203,16 +188,17 @@ public class PurchaseManagementService {
 
 
     /**
-     * Add a credit card to a customer wallet
+     * Creates a new credit card with input parameters and adds it to a customers wallet
      *
-     * @param cardNumber
-     * @param cvv
-     * @param expiryDate
-     * @param customerEmail
-     * @param addressId
-     * @return CreditCard
-     *
-     * @author
+     * @param cardNumber credit card number
+     * @param cvv code of credit card
+     * @param expiryDate expiry date of credit card
+     * @param customerEmail email of credit card's owner
+     * @param addressId billing address of credit card
+     * @return created credit card
+     * @throws IllegalArgumentException when expiry date and cvv are in the wrong format
+     * @throws EntityNotFoundException when customer does not exist, or when the address does not exist
+     * @author Tarek Namani
      */
     @Transactional
     public CreditCard addCreditCardToCustomerWallet(int cardNumber, int cvv, String expiryDate, String customerEmail, int addressId) {
@@ -228,13 +214,10 @@ public class PurchaseManagementService {
             throw new IllegalArgumentException("Invalid expiry date, format is MM/YY");
         }
 
-
-
         LocalDate date = LocalDate.of(2000 + Integer.parseInt(expiryDateMatcher.group(2)), Integer.parseInt(expiryDateMatcher.group(1)),1); //use the matchers to get positional arguments for month and date
 
         Customer customer = findCustomerByEmail(customerEmail);
         Address billingAddress = findAddressById(addressId);
-
         CreditCard creditCard = new CreditCard(cardNumber, cvv, date, customer, billingAddress);
 
         creditCardRepository.save(creditCard);
@@ -243,12 +226,12 @@ public class PurchaseManagementService {
     }
 
     /**
-     * Like a review
+     * Likes a review with the customer associated to customer email
      *
-     * @param customerEmail
-     * @param reviewId
-     *
-     * @author
+     * @param customerEmail email of customer liking the review
+     * @param reviewId id of review customer will like
+     * @throws EntityNotFoundException when customer does not exist, or when the review does not exist
+     * @author Tarek Namani
      */
     @Transactional
     public void likeReview(String customerEmail, int reviewId) {
@@ -265,25 +248,26 @@ public class PurchaseManagementService {
     }
 
     /**
-     * Post a review
+     * Customer pots a review about a game they bought
      *
-     * @param reivewerEmail
-     * @param rating
-     * @param text
-     * @param purchaseId
-     * @return Review
-     *
-     * @author
+     * @param reviewerEmail email of customer writing the reivew
+     * @param rating given to the game
+     * @param text text body of the review
+     * @param purchaseId id associated to review
+     * @throws IllegalArgumentException when customer attempts to write a null review, a review with an invalid rating, or a review of a game they do not own
+     * @throws EntityNotFoundException when purchase does not exist, or when customer does not exist
+     * @author Tarek Namani
+     * @return
      */
     @Transactional
-    public Review postReview(String reivewerEmail, int rating, String text, int purchaseId) {
+    public Review postReview(String reviewerEmail, int rating, String text, int purchaseId) {
         if (text == null) {
             throw new IllegalArgumentException("Review text is null");
         }
         if (rating > 5 || rating < 0) {
             throw new IllegalArgumentException("Review rating is out of range");
         }
-        Customer customer = findCustomerByEmail(reivewerEmail);
+        Customer customer = findCustomerByEmail(reviewerEmail);
         Purchase purchase = findPurchaseById(purchaseId); //will call an exception if the purchase does not exist
         if (!purchase.getCustomer().equals(customer))
         {
@@ -299,13 +283,14 @@ public class PurchaseManagementService {
     }
 
     /**
-     * Reply to a review
+     * Allows a manager to reply to a review on a game
      *
-     * @param reviewId
-     * @param replyText
-     * @param managerId
-     *
-     * @author
+     * @param reviewId  id of review to reply to
+     * @param replyText body of reply text
+     * @param managerId id of manager
+     * @throws IllegalArgumentException when manager attempts to write a null reply,
+     * @throws EntityNotFoundException when purchase does not exist, or when manager does not exist
+     * @author Tarek Namani
      */
     @Transactional
     public void replyToReview(int reviewId, String replyText, int managerId) {
@@ -329,13 +314,14 @@ public class PurchaseManagementService {
     }
 
     /**
-     * Checkout a customer cart/ Purchase a customer cart
+     * Checks out a customers cart
      *
-     * @param customerEmail
-     * @param addressId
-     * @param creditCardId
-     *
-     * @author
+     * @param customerEmail email of customer checking out
+     * @param addressId id associated to a customers billing address
+     * @param creditCardId credit card used to process the payment
+     * @author Tarek Namani
+     * @throws IllegalArgumentException when customer attempts to check out an empty card, a cart with out of stock or inactive games, or when credit card does not belong to the customer, or is expired
+     * @throws EntityNotFoundException when customer, credit card or address do not exist
      */
     @Transactional
     public void checkout(String customerEmail, int addressId, int creditCardId) {
@@ -366,35 +352,40 @@ public class PurchaseManagementService {
             game.setStock(game.getStock() - cartItem.getQuantity());
 
         });
-        cartItemRepository.deleteAll(itemsInCart); //remove the game from the customers cart
         gameRepository.saveAll(gamesInCart);
-        gamesInCart.stream().map(game -> new Purchase(dateOfPurchase, getPromotionalPrice(game.getId()), game, customer, address, creditCard)).collect(Collectors.toSet()).forEach(purchaseRepository::save);
+        itemsInCart.stream().forEach(item -> {
+            while (item.getQuantity()>0) {
+                Purchase purchase = new Purchase(dateOfPurchase,getPromotionalPrice(item.getGame().getId()),item.getGame(),customer,address,creditCard);
+                purchaseRepository.save(purchase);
+                item.setQuantity(item.getQuantity()-1);
+            }
+        });
+        cartItemRepository.deleteAll(itemsInCart); //remove the game from the customers cart
         customerRepository.save(customer);
     }
 
     /**
-     * Get the price of a customer cart
+     * gets the current price of a customers cart (including promotions)
      *
-     * @param customerEmail
-     * @return float
-     *
-     * @author
+     * @param customerEmail email associated to customer
+     * @return float price of all the games in the customer's cart
+     * @throws EntityNotFoundException when customer does not exist
+     * @author Tarek Namani
      */
     @Transactional
     public float getCartPrice(String customerEmail) {
 
         Customer customer = findCustomerByEmail(customerEmail);
-        long price = cartItemRepository.findByCartItemId_Customer_Id(customer.getId()).stream().map(CartItem::getGame).mapToLong(game -> (long) getPromotionalPrice(game.getId())).sum();
+        long price = cartItemRepository.findByCartItemId_Customer_Id(customer.getId()).stream().mapToLong(game -> (long) ((long) game.getQuantity()*getPromotionalPrice(game.getGame().getId()))).sum();
         return (float) price;
     }
-
     /**
-     * Get price of a game with promotion
+     * gets the current price of a Game(including promotions)
      *
-     * @param gameId
-     * @return float
-     *
-     * @author
+     * @param gameId id associated to a game
+     * @return float price of the game
+     * @throws EntityNotFoundException when Game does not exist
+     * @author Tarek Namani
      */
     @Transactional
     public float getPromotionalPrice(int gameId) {
@@ -416,12 +407,12 @@ public class PurchaseManagementService {
 
 
     /**
-     * Get credit card of a customer
+     * Returns a set of all the credit cards associated to a customer
      *
-     * @param email
-     * @return Set<CreditCard>
-     *
-     * @author
+     * @param email email associated to a customer
+     * @return a set of credit cards associated to a customer
+     * @throws EntityNotFoundException when customer does not exist
+     * @author Tarek Namani
      */
     @Transactional
     public Set<CreditCard> viewCustomerCreditCards(String email) {
@@ -430,13 +421,15 @@ public class PurchaseManagementService {
     }
 
 
+
     /**
-     * Remove a credit card from a customer wallet
+     * Returns removes a credit card from a customers wallet
      *
-     * @param customerEmail
-     * @param creditCardId
-     *
-     * @author
+     * @param customerEmail email associated to a customer
+     * @param creditCardId email associated to a customer
+     * @throws EntityNotFoundException when customer or credit card do not exist
+     * @throws IllegalArgumentException when customer does not own the credit card they want to remove, or when it fails to be removed
+     * @author Tarek Namani
      */
     @Transactional
     public void removeCreditCardFromWallet(String customerEmail, int creditCardId) {
@@ -447,11 +440,13 @@ public class PurchaseManagementService {
         if (!wallet.contains(creditCardToRemove)) {
             throw new IllegalArgumentException("Customer is not associated with given credit card");
         }
+        boolean success = customer.removeCreditCartFromWallet(creditCardToRemove);
 
-        if(!customer.removeCreditCartFromWallet(creditCardToRemove)){
+        if(!success){
             throw new IllegalStateException("Failed to delete credit card from customer");
         }
         customerRepository.save(customer);
+        creditCardRepository.delete(creditCardToRemove);
     }
 
     /*

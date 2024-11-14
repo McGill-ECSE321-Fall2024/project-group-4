@@ -25,8 +25,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -286,5 +286,15 @@ public class TestGameManagementService {
                     () -> gameManagementService.updateStock(-1, 10),
                     "Should throw exception when the game ID is invalid");
         verify(gameRepo, times(0)).save(any(Game.class));
+    }
+
+    @Test
+    public void testUpdateGameActive() {
+        //Act
+        gameManagementService.updateActivity(referenceGame1.getId(), false);
+
+        //Assert
+        assertFalse(referenceGame1.isActive());
+        verify(gameRepo, times(1)).save(referenceGame1);
     }
 }

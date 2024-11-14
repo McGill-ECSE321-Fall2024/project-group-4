@@ -30,29 +30,13 @@ public class PurchaseManagementController {
 //        return new GameDTO(purchaseManagementService.findGameById(gameId));
 //    }
 
-    /**
-     * Get the price of a game with promotion
-     *
-     * @param gameId Game unique identifier
-     * @return Price of the game with promotion
-     *
-     * @author
-     */
-    @GetMapping("games/promotions/{gameId}")
+    @GetMapping("/games/{gameId}/price")
     @ResponseStatus(HttpStatus.FOUND)
     public float getPromotionalPrice(@PathVariable int gameId) {
         return purchaseManagementService.getPromotionalPrice(gameId);
     }
 
-    /**
-     * Get a review
-     *
-     * @param reviewId Review unique identifier
-     * @return Review DTO with corresponding id
-     *
-     * @author
-     */
-    @GetMapping("reviews/{reviewId}")
+    @GetMapping("/reviews/{reviewId}")
     @ResponseStatus(HttpStatus.FOUND)
     public ReviewDTO getReviewById(@PathVariable int reviewId) {
         return new ReviewDTO(purchaseManagementService.findReviewById(reviewId));
@@ -66,7 +50,7 @@ public class PurchaseManagementController {
      *
      * @author
      */
-    @PutMapping("customers/{customerEmail}/reviews/{reviewId}/likes")
+    @PutMapping("/customers/{customerEmail}/reviews/{reviewId}/likes")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void likeReview(@PathVariable int reviewId, @PathVariable String customerEmail) {
         purchaseManagementService.likeReview(customerEmail, reviewId);
@@ -82,7 +66,7 @@ public class PurchaseManagementController {
      *
      * @author
      */
-    @PostMapping("customers/{customerEmail}/reviews")
+    @PostMapping("/customers/{customerEmail}/reviews")
     @ResponseStatus(HttpStatus.CREATED)
     public void postReview(@PathVariable String customerEmail, @RequestParam int purchaseId, @RequestParam int rating, @RequestBody String text) {
         purchaseManagementService.postReview(customerEmail,rating,text, purchaseId);
@@ -97,7 +81,7 @@ public class PurchaseManagementController {
      *
      * @author
      */
-    @PostMapping("reviews/{reviewId}/reply")
+    @PostMapping("/reviews/{reviewId}/reply")
     @ResponseStatus(HttpStatus.CREATED)
     public void replyToReview(@PathVariable int reviewId, @RequestParam int managerId, @RequestBody String replyText) {
         purchaseManagementService.replyToReview(reviewId, replyText,managerId);
@@ -159,15 +143,13 @@ public class PurchaseManagementController {
         return new CreditCardDTO(purchaseManagementService.findCreditCardById(creditCardId));
     }
 
-
-    @PutMapping("customers/{customerEmail}/credit-cards")
+    @PostMapping("customers/{customerEmail}/credit-cards")
     @ResponseStatus(HttpStatus.CREATED)
-    public CreditCardDTO addCreditCardToCustomerWallet(@RequestBody int cardNumber,
-                                                       @RequestBody int cvv,
-                                                       @PathVariable String customerEmail,
-                                                       @RequestBody String expiryDate,
-                                                       @RequestBody int addressId) {
-        return new CreditCardDTO(purchaseManagementService.addCreditCardToCustomerWallet(cardNumber,cvv,expiryDate,customerEmail,addressId));
+    public CreditCardDTO addCreditCardToCustomerWallet(@RequestBody CreditCardDTO creditCardDTO,
+                                                       @RequestParam String expiryDate,
+                                                       @RequestParam int addressId,
+                                                       @PathVariable String customerEmail) {
+        return new CreditCardDTO(purchaseManagementService.addCreditCardToCustomerWallet(creditCardDTO.cardNumber(),creditCardDTO.cvv(),expiryDate,customerEmail,addressId));
 
     }
 
@@ -202,7 +184,7 @@ public class PurchaseManagementController {
 
     @PostMapping("customers/{customerEmail}/cart")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void checkout(@PathVariable String customerEmail, @RequestBody int billingAddressId, @RequestBody int creditCardId) {
+    public void checkout(@PathVariable String customerEmail, @RequestParam int billingAddressId, @RequestParam int creditCardId) {
         purchaseManagementService.checkout(customerEmail, billingAddressId, creditCardId);
     }
 
