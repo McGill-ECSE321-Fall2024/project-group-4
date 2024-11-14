@@ -15,11 +15,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import jakarta.persistence.EntityNotFoundException;
-
-import org.springframework.web.server.ResponseStatusException;
 
 import ca.mcgill.ecse321.gameshop.DAO.*;
 import ca.mcgill.ecse321.gameshop.model.*;
@@ -31,7 +28,7 @@ import ca.mcgill.ecse321.gameshop.serviceClasses.AccountManagementService;
  * @author Ana Gordon, Tarek Namani, Clara Mickail
  */
 @SpringBootTest
-public class AccountManagementServiceTest {
+public class TestAccountManagementService {
 
     @InjectMocks
     private AccountManagementService accountManagementService;
@@ -110,9 +107,9 @@ public class AccountManagementServiceTest {
         when(customerRepository.save(customer1)).thenReturn(customer1);
 
         when(employeeRepository.save(any(Employee.class))).thenReturn(employee1);
-        when(employeeRepository.findEmployeeById(0)).thenReturn(Optional.of(employee1));
-        when(employeeRepository.findEmployeeById(1)).thenReturn(Optional.of(employee2));
-        when(employeeRepository.findEmployeeById(-1)).thenReturn(Optional.empty());
+        when(employeeRepository.findById(0)).thenReturn(Optional.of(employee1));
+        when(employeeRepository.findById(1)).thenReturn(Optional.of(employee2));
+//        when(employeeRepository.findById(-1)).thenReturn(Optional.empty());
         when(employeeRepository.findByUsername("uniqueUsername")).thenReturn(Optional.empty());
         when(employeeRepository.findByUsername("employee1")).thenReturn(Optional.of(employee1));
         when(employeeRepository.findByUsername("employee2")).thenReturn(Optional.of(employee2));
@@ -347,7 +344,7 @@ public class AccountManagementServiceTest {
     @Test
     public void testcreateManager(){
         //Arrange
-        when(managerRepository.findAll()).thenReturn(null); //mock there being no manager in the system
+        when(managerRepository.findAll()).thenReturn(List.of()); //mock there being no manager in the system
         //Act
         Manager manager = accountManagementService.createManager();
 
@@ -398,7 +395,7 @@ public class AccountManagementServiceTest {
     @Test
     public void testGetSetOfNonExistentEmployees(){
         //Arrange
-        when(employeeRepository.findAll()).thenReturn(null); //mock there being no employees in the system
+        when(employeeRepository.findAll()).thenReturn(List.of()); //mock there being no employees in the system
 
         //Act
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> accountManagementService.getSetOfEmployees());
@@ -581,7 +578,7 @@ public class AccountManagementServiceTest {
         accountManagementService.setEmployeeStatus(employee1.getId(),false);
         // Assert
         assertFalse(employee1.isActive());
-        verify(employeeRepository, times(1)).findEmployeeById(employee1.getId());
+        verify(employeeRepository, times(1)).findById(employee1.getId());
     }
 
     /**
@@ -598,7 +595,7 @@ public class AccountManagementServiceTest {
         accountManagementService.setEmployeeStatus(employee1.getId(),true);
         // Assert
         assertTrue(employee1.isActive());
-        verify(employeeRepository, times(1)).findEmployeeById(employee1.getId());
+        verify(employeeRepository, times(1)).findById(employee1.getId());
     }
 
     /**
@@ -1567,6 +1564,40 @@ public class AccountManagementServiceTest {
         //Assert
         assertEquals("Customer not found", exception.getMessage());
 
+    }
+
+    /**
+     * Test finding an employee
+     *
+     * @author Camille Pouliot
+     */
+    @Test
+    public void testFindEmployee() {
+        //Act
+        Employee loadedEmployee = accountManagementService.findEmployeeById(employee1.getId());
+
+        //Assert
+        assertNotNull(loadedEmployee);
+        assertEquals(loadedEmployee.getUsername(), employee1.getUsername());
+        assertEquals(loadedEmployee.getPassword(), employee1.getPassword());
+        assertEquals(loadedEmployee.isActive(), employee1.isActive());
+        assertEquals(loadedEmployee, employee1);
+        verify(employeeRepository, times(1)).findById(employee1.getId());
+    }
+
+    /**
+     * Test finding an employee with an invalid id
+     *
+     * @author Camille Pouliot
+     */
+    @Test
+    public void testFindEmployeeInvalid() {
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> accountManagementService.findEmployeeById(-1));
+
+        //Assert
+        assertEquals(exception.getMessage(), "No Employee found");
+        verify(employeeRepository, times(1)).findById(-1);
     }
 }
 

@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class testPurchaseIntegration {
+public class TestPurchaseIntegration {
 
     @Autowired
     private TestRestTemplate client;
@@ -44,7 +44,7 @@ public class testPurchaseIntegration {
     private final String customerUsername = "validUser";
     private final String customerPassword = "SafePassword";
     private final String customerPhoneNumber = "123456789";
-    private CustomerDTO customerDTO;
+    private CustomerResponseDTO customerResponseDTO;
     private int customerId = 0;
 
 
@@ -195,9 +195,9 @@ public class testPurchaseIntegration {
     public void testCreateCustomer() throws JSONException {
         //Arrange
         Customer customer = new Customer(customerUsername,customerPassword,customerEmail,customerPhoneNumber);
-        customerDTO = new CustomerDTO(customer);
+        customerResponseDTO = new CustomerResponseDTO(customer);
         //Act
-        ResponseEntity<String> response = client.postForEntity("/accounts/customers/"+customerEmail, customerDTO, String.class);
+        ResponseEntity<String> response = client.postForEntity("/accounts/customers/"+customerEmail, customerResponseDTO, String.class);
 
         //Assert
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -592,7 +592,7 @@ public class testPurchaseIntegration {
         Date endDate = Date.valueOf(LocalDate.of(2050,10,10));
 
         //Act
-        ResponseEntity<PromotionResponseDTO> response =  client.exchange(url, HttpMethod.POST, requestEntity , PromotionResponseDTO.class, StartDate, endDate);
+        ResponseEntity<PromotionResponseDTO> response =  client.exchange(url, HttpMethod.POST, requestEntity , PromotionResponseDTO.class);
 
 
         //Assert

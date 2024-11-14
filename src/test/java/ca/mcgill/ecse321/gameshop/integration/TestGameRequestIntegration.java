@@ -79,7 +79,7 @@ public class TestGameRequestIntegration {
     private final String employeePassword = "password";
     private final Boolean employeeActive = true;
     private final Employee employee = new Employee(employeeUsername, employeePassword, employeeActive);
-    private EmployeeDTO employeeDTO = new EmployeeDTO(employee);
+    private EmployeeResponseDTO employeeResponseDTO = new EmployeeResponseDTO(employee);
 
     //Approved Game Request
     private int approvedGameRequestId;
@@ -173,7 +173,7 @@ public class TestGameRequestIntegration {
     @Order(3)
     public void createGameRequestActiveGameTest(){
         //Arrange
-        GameRequestDTO gameRequestDTO1 = new GameRequestDTO(2, createGameRequestExternalReview, createGameRequestStatus, this.employeeDTO, new GameResponseDTO(game1));
+        GameRequestDTO gameRequestDTO1 = new GameRequestDTO(2, createGameRequestExternalReview, createGameRequestStatus, this.employeeResponseDTO, new GameResponseDTO(game1));
 
         //Act
         ResponseEntity<GameRequestDTO> response = restTemplate.postForEntity("/gameRequests", gameRequestDTO1, GameRequestDTO.class);

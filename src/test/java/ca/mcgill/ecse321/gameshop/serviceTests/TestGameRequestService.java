@@ -152,39 +152,7 @@ public class TestGameRequestService {
         verify(gameRepository, times(1)).findById(-1);
     }
 
-    /**
-     * Test finding an employee
-     *
-     * @author Camille Pouliot
-     */
-    @Test
-    public void testFindEmployee() {
-        //Act
-        Employee loadedEmployee = gameRequestService.findEmployeeById(employee.getId());
 
-        //Assert
-        assertNotNull(loadedEmployee);
-        assertEquals(loadedEmployee.getUsername(), employee.getUsername());
-        assertEquals(loadedEmployee.getPassword(), employee.getPassword());
-        assertEquals(loadedEmployee.isActive(), employee.isActive());
-        assertEquals(loadedEmployee, employee);
-        verify(employeeRepository, times(1)).findById(employee.getId());
-    }
-
-    /**
-     * Test finding an employee with an invalid id
-     *
-     * @author Camille Pouliot
-     */
-    @Test
-    public void testFindEmployeeInvalid() {
-        //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> gameRequestService.findEmployeeById(-1));
-
-        //Assert
-        assertEquals(exception.getMessage(), "No Employee found");
-        verify(employeeRepository, times(1)).findById(-1);
-    }
 
     /**
      * Test creating a game request

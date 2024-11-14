@@ -9,11 +9,11 @@ public record GameRequestDTO(
         int id,
         String externalReview,
         RequestStatus requestStatus,
-        EmployeeDTO requestor,
+        EmployeeResponseDTO requestor,
         GameResponseDTO game
 
 ) implements Serializable {
     public GameRequestDTO(GameRequest gameRequest) {
-        this(gameRequest.getId(), gameRequest.getExternalReview(), gameRequest.getStatus(), new EmployeeDTO(gameRequest.getRequestor()), new GameResponseDTO(gameRequest.getGame()));
+        this(gameRequest.getId(), gameRequest.getExternalReview(), gameRequest.getStatus(), new EmployeeResponseDTO(gameRequest.getRequestor()), new GameResponseDTO(gameRequest.getGame()));
     }
 }

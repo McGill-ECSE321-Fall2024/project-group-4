@@ -5,7 +5,7 @@ import ca.mcgill.ecse321.gameshop.model.Purchase;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-public record PurchaseDTO (int id, LocalDate purchaseDate, float purchasePrice, GameResponseDTO game, CustomerDTO customer, AddressResponseDTO billingAddress, CreditCardDTO creditCard, ReviewDTO review, RefundRequestDTO refundRequest) implements Serializable {
+public record PurchaseDTO (int id, LocalDate purchaseDate, float purchasePrice, GameResponseDTO game, CustomerResponseDTO customer, AddressResponseDTO billingAddress, CreditCardDTO creditCard, ReviewDTO review, RefundRequestDTO refundRequest) implements Serializable {
 
 
     public PurchaseDTO(Purchase purchase) {
@@ -13,7 +13,7 @@ public record PurchaseDTO (int id, LocalDate purchaseDate, float purchasePrice, 
                 purchase.getPurchaseDate(),
                 purchase.getPurchasePrice(),
                 new GameResponseDTO(purchase.getGamePurchased()),
-                new CustomerDTO(purchase.getCustomer()),
+                new CustomerResponseDTO(purchase.getCustomer()),
                 new AddressResponseDTO(purchase.getDeliveryAddress()),
                 new CreditCardDTO(purchase.getPaymentMethod()),
                 new ReviewDTO(purchase.getReview()),

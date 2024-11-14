@@ -67,9 +67,10 @@ public class AccountManagementController {
      *
      * @author Tarek Namani
      */
-    @PostMapping("/customers/customers/{email}")
-    public CustomerDTO createCustomer(@RequestBody CustomerDTO customerDTO) {
-        return new CustomerDTO(accountManagementService.createCustomer(customerDTO.email(), customerDTO.password() ,customerDTO.username(),customerDTO.phoneNumber()));
+    @PostMapping("/customers")
+    public CustomerResponseDTO createCustomer(@RequestBody CustomerRequestDTO customerDTO) {
+        return new CustomerResponseDTO(accountManagementService.createCustomer(customerDTO.email(), customerDTO.password(),
+                customerDTO.username(), customerDTO.phoneNumber()));
     }
 
     /**
@@ -80,8 +81,8 @@ public class AccountManagementController {
      * @author Tarek Namani
      */
     @GetMapping("/customers/")
-    public Set<CustomerDTO> getCustomers() {
-        return accountManagementService.getSetOfCustomers().stream().map(CustomerDTO::new).collect(Collectors.toSet());
+    public Set<CustomerResponseDTO> getCustomers() {
+        return accountManagementService.getSetOfCustomers().stream().map(CustomerResponseDTO::new).collect(Collectors.toSet());
     }
 
     /**
@@ -93,8 +94,8 @@ public class AccountManagementController {
      * @author Tarek Namani
      */
     @GetMapping("/customers/{customerEmail}")
-    public CustomerDTO getCustomerByEmail(@PathVariable String customerEmail) {
-        return new CustomerDTO(accountManagementService.getCustomerByEmail(customerEmail));
+    public CustomerResponseDTO getCustomerByEmail(@PathVariable String customerEmail) {
+        return new CustomerResponseDTO(accountManagementService.getCustomerByEmail(customerEmail));
     }
 
     /**
@@ -105,9 +106,10 @@ public class AccountManagementController {
      *
      * @author Tarek Namani
      */
-    @PostMapping("/employees/{username}")
-    public EmployeeDTO createEmployee(@RequestBody EmployeeDTO employeeDTO) {
-        return new EmployeeDTO(accountManagementService.createEmployee(employeeDTO.username(),employeeDTO.password(),employeeDTO.isActive()));
+    @PostMapping("/employees")
+    public EmployeeResponseDTO createEmployee(@RequestBody EmployeeRequestDTO employeeDTO) {
+        return new EmployeeResponseDTO(accountManagementService.createEmployee(employeeDTO.username(),
+                employeeDTO.password(), employeeDTO.isActive()));
     }
 
     /**
@@ -130,8 +132,8 @@ public class AccountManagementController {
      * @author Tarek Namani
      */
     @GetMapping("/employees/")
-    public Set<EmployeeDTO> getEmployees() {
-        return accountManagementService.getSetOfEmployees().stream().map(EmployeeDTO::new).collect(Collectors.toSet());
+    public Set<EmployeeResponseDTO> getEmployees() {
+        return accountManagementService.getSetOfEmployees().stream().map(EmployeeResponseDTO::new).collect(Collectors.toSet());
     }
 
     /**
@@ -142,9 +144,9 @@ public class AccountManagementController {
      *
      * @author Camille Pouliot
      */
-    @GetMapping("/employees/{employeeId}")
-    public EmployeeDTO getEmployeeById(@PathVariable int employeeId) {
-        return new EmployeeDTO(accountManagementService.findEmployeeById(employeeId));
+    @GetMapping("/employees/id/{employeeId}")
+    public EmployeeResponseDTO getEmployeeById(@PathVariable int employeeId) {
+        return new EmployeeResponseDTO(accountManagementService.findEmployeeById(employeeId));
     }
 
     /**
@@ -155,9 +157,9 @@ public class AccountManagementController {
      *
      * @author Tarek Namani
      */
-    @GetMapping("/employees/{username}")
-    public EmployeeDTO getEmployeeByUsername(@PathVariable String username) {
-        return new EmployeeDTO(accountManagementService.getEmployeeByUsername(username));
+    @GetMapping("/employees/username/{username}")
+    public EmployeeResponseDTO getEmployeeByUsername(@PathVariable String username) {
+        return new EmployeeResponseDTO(accountManagementService.getEmployeeByUsername(username));
     }
 
 
@@ -175,13 +177,13 @@ public class AccountManagementController {
     }
 
     @PostMapping("/login/customers/{customerEmail}")
-    public CustomerDTO customerLogin(@PathVariable String customerEmail, @RequestBody String password) {
-        return new CustomerDTO(accountManagementService.customerLogin(customerEmail,password));
+    public CustomerResponseDTO customerLogin(@PathVariable String customerEmail, @RequestBody String password) {
+        return new CustomerResponseDTO(accountManagementService.customerLogin(customerEmail,password));
     }
 
     @PostMapping("/login/employees/{username}")
-    public EmployeeDTO employeeLogin(@PathVariable String username, @RequestBody String password) {
-        return new EmployeeDTO(accountManagementService.employeeLogin(username,password));
+    public EmployeeResponseDTO employeeLogin(@PathVariable String username, @RequestBody String password) {
+        return new EmployeeResponseDTO(accountManagementService.employeeLogin(username,password));
     }
 
     @PostMapping("/login/manager/{username}")
@@ -193,15 +195,15 @@ public class AccountManagementController {
      * Change a customer password
      *
      * @param customerEmail
-     * @param oldPassword
-     * @param newPassword
+     * @param changePasswordDTO
      * @return CustomerDTO
      *
      * @author Tarek Namani
      */
     @PutMapping("/customers/{customerEmail}/password")
-    public CustomerDTO changeCustomerPassword(@PathVariable String customerEmail, @RequestBody String oldPassword, @RequestBody String newPassword) {
-        return new CustomerDTO(accountManagementService.updateCustomerPassword(oldPassword,newPassword,customerEmail));
+    public CustomerResponseDTO changeCustomerPassword(@PathVariable String customerEmail, @RequestBody ChangePasswordDTO changePasswordDTO) {
+        return new CustomerResponseDTO(accountManagementService.updateCustomerPassword(changePasswordDTO.oldPassword(),
+                changePasswordDTO.newPassword(),customerEmail));
     }
 
     /**
@@ -213,28 +215,28 @@ public class AccountManagementController {
      *
      * @author Tarek Namani
      */
-    @PutMapping("/customers/{customerEmail}/username")
-    public CustomerDTO changeCustomerUsername(@PathVariable String customerEmail, @RequestBody String newUsername) {
-        return new CustomerDTO(accountManagementService.updateCustomerUsername(newUsername,customerEmail));
+    @PutMapping("/customers/{customerEmail}/username/{newUsername}")
+    public CustomerResponseDTO updateCustomerUsername(@PathVariable String customerEmail, @PathVariable String newUsername) {
+        return new CustomerResponseDTO(accountManagementService.updateCustomerUsername(newUsername,customerEmail));
     }
 
     /**
      * Change a customer phone number
      *
      * @param customerEmail Customer unique email
-     * @param newPhonenumber Updated phone number
+     * @param newPhoneNumber Updated phone number
      * @return Customer DTO of the updated customer
      *
      * @author Tarek Namani
      */
-    @PutMapping("/customers/{customerEmail}/phoneNumber")
-    public CustomerDTO changeCustomerPhonenumber(@PathVariable String customerEmail, @RequestBody String newPhonenumber) {
-        return new CustomerDTO(accountManagementService.updateCustomerUsername(newPhonenumber,customerEmail));
+    @PutMapping("/customers/{customerEmail}/phoneNumber/{newPhoneNumber}")
+    public CustomerResponseDTO changeCustomerPhoneNumber(@PathVariable String customerEmail, @PathVariable String newPhoneNumber) {
+        return new CustomerResponseDTO(accountManagementService.updateCustomerPhoneNumber(newPhoneNumber,customerEmail));
     }
 
-    @PutMapping("/employees/{oldUsername}")
-    public EmployeeDTO updateEmployeeUsername(@PathVariable String oldUsername, @RequestBody String newUsername) {
-        return new EmployeeDTO(accountManagementService.updateEmployeeUsername(newUsername,oldUsername));
+    @PutMapping("/employees/{oldUsername}/username/{newUsername}")
+    public EmployeeResponseDTO updateEmployeeUsername(@PathVariable String oldUsername, @PathVariable String newUsername) {
+        return new EmployeeResponseDTO(accountManagementService.updateEmployeeUsername(newUsername,oldUsername));
     }
 
     /**

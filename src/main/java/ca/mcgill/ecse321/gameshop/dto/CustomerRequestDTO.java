@@ -6,18 +6,18 @@ import java.io.Serializable;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public record CustomerDTO(String username,
-                          String password,
-                          String email,
-                          String phoneNumber,
-                          Set<AddressResponseDTO> addresses,
-                          Set<CreditCardDTO> creditCards,
-                          Set<ReviewDTO> likedReviews,
-                          Set<PurchaseDTO> purchases,
-                          Integer id) implements Serializable {
+public record CustomerRequestDTO(String username,
+                                  String password,
+                                  String email,
+                                  String phoneNumber,
+                                  Set<AddressResponseDTO> addresses,
+                                  Set<CreditCardDTO> creditCards,
+                                  Set<ReviewDTO> likedReviews,
+                                  Set<PurchaseDTO> purchases
+) implements Serializable {
 
 
-    public CustomerDTO(Customer customer) {
+    public CustomerRequestDTO(Customer customer) {
         this(customer.getUsername(),
                 customer.getPassword(),
                 customer.getEmail(),
@@ -26,13 +26,7 @@ public record CustomerDTO(String username,
                 ,customer.getCopyofCreditCards().stream().map(CreditCardDTO::new).collect(Collectors.toSet())
                 ,customer.getCopyLikedReviews().stream().map(ReviewDTO::new).collect(Collectors.toSet())
                 ,customer.getCopyPurchases().stream().map(PurchaseDTO::new).collect(Collectors.toSet())
-                , customer.getId());
-    }
-
-    public Customer toCustomer() {
-        Customer customer = new Customer(this.username, this.password, this.email, this.phoneNumber);
-        
-        return customer;
+        );
     }
 }
 

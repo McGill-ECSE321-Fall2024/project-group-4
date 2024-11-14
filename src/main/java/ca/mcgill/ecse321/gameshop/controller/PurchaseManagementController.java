@@ -90,8 +90,8 @@ public class PurchaseManagementController {
      */
     @GetMapping("customers/{customerEmail}")
     @ResponseStatus(HttpStatus.FOUND)
-    public CustomerDTO getCustomerByEmail(@PathVariable String customerEmail) {
-        return new CustomerDTO(purchaseManagementService.findCustomerByEmail(customerEmail));
+    public CustomerResponseDTO getCustomerByEmail(@PathVariable String customerEmail) {
+        return new CustomerResponseDTO(purchaseManagementService.findCustomerByEmail(customerEmail));
     }
 
     /**
