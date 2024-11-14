@@ -9,7 +9,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -21,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class TestPurchaseManagementService {
+public class testPurchaseManagementService {
 
     @InjectMocks
     PurchaseManagementService purchaseManagementService;
@@ -39,15 +41,13 @@ public class TestPurchaseManagementService {
     @Mock
     CreditCardRepository creditCardRepository;
     @Mock
-    private GameRepository gameRepository;
+    GameRepository gameRepository;
     @Mock
     EmployeeRepository employeeRepository;
     @Mock
     RefundRequestRepository refundRepository;
     @Mock
-    private ManagerRepository managerRepository;
-    @Mock
-    private CartItemRepository cartItemRepository;
+    ManagerRepository managerRepository;
 
     Customer customer;
     Customer customer2;
@@ -70,8 +70,7 @@ public class TestPurchaseManagementService {
     RefundRequest approvedRequest;
     RefundRequest deniedRequest;
     Manager manager;
-    CartItem cartItem1;
-    CartItem cartItem2;
+    RefundRequest toModifyRequest;
 
 
     @AfterEach
@@ -87,48 +86,22 @@ public class TestPurchaseManagementService {
     public void setUp() {
         //initialize all fields
         customer = new Customer("customer", "password", "customer@email.com", "0123456789");
-
-        Customer originalCustomer2 = new Customer("customer2", "password", "secondCustomer@email.com", "0123456789");
-        customer2 = spy(originalCustomer2);
-        when(customer2.getId()).thenReturn(customer.getId() + 1);
-
+        customer2 = new Customer("customer2", "password", "secondCustomer@email.com", "0123456789");
         manager = new Manager();
         cusomterAddress = new Address("Rue University","Montreal", "Quebec","Canada", "123 4h4", customer);
-
-        creditCard = new CreditCard(123123, 123, LocalDate.of(2025, 10,1),customer, cusomterAddress);
-        CreditCard originalCreditCard2 = new CreditCard(12312233, 124, LocalDate.of(2025, 10,1),customer2, cusomterAddress);
-        creditCard2 = spy(originalCreditCard2);
-        when(creditCard2.getId()).thenReturn(creditCard.getId() + 1);
-
+        creditCard = new CreditCard(123123, "123", LocalDate.of(2025, 10,1),customer, cusomterAddress);
+        creditCard2 = new CreditCard(12312233, "124", LocalDate.of(2025, 10,1),customer2, cusomterAddress);
         game = new Game("testGame", "An average game", "example.url",15,true, 5);
-
-        Game originalGame2 = new Game("testGame2", "A good game", "example.url",30,true, 2);
-        game2 = spy(originalGame2);
-        when(game2.getId()).thenReturn(game.getId() + 1);
-
+        game2 = new Game("testGame2", "A good game", "example.url",30,true, 1);
         purchase = new Purchase(date,15,game,customer,cusomterAddress,creditCard);
-        Purchase originalPurchase2 = new Purchase(date,15,game,customer,cusomterAddress,creditCard);
-        purchase2 = spy(originalPurchase2);
-        when(purchase2.getId()).thenReturn(purchase.getId() + 1);
-
+        purchase2 = new Purchase(date,15,game,customer,cusomterAddress,creditCard);
         referenceReview = new Review(rating, reviewText, purchase);
         validEmployee = new Employee("employee", "password", true);
         inactiveEmployee = new Employee("inactive", "password", false);
-
-        cartItem1 = new CartItem(1, customer,game);
-        cartItem2 = new CartItem(1, customer,game2);
-
-
-
         referenceRequest = new RefundRequest(purchase, RequestStatus.PENDING, refundText, null);
-
-        RefundRequest originalApprovedRequest = new RefundRequest(purchase, RequestStatus.APPROVED, refundText, validEmployee);
-        approvedRequest = spy(originalApprovedRequest);
-        when(approvedRequest.getId()).thenReturn(referenceRequest.getId()+1);
-
-        RefundRequest originalDeniedRequest = new RefundRequest(purchase, RequestStatus.DENIED, refundText, validEmployee);
-        deniedRequest = spy(originalDeniedRequest);
-        when(deniedRequest.getId()).thenReturn(referenceRequest.getId()+2);
+        approvedRequest = new RefundRequest(purchase, RequestStatus.APPROVED, refundText, validEmployee);
+        deniedRequest = new RefundRequest(purchase, RequestStatus.DENIED, refundText, validEmployee);
+        toModifyRequest = new RefundRequest(purchase, RequestStatus.PENDING, refundText, validEmployee);
 
         validEmployee.addRefundRequest(approvedRequest);
 
@@ -138,6 +111,7 @@ public class TestPurchaseManagementService {
         when(reviewRepository.save(any(Review.class))).thenReturn(referenceReview);
 
         when(purchaseRepository.findById(purchase.getId())).thenReturn(Optional.of(purchase));
+        when(purchaseRepository.findById(purchase2.getId())).thenReturn(Optional.of(purchase2));
         when(purchaseRepository.findById(-5)).thenReturn(Optional.empty());
 
         when(customerRepository.save(any(Customer.class))).thenReturn(customer);
@@ -169,20 +143,19 @@ public class TestPurchaseManagementService {
         when(refundRepository.findById(referenceRequest.getId())).thenReturn(Optional.of(referenceRequest));
         when(refundRepository.findById(approvedRequest.getId())).thenReturn(Optional.of(approvedRequest));
         when(refundRepository.findById(deniedRequest.getId())).thenReturn(Optional.of(deniedRequest));
+        when(refundRepository.findById(toModifyRequest.getId())).thenReturn(Optional.of(toModifyRequest));
         when(refundRepository.findById(-1)).thenReturn(Optional.empty());
-
         when(managerRepository.findById(manager.getId())).thenReturn(Optional.of(manager));
         when(managerRepository.findById(-1)).thenReturn(Optional.empty());
-
-        Set<CartItem> cartItems = new HashSet<>();
-        cartItems.add(cartItem1);
-        cartItems.add(cartItem2);
-        when(cartItemRepository.findByCartItemId_Customer_Id(customer.getId())).thenReturn(cartItems);
 
 
 
     }
 
+    /*
+     * Tests finding a valid employee
+     * @author Aerin Brown
+     */
     @Test
     public void testFindEmployeeByEmail() {
         //Act
@@ -196,6 +169,10 @@ public class TestPurchaseManagementService {
         verify(employeeRepository, times(1)).findByUsername("employee");
     }
 
+    /*
+     * Tests finding a nonexistant employee
+     * @author Aerin Brown
+     */
     @Test
     public void testFindInvalidEmployeeByUsername() {
         //Act
@@ -206,6 +183,10 @@ public class TestPurchaseManagementService {
         verify(employeeRepository, times(1)).findByUsername("asdf");
     }
 
+    /*
+     * Tests finding an employee with a null username
+     * @author Aerin Brown
+     */
     @Test
     public void testFindInvalidEmployeeByUsername2() {
         //Act
@@ -215,6 +196,10 @@ public class TestPurchaseManagementService {
         assertEquals("Employee username is null!", exception.getMessage());
     }
 
+    /*
+     * Tests finding a valid refund request
+     * @author Aerin Brown
+     */
     @Test
     public void testFindRefundById() {
         //Act
@@ -225,10 +210,10 @@ public class TestPurchaseManagementService {
         assertEquals(referenceRequest.getId(), refund.getId());
         assertEquals(refundText, refund.getReason());
         assertEquals(RequestStatus.PENDING, refund.getStatus());
-        assertNull(refund.getReviewer());
+        assertEquals(validEmployee, refund.getReviewer());
         verify(refundRepository, times(1)).findById(referenceRequest.getId());
     }
-
+     
     @Test
     public void testFindInvalidGameById() {
         //Act
@@ -242,18 +227,19 @@ public class TestPurchaseManagementService {
     @Test
     public void testFindGameById() {
         //Act
-        Game loadedGame = purchaseManagementService.findGameById(game.getId());
+        Game loadedGame = purchaseManagementService.findGameById(game2.getId());
 
         //Assert
         assertNotNull(loadedGame);
-        assertEquals(game.getId(), loadedGame.getId());
-        assertEquals(game.getName(), loadedGame.getName());
-        assertEquals(game.getDescription(), loadedGame.getDescription());
-        assertEquals(game.getPrice(), loadedGame.getPrice());
-        assertEquals(game.getStock(), loadedGame.getStock());
-        assertEquals(game.getCoverPicture(), loadedGame.getCoverPicture());
-        assertEquals(game.getCopyPromotions(), loadedGame.getCopyPromotions());
-        verify(gameRepository, times(1)).findById(game.getId());
+        assertEquals(game2.getId(), loadedGame.getId());
+        assertEquals(game2.getName(), loadedGame.getName());
+        assertEquals(game2.getDescription(), loadedGame.getDescription());
+        assertEquals(game2.getPrice(), loadedGame.getPrice());
+        assertEquals(game2.getStock(), loadedGame.getStock());
+        assertEquals(game2.getCopyInCartOf(), loadedGame.getCopyInCartOf());
+        assertEquals(game2.getCoverPicture(), loadedGame.getCoverPicture());
+        assertEquals(game2.getCopyPromotions(), loadedGame.getCopyPromotions());
+        verify(gameRepository, times(1)).findById(game2.getId());
 
     }
 
@@ -264,7 +250,7 @@ public class TestPurchaseManagementService {
 
         //Assert
         assertEquals("No Refund Request found with id -1", exception.getMessage());
-        verify(refundRepository, times(1)).findById(null);
+        verify(refundRepository, times(1)).findById(-1);
     }
 
 
@@ -291,6 +277,10 @@ public class TestPurchaseManagementService {
         verify(managerRepository, times(1)).findById(-1);
     }
 
+    /*
+     * Tests creating a new refund request
+     * @author Aerin Brown
+     */
     @Test
     public void testRequestRefund() {
         //Act
@@ -305,6 +295,10 @@ public class TestPurchaseManagementService {
         verify(refundRepository, times(1)).save(request);
     }
 
+    /*
+     * Tests requesting a refund without a reason
+     * @author Aerin Brown
+     */
     @Test
     public void testRequestInvalidRefund() {
         //Act
@@ -314,6 +308,10 @@ public class TestPurchaseManagementService {
         assertEquals("No reason given for refund.", exception.getMessage());
     }
 
+    /*
+     * Tests requesting a duplicate refund
+     * @author Aerin Brown
+     */
     @Test
     public void testRequestInvalidRefund2() {
         //Act
@@ -323,60 +321,88 @@ public class TestPurchaseManagementService {
         assertEquals("Purchase already has a refund request", exception.getMessage());
     }
 
+    /*
+     * Tests approving a valid pending refund
+     * @author Aerin Brown
+     */
     @Test
     public void testApproveRefund() {
         //Act
-        purchaseManagementService.approveRefund(referenceRequest.getId());
+        purchaseManagementService.approveRefund(toModifyRequest.getId(), validEmployee.getUsername());
 
         //Assert
-        assertEquals(RequestStatus.APPROVED, referenceRequest.getStatus());
+        assertEquals(RequestStatus.APPROVED, toModifyRequest.getStatus());
     }
 
+    /*
+     * Tests approving an already approved refund
+     * @author Aerin Brown
+     */
     @Test
     public void testApproveInvalidRefund() {
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.approveRefund(approvedRequest.getId()));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.approveRefund(approvedRequest.getId(), validEmployee.getUsername()));
 
         //Assert
         assertEquals("Only pending requests can be approved.", exception.getMessage());
     }
 
+    /*
+     * Tests approving a denied refund
+     * @author Aerin Brown
+     */
     @Test
     public void testApproveInvalidRefund2() {
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.approveRefund(deniedRequest.getId()));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.approveRefund(deniedRequest.getId(), validEmployee.getUsername()));
 
         //Assert
         assertEquals("Only pending requests can be approved.", exception.getMessage());
     }
 
+    /*
+     * Tests denying a valid pending refund
+     * @author Aerin Brown
+     */
     @Test
     public void testDenyRefund() {
         //Act
-        purchaseManagementService.approveRefund(referenceRequest.getId());
+        purchaseManagementService.denyRefund(toModifyRequest.getId(), validEmployee.getUsername());
 
         //Assert
-        assertEquals(RequestStatus.DENIED, referenceRequest.getStatus());
+        assertEquals(RequestStatus.DENIED, toModifyRequest.getStatus());
     }
 
+    /*
+     * Tests denying an approved refund
+     * @author Aerin Brown
+     */
     @Test
     public void testDenyInvalidRefund() {
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.approveRefund(approvedRequest.getId()));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.denyRefund(approvedRequest.getId(), validEmployee.getUsername()));
 
         //Assert
         assertEquals("Only pending requests can be denied.", exception.getMessage());
     }
 
+    /*
+     * Tests denying an already denied refund
+     * @author Aerin Brown
+     */
     @Test
     public void testDenyInvalidRefund2() {
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.approveRefund(deniedRequest.getId()));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.denyRefund(deniedRequest.getId(), validEmployee.getUsername()));
 
         //Assert
         assertEquals("Only pending requests can be denied.", exception.getMessage());
     }
 
+    /*
+     * Tests adding a valid reviewer to a refund request
+     * @author Aerin Brown
+     */
     @Test
     public void testAddReviewerToRefund() {
         //Act
@@ -387,6 +413,10 @@ public class TestPurchaseManagementService {
         assertTrue(validEmployee.getRefundRequests().contains(referenceRequest));
     }
 
+    /*
+     * Tests adding a reviewer to a request that already has one
+     * @author Aerin Brown
+     */
     @Test
     public void testAddInvalidReviewerToRefund() {
         //Act
@@ -396,6 +426,10 @@ public class TestPurchaseManagementService {
         assertEquals("Refund already has reviewer!", exception.getMessage());
     }
 
+    /*
+     * Tests adding an inactive employee as a reviewer
+     * @author Aerin Brown
+     */
     @Test
     public void testAddInvalidReviewerToRefund2() {
         //Act
@@ -405,6 +439,10 @@ public class TestPurchaseManagementService {
         assertEquals("Cannot assign an inactive employee", exception.getMessage());
     }
 
+    /*
+     * Tests removing a valid reviewer
+     * @author Aerin Brown
+     */
     @Test
     public void testRemoveReviewerFromRefund() {
         //Act
@@ -412,9 +450,13 @@ public class TestPurchaseManagementService {
 
         //Assert
         assertNull(approvedRequest.getReviewer());
-        assertEquals(0, validEmployee.getRefundRequests().size());
+        assertTrue(validEmployee.getRefundRequests().isEmpty());
     }
 
+    /*
+     * Tests removing a nonexistant reviewer from a refund
+     * @author Aerin Brown
+     */
     @Test
     public void testRemoveInvalidReviewerFromRefund()  {
         //Act
@@ -424,6 +466,10 @@ public class TestPurchaseManagementService {
         assertEquals("Employee is not the reviewer of this refund request.", exception.getMessage());
     }
 
+    /*
+     * Tests removing a reviewer from a refund request they aren't assigned to
+     * @author Aerin Brown
+     */
     @Test 
     public void testRemoveInvalidReviewerFromRefund2() {
         //Act
@@ -639,9 +685,18 @@ public class TestPurchaseManagementService {
     }
 
     @Test
+    public void addCreditCardToCustomerWalletWithInvalidCVV1() {
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->purchaseManagementService.addCreditCardToCustomerWallet(creditCard.getCardNumber(), "Invalid CVV", "10/2", creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId()));
+
+        //Assert
+        assertEquals("Invalid cvv number, enter a 3 digit CVV", exception.getMessage());
+    }
+
+    @Test
     public void addCreditCardToCustomerWalletWithInvalidCVV2() {
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->purchaseManagementService.addCreditCardToCustomerWallet(creditCard.getCardNumber(), 1234, "10/2", creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId()));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->purchaseManagementService.addCreditCardToCustomerWallet(creditCard.getCardNumber(), "1234", "10/2", creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId()));
 
         //Assert
         assertEquals("Invalid cvv number, enter a 3 digit CVV", exception.getMessage());
@@ -725,10 +780,10 @@ public class TestPurchaseManagementService {
        //Arrange
 
        //Act
-       IllegalArgumentException exception = assertThrows(IllegalArgumentException.class , () ->purchaseManagementService.postReview(customer2.getEmail(),2,"Some text",purchase.getId()));
+       IllegalArgumentException exception = assertThrows(IllegalArgumentException.class , () ->purchaseManagementService.postReview(customer2.getEmail(),-2,"Some text",purchase.getId()));
 
        //Assert
-       assertEquals("Customer customer2 does not own the game they want to review", exception.getMessage());
+       assertEquals("Customer customer2 does not own the game they want to review!", exception.getMessage());
 
    }
 
@@ -768,7 +823,7 @@ public class TestPurchaseManagementService {
         //Arrange
 
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class , () ->purchaseManagementService.replyToReview(referenceReview.getId(),"goodText", 1));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class , () ->purchaseManagementService.replyToReview(referenceReview.getId(),null, customer.getId()));
 
         //Assert
         assertEquals("Only manager can reply to reviews !", exception.getMessage());
@@ -803,13 +858,12 @@ public class TestPurchaseManagementService {
     public void TestRemoveCreditCardFromWrongCustomerWallet() {
         //Arrange
         creditCard.setCustomer(customer2);
-        customer.removeCreditCartFromWallet(creditCard);
 
         //Act
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, ()-> purchaseManagementService.removeCreditCardFromWallet(customer.getEmail(),creditCard.getId()));
 
         //Assert
-        assertEquals("Customer is not associated with given credit card", exception.getMessage());
+        assertEquals("Credit card is not associated to customer : customer", exception.getMessage());
 
     }
 
@@ -822,7 +876,7 @@ public class TestPurchaseManagementService {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, ()-> purchaseManagementService.removeCreditCardFromWallet(customer.getEmail(),creditCard.getId()));
 
         //Assert
-        assertEquals("Customer is not associated with given credit card", exception.getMessage());
+        assertEquals("Customer doesn't have credit cards!", exception.getMessage());
 
     }
 
@@ -835,7 +889,7 @@ public class TestPurchaseManagementService {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, ()-> purchaseManagementService.removeCreditCardFromWallet(customer.getEmail(),1));
 
         //Assert
-        assertEquals("Customer is not associated with given credit card", exception.getMessage());
+        assertEquals("Customer does not own credit card : 12312233", exception.getMessage());
 
     }
 
@@ -898,6 +952,16 @@ public class TestPurchaseManagementService {
     }
 
     @Test
+    public void testGetPromotionalPriceWithInvalidDate() {
+
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purchaseManagementService.getPromotionalPrice(game.getId()));
+
+        //Assert
+        assertEquals("Date is null!",exception.getMessage());
+    }
+
+    @Test
     public void testCheckoutWithWrongCreditCard() {
 
         //Act
@@ -910,9 +974,6 @@ public class TestPurchaseManagementService {
 
     @Test
     public void testCheckoutWithExpiredCreditCard() {
-        //Arrange
-        cartItemRepository.findByCartItemId_Customer_Id(customer.getId()).add(new CartItem(1,customer,game)); //create a new Cart item and link it to a customer
-        creditCard.setExpiryDate(LocalDate.of(1999,10,19));
 
         //Act
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purchaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), creditCard.getId()));
@@ -923,9 +984,18 @@ public class TestPurchaseManagementService {
     }
 
     @Test
+    public void testCheckoutWithNullDate() {
+
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purchaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), creditCard.getId()));
+
+        //Assert
+        assertEquals("Purchase date is null", exception.getMessage());
+
+    }
+
+    @Test
     public void testCheckoutEmptyCart() {
-        //Arrange
-        cartItemRepository.findByCartItemId_Customer_Id(customer.getId()).clear();
 
         //Act
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purchaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), creditCard.getId()));
@@ -939,7 +1009,7 @@ public class TestPurchaseManagementService {
     public void testCheckoutInacitveGame() {
         //Arrange
         game.setActive(false);
-        cartItemRepository.findByCartItemId_Customer_Id(customer.getId()).add(new CartItem(1,customer,game));
+        customer.addGameToCart(game);
 
         //Act
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,()->purchaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), creditCard.getId()));
@@ -952,7 +1022,7 @@ public class TestPurchaseManagementService {
     @Test
     public void testCheckoutOutOfStockgame() {
         //Arrange
-        cartItemRepository.findByCartItemId_Customer_Id(customer.getId()).add(new CartItem(1,customer,game)); //create a new Cart item and link it to a customer
+        customer.addGameToCart(game);
         game.setStock(0);
 
         //Act
@@ -968,6 +1038,8 @@ public class TestPurchaseManagementService {
         //Arrange
         int initialStockGame1 = game.getStock();
         int initialStockGame2 = game2.getStock();
+        customer.addGameToCart(game);
+        customer.addGameToCart(game2);
 
         //Act
         purchaseManagementService.checkout(customer.getEmail(), cusomterAddress.getId(), creditCard.getId());
@@ -976,24 +1048,26 @@ public class TestPurchaseManagementService {
         assertEquals(initialStockGame1 - 1, game.getStock());
         assertEquals(initialStockGame2 - 1, game2.getStock());
 
-        assertEquals(4, customer.getCopyPurchases().size()); //note the two games originally in the cart from intialization
+        assertTrue(game.getCopyInCartOf().isEmpty());
+        assertTrue(game2.getCopyInCartOf().isEmpty());
+        assertTrue(customer.getCopyCart().isEmpty());
+
+        assertEquals(4, customer.getCopyPurchases().size()); //note that we already have two purchases in customer from initialization
 
         verify(customerRepository, times(1)).save(customer);
-        verify(gameRepository, times(1)).saveAll(any());
+        verify(gameRepository, times(1)).save(game);
+        verify(gameRepository, times(1)).save(game2);
         verify(purchaseRepository, times(2)).save(any(Purchase.class));
-        verify(cartItemRepository, times(1)).deleteAll(any());
 
     }
 
     @Test
     public void testGetCartPrice() {
         //Arrange
-        float price = game.getPrice() + game2.getPrice();
+        customer.addGameToCart(game2);
 
-        //Act
         float cartPrice = purchaseManagementService.getCartPrice(customer.getEmail());
 
-        //Assert
-        assertEquals( price , cartPrice);
+        assertEquals( game2.getPrice() , cartPrice);
     }
 }

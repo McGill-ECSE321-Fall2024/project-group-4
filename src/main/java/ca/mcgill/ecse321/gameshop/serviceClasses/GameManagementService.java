@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.HashSet;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -278,6 +277,20 @@ public class GameManagementService {
         gameRepository.save(game);
     }
 
+
+    /**
+     * @param gameId id of Game to update
+     * @param is_active new state of the game
+     * @throws EntityNotFoundException when the game does not exist
+     * @author Tarek Namaani
+     */
+    @Transactional
+    public void updateActivity(int gameId, boolean is_active) {
+        Game game = gameRepository.findById(gameId).orElseThrow(() -> new EntityNotFoundException("Game not found"));
+        game.setActive(is_active);
+        gameRepository.save(game);
+    }
+
     /**
      * Get a game request from id
      *
@@ -309,7 +322,7 @@ public class GameManagementService {
         if (game.isPresent()) {
             return game.get();
         }
-        throw new IllegalArgumentException("No Game found");
+        throw new EntityNotFoundException("No Game found");
     }
 
     /**

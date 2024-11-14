@@ -5,6 +5,7 @@ import ca.mcgill.ecse321.gameshop.model.Game;
 import ca.mcgill.ecse321.gameshop.model.Policy;
 import ca.mcgill.ecse321.gameshop.serviceClasses.AccountManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import ca.mcgill.ecse321.gameshop.model.Customer;
@@ -285,19 +286,16 @@ public class AccountManagementController {
     /**
      * Create an address into a customer account
      *
-     * @param customerEmail
-     * @param zipCode
-     * @param city
-     * @param province
-     * @param country
-     * @param street
+     * @param customerEmail of customer
+     * @param address address to add
      * @return AddressDTO
      *
      * @author Tarek Namani
      */
     @PostMapping("/customers/{customerEmail}/addresses")
-    public AddressDTO createAddress(@PathVariable String customerEmail, @RequestBody String zipCode, @RequestBody String city, @RequestBody String province, @RequestBody String country, @RequestBody String street) {
-        return new AddressDTO(accountManagementService.createAddress(street,city,province,zipCode,country,customerEmail));
+    @ResponseStatus(HttpStatus.CREATED)
+    public AddressDTO createAddress(@PathVariable String customerEmail, @RequestBody AddressDTO address) {
+        return new AddressDTO(accountManagementService.createAddress(address.street(),address.city(),address.province(),address.postalCode(),address.country(),customerEmail));
     }
 
 

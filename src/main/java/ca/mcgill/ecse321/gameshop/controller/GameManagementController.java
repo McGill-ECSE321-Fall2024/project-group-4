@@ -141,15 +141,7 @@ public class GameManagementController {
         return inventory.stream().map(GameResponseDTO::new).collect(Collectors.toList());
     }
 
-    /**
-     * Add a game and return it
-     *
-     * @param gameRequestDTO game request that approves the game
-     * @return The added game response
-     *
-     * @author Clara Mickail
-     */
-    @PostMapping("/games")
+    @PostMapping("games")
     public GameResponseDTO addGame(@RequestBody GameInputDTO gameRequestDTO) {
         Game newGame = gameManagementService.addNewGame(gameRequestDTO.name(), gameRequestDTO.description(),
                 gameRequestDTO.coverPicture(), gameRequestDTO.price(), gameRequestDTO.isActive(),
@@ -336,7 +328,7 @@ public class GameManagementController {
      */
     @PutMapping("/games/{gameId}/{promotionId}")
     public void addPromotionToGame(@PathVariable int gameId, @PathVariable int promotionId) {
-        gameManagementService.addPromotionToGame(promotionId, gameId);
+        gameManagementService.addPromotionToGame(promotionId,gameId);
     }
 
     /**
@@ -350,5 +342,11 @@ public class GameManagementController {
     @PutMapping("/games/{promotionId}/{gameId}")
     public void removePromotionFromGame(@PathVariable int promotionId, @PathVariable int gameId) {
         gameManagementService.removePromotionFromGame(promotionId, gameId);
+    }
+
+
+    @PutMapping("/games/{gameId}/is_active")
+    public void setGameActivity(@RequestParam boolean is_active, @PathVariable int gameId) {
+        gameManagementService.updateActivity(gameId, is_active);
     }
 }
