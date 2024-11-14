@@ -339,8 +339,8 @@ public class GameManagementController {
      *
      * @author Camille Pouliot
      */
-    @PutMapping("/games/{promotionId}/{gameId}")
-    public void removePromotionFromGame(@PathVariable int promotionId, @PathVariable int gameId) {
+    @DeleteMapping("/games/{gameId}/{promotionId}")
+    public void removePromotionFromGame(@PathVariable int gameId, @PathVariable int promotionId) {
         gameManagementService.removePromotionFromGame(promotionId, gameId);
     }
 

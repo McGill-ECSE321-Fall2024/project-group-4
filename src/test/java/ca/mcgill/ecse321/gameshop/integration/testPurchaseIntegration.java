@@ -614,7 +614,7 @@ public class testPurchaseIntegration {
     @Transactional
     public void testAddGameToPromotion() {
         //Arrange
-        ResponseEntity<Void> addedPromotion = client.exchange("/games/"+gameId+"/"+promotionID, HttpMethod.PUT, null ,void.class);
+        client.put("/games/"+gameId+"/"+promotionID, null);
         String url = "/customers/"+customerEmail+"/cart/price";
 
         //Act
@@ -710,13 +710,12 @@ public class testPurchaseIntegration {
     @Transactional
     public void testReplyToReview() {
         //Arrange
-        Manager manager = new Manager("manager", "manager");
-        managerRepository.save(manager);
+        ManagerDTO managerDTO = client.postForEntity("/accounts/manager/", null, ManagerDTO.class).getBody();
         String url = "/reviews/"+reviewId+"/reply?managerId={managerId}";
         HttpEntity<String> requestEntity = new HttpEntity<>("Thank you for the review!");
 
         //Act
-        ResponseEntity<Void> response = client.exchange(url,HttpMethod.POST, requestEntity,void.class,manager.getId());
+        ResponseEntity<Void> response = client.exchange(url,HttpMethod.POST, requestEntity,void.class,managerDTO.id());
 
         //Assert
         assertNull(response.getBody());

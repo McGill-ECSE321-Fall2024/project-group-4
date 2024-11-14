@@ -381,7 +381,7 @@ public class PurchaseManagementService {
     public float getCartPrice(String customerEmail) {
 
         Customer customer = findCustomerByEmail(customerEmail);
-        long price = cartItemRepository.findByCartItemId_Customer_Id(customer.getId()).stream().mapToLong(game -> (long) ((long) game.getQuantity()*getPromotionalPrice(game.getGame().getId()))).sum();
+        double price = cartItemRepository.findByCartItemId_Customer_Id(customer.getId()).stream().mapToDouble(game -> (game.getQuantity()*getPromotionalPrice(game.getGame().getId()))).sum();
         return (float) price;
     }
     /**
@@ -407,7 +407,7 @@ public class PurchaseManagementService {
                         .toLocalDate()))).mapToInt(Promotion::getDiscount).sum(); //sum up the active discounts on the game
 
         if (discount >= 100) return 0; //discount cannot exceed 100%
-        return originalPrice * ((float) discount/100);
+        return originalPrice * (1 - (float) discount/100);
     }
 
 
