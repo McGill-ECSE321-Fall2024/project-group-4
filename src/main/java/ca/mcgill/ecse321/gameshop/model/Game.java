@@ -148,7 +148,6 @@ public class Game {
         return stock;
     }
 
-
     private boolean isAvailable;
 
     public boolean isAvailable() {
@@ -162,5 +161,15 @@ public class Game {
     public void setStock(int stock) {
         this.stock = stock;
         this.isAvailable = stock > 0;
+    }
+
+    private Set<Game> copyInCartOf;
+
+    public Set<Game> getCopyInCartOf() {
+        return copyInCartOf;
+    }
+
+    public void setCopyInCartOf(Set<Game> copyInCartOf) {
+        this.copyInCartOf = copyInCartOf;
     }
 }

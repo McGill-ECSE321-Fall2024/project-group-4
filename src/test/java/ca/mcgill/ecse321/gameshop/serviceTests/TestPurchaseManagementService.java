@@ -9,9 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -23,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class testPurchaseManagementService {
+public class TestPurchaseManagementService {
 
     @InjectMocks
     PurchaseManagementService purchaseManagementService;
@@ -687,7 +685,7 @@ public class testPurchaseManagementService {
     @Test
     public void addCreditCardToCustomerWalletWithInvalidCVV1() {
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->purchaseManagementService.addCreditCardToCustomerWallet(creditCard.getCardNumber(), "Invalid CVV", "10/2", creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId()));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->purchaseManagementService.addCreditCardToCustomerWallet(creditCard.getCardNumber(), -2, "10/2", creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId()));
 
         //Assert
         assertEquals("Invalid cvv number, enter a 3 digit CVV", exception.getMessage());
@@ -696,7 +694,7 @@ public class testPurchaseManagementService {
     @Test
     public void addCreditCardToCustomerWalletWithInvalidCVV2() {
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->purchaseManagementService.addCreditCardToCustomerWallet(creditCard.getCardNumber(), "1234", "10/2", creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId()));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->purchaseManagementService.addCreditCardToCustomerWallet(creditCard.getCardNumber(), 1234, "10/2", creditCard.getCustomer().getEmail(),creditCard.getBillingAddress().getId()));
 
         //Assert
         assertEquals("Invalid cvv number, enter a 3 digit CVV", exception.getMessage());

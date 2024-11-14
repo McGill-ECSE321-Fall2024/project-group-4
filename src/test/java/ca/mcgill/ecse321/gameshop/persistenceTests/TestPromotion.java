@@ -30,9 +30,13 @@ public class TestPromotion {
     @BeforeEach
     public void setUp() {
         promotion = new Promotion(20);
-        Date startDate = new Date(2024, 10, 1);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2024, Calendar.OCTOBER, 1);
+        Date startDate = new Date(calendar.getTimeInMillis());
         promotion.setStartDate(startDate);
-        Date endDate = new Date(2024, 10, 31);
+
+        calendar.set(2024, Calendar.OCTOBER, 31);
+        Date endDate = new Date(calendar.getTimeInMillis());
         promotion.setEndDate(endDate);
     }
 

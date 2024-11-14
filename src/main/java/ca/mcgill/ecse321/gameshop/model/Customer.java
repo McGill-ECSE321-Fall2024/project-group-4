@@ -122,6 +122,14 @@ public class Customer extends Account {
     public Set<Game> getCopyWishlist(){
         return new HashSet<>(wishlist);
     }
+
+    public Set<Game> getCart() {
+        return cart;
+    }
+
+    public Set<Game> getCopyCart() {
+        return new HashSet<>(cart);
+    }
     
     public String getEmail() {
         return email;
@@ -137,6 +145,12 @@ public class Customer extends Account {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    private Set<Game> cart = new HashSet<>();
+
+    public void addGameToCart(Game game) {
+        this.cart.add(game);
     }
 
 }
