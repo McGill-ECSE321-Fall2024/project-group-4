@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.sql.Date;
@@ -37,6 +38,8 @@ public class TestPromotionService {
     Game game;
     Game game2;
     Promotion promotion;
+    @Autowired
+    private GameManagementService gameManagementService;
 
     @BeforeEach
     void setUp() {
@@ -50,6 +53,7 @@ public class TestPromotionService {
 
         when(promotionRepository.save(any(Promotion.class))).thenReturn(promotion);
         when(promotionRepository.findById(promotion.getId())).thenReturn(Optional.of(promotion));
+        when(promotionRepository.findById(1)).thenReturn(Optional.of(promotion));
         when(promotionRepository.findById(-1)).thenReturn(Optional.empty());
 
         when(gameRepository.save(any(Game.class))).thenReturn(game);
@@ -267,6 +271,66 @@ public class TestPromotionService {
         //Assert
         assertEquals("End date cannot be before current date", exception.getMessage());
         verify(promotionRepository, times(1)).findById(promotion.getId());
+    }
+
+    @Test
+    public void testAddPromotionToGame() {
+        //Act
+        game.removePromotion(promotion);
+        game2.removePromotion(promotion);
+        promotionService.addPromotionToGame(promotion.getId(), 1);
+
+        //Assert
+        Promotion updatedPromotion = promotionService.findPromotionById(promotion.getId());
+        assertNotNull(updatedPromotion);
+        assertEquals(1, updatedPromotion.getCopyGames().size());
+        verify(promotionRepository, times(1)).save(promotion);
+
+
+        Game updatedGame = promotionService.findGameById(1);
+        assertNotNull(updatedGame);
+        assertEquals(1, updatedGame.getCopyPromotions().size());
+        verify(gameRepository, times(1)).save(game);
+    }
+
+    @Test
+    public void testAddPromotionToGameInvalid() {
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {promotionService.addPromotionToGame(promotion.getId(), 1);});
+
+        //Assert
+        assertEquals("Promotion already applied to game", exception.getMessage());
+        verify(promotionRepository, times(1)).findById(promotion.getId());
+        verify(gameRepository, times(1)).findById(1);
+    }
+
+    @Test
+    public void testRemovePromotionFromGame() {
+        //Act
+        promotionService.removePromotionFromGame(promotion.getId(), 1);
+
+        //Assert
+        Promotion updatedPromotion = promotionService.findPromotionById(promotion.getId());
+        assertNotNull(updatedPromotion);
+        assertEquals(1, updatedPromotion.getCopyGames().size());
+        verify(promotionRepository, times(1)).save(promotion);
+
+        Game updatedGame = promotionService.findGameById(1);
+        assertNotNull(updatedGame);
+        assertEquals(0, updatedGame.getCopyPromotions().size());
+        verify(gameRepository, times(1)).save(game);
+    }
+
+    @Test
+    public void testRemovePromotionFromGameInvalid() {
+        //Act
+        game.removePromotion(promotion);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {promotionService.removePromotionFromGame(promotion.getId(), 1);});
+
+        //Assert
+        assertEquals("Promotion not applied to game", exception.getMessage());
+        verify(promotionRepository, times(1)).findById(promotion.getId());
+        verify(gameRepository, times(1)).findById(1);
     }
 
 }
