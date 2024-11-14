@@ -344,4 +344,10 @@ public class GameManagementController {
     public void removePromotionFromGame(@PathVariable int promotionId, @PathVariable int gameId) {
         gameManagementService.removePromotionFromGame(promotionId, gameId);
     }
+
+
+    @PutMapping("/games/{gameId}/is_active")
+    public void setGameActivity(@RequestParam boolean is_active, @PathVariable int gameId) {
+        gameManagementService.updateActivity(gameId, is_active);
+    }
 }

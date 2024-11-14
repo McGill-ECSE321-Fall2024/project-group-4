@@ -219,13 +219,10 @@ public class PurchaseManagementService {
             throw new IllegalArgumentException("Invalid expiry date, format is MM/YY");
         }
 
-
-
         LocalDate date = LocalDate.of(2000 + Integer.parseInt(expiryDateMatcher.group(2)), Integer.parseInt(expiryDateMatcher.group(1)),1); //use the matchers to get positional arguments for month and date
 
         Customer customer = findCustomerByEmail(customerEmail);
         Address billingAddress = findAddressById(addressId);
-
         CreditCard creditCard = new CreditCard(cardNumber, cvv, date, customer, billingAddress);
 
         creditCardRepository.save(creditCard);
@@ -442,11 +439,13 @@ public class PurchaseManagementService {
         if (!wallet.contains(creditCardToRemove)) {
             throw new IllegalArgumentException("Customer is not associated with given credit card");
         }
+        boolean success = customer.removeCreditCartFromWallet(creditCardToRemove);
 
-        if(!customer.removeCreditCartFromWallet(creditCardToRemove)){
+        if(!success){
             throw new IllegalStateException("Failed to delete credit card from customer");
         }
         customerRepository.save(customer);
+       //creditCardRepository.delete(creditCardToRemove);
     }
 
     /**

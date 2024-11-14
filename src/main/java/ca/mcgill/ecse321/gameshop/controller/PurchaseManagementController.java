@@ -29,28 +29,12 @@ public class PurchaseManagementController {
 //        return new GameDTO(purchaseManagementService.findGameById(gameId));
 //    }
 
-    /**
-     * Get the price of a game with promotion
-     *
-     * @param gameId Game unique identifier
-     * @return Price of the game with promotion
-     *
-     * @author
-     */
     @GetMapping("games/promotions/{gameId}")
     @ResponseStatus(HttpStatus.FOUND)
     public float getPromotionalPrice(@PathVariable int gameId) {
         return purchaseManagementService.getPromotionalPrice(gameId);
     }
 
-    /**
-     * Get a review
-     *
-     * @param reviewId Review unique identifier
-     * @return Review DTO with corresponding id
-     *
-     * @author
-     */
     @GetMapping("reviews/{reviewId}")
     @ResponseStatus(HttpStatus.FOUND)
     public ReviewDTO getReviewById(@PathVariable int reviewId) {
