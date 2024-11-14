@@ -23,12 +23,6 @@ public class PurchaseManagementController {
     PurchaseManagementService purchaseManagementService;
 
 
-//    @GetMapping("games/{gameId}")
-//    @ResponseStatus(HttpStatus.FOUND)
-//    public GameDTO getGameById(@PathVariable int gameId) {
-//        return new GameDTO(purchaseManagementService.findGameById(gameId));
-//    }
-
     @GetMapping("/games/{gameId}/price")
     @ResponseStatus(HttpStatus.FOUND)
     public float getPromotionalPrice(@PathVariable int gameId) {
@@ -124,8 +118,8 @@ public class PurchaseManagementController {
      */
     @GetMapping("addresses/{addressId}")
     @ResponseStatus(HttpStatus.FOUND)
-    public AddressDTO getAddressById(@PathVariable int addressId) {
-        return new AddressDTO(purchaseManagementService.findAddressById(addressId));
+    public AddressResponseDTO getAddressById(@PathVariable int addressId) {
+        return new AddressResponseDTO(purchaseManagementService.findAddressById(addressId));
     }
 
     /**
@@ -144,12 +138,10 @@ public class PurchaseManagementController {
 
     @PostMapping("customers/{customerEmail}/credit-cards")
     @ResponseStatus(HttpStatus.CREATED)
-    public CreditCardDTO addCreditCardToCustomerWallet(@RequestBody CreditCardDTO creditCardDTO,
-                                                       @RequestParam String expiryDate,
-                                                       @RequestParam int addressId,
-                                                       @PathVariable String customerEmail) {
-        return new CreditCardDTO(purchaseManagementService.addCreditCardToCustomerWallet(creditCardDTO.cardNumber(),creditCardDTO.cvv(),expiryDate,customerEmail,addressId));
+    public CreditCardDTO addCreditCardToCustomerWallet(@RequestBody CreditCardDTO creditCardDTO, @PathVariable String customerEmail) {
 
+        return new CreditCardDTO(purchaseManagementService.addCreditCardToCustomerWallet(creditCardDTO.cardNumber(),
+                creditCardDTO.cvv(), String.valueOf(creditCardDTO.expiryDate()),customerEmail,creditCardDTO.billingAddress().id()));
     }
 
     /**

@@ -221,7 +221,7 @@ public class testPurchaseIntegration {
     @Transactional
     public void testCreateAddress() throws JSONException {
         //Arrange
-        AddressDTO customerAddress = new AddressDTO(validCustomerAddress);
+        AddressResponseDTO customerAddress = new AddressResponseDTO(validCustomerAddress);
 
 
         //Act
@@ -586,13 +586,13 @@ public class testPurchaseIntegration {
         //Arrange
         String url = "/promotions?startDate={startDate}&endDate={endDate}";
         Promotion promotion = new Promotion(25);
-        PromotionDTO promotionDTO = new PromotionDTO(promotion);
-        HttpEntity<PromotionDTO> requestEntity = new HttpEntity<>(promotionDTO);
+        PromotionRequestDTO promotionRequestDTO = new PromotionRequestDTO(promotion);
+        HttpEntity<PromotionRequestDTO> requestEntity = new HttpEntity<>(promotionRequestDTO);
         Date StartDate = Date.valueOf(LocalDate.of(2000,10,10));
         Date endDate = Date.valueOf(LocalDate.of(2050,10,10));
 
         //Act
-        ResponseEntity<PromotionDTO> response =  client.exchange(url, HttpMethod.POST, requestEntity ,PromotionDTO.class, StartDate, endDate);
+        ResponseEntity<PromotionResponseDTO> response =  client.exchange(url, HttpMethod.POST, requestEntity , PromotionResponseDTO.class, StartDate, endDate);
 
 
         //Assert

@@ -326,23 +326,6 @@ public class GameManagementService {
     }
 
     /**
-     * Get an employee from id
-     *
-     * @param id
-     * @return Employee
-     *
-     * @author Camille Pouliot
-     */
-    @Transactional
-    public Employee findEmployeeById(int id){
-        Optional<Employee> employee = employeeRepository.findById(id);
-        if (employee.isPresent()) {
-            return employee.get();
-        }
-        throw new IllegalArgumentException("No Employee found");
-    }
-
-    /**
      * Create a game request
      *
      * @param externalReview
@@ -361,7 +344,7 @@ public class GameManagementService {
             throw new IllegalArgumentException("Game is already active");
         }
 
-        Employee employee = findEmployeeById(employeeId);
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(() -> new EntityNotFoundException("Employee does not exist"));
 
         GameRequest gameRequest = new GameRequest(externalReview, RequestStatus.PENDING, employee, game);
 

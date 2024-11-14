@@ -62,10 +62,7 @@ public class AccountManagementService {
      */
 
     private static boolean validateStringParameter(String inputString) {
-        if (inputString == null || inputString.trim().isEmpty() || inputString.contains(" ")) {
-            return false;
-        }
-        return true;
+        return inputString != null && !inputString.trim().isEmpty() && !inputString.contains(" ");
     }
 
     /**
@@ -130,7 +127,7 @@ public class AccountManagementService {
             throw new IllegalArgumentException("Password cannot be empty, null, or contain spaces.");
         }
 
-        if (!employeeRepository.findByUsername(username).isEmpty()) {
+        if (employeeRepository.findByUsername(username).isPresent()) {
             throw new IllegalArgumentException("Employee already exists with that username.");
         }
         Employee employee = new Employee(username, password, is_active);
@@ -149,13 +146,13 @@ public class AccountManagementService {
     @Transactional
     public Manager createManager() {
         Iterable<Manager> managers = managerRepository.findAll();
-        if (managers == null || !managers.iterator().hasNext()) {
-            Manager manager = new Manager("manager", "manager");
-            managerRepository.save(manager);
-            return manager;
-        } else
-        throw new IllegalArgumentException("There can only be one manager in the system");
+        if (managers.iterator().hasNext()) {
+            throw new IllegalArgumentException("There can only be one manager in the system");
+        }
 
+        Manager manager = new Manager("manager", "manager");
+        managerRepository.save(manager);
+        return manager;
     }
 
     /**
@@ -168,7 +165,7 @@ public class AccountManagementService {
     @Transactional
     public Set<Employee> getSetOfEmployees() {
         Iterable<Employee> employees = employeeRepository.findAll();
-        if (employees == null || !employees.iterator().hasNext()) {
+        if (!employees.iterator().hasNext()) {
             throw new EntityNotFoundException("There are no employees in the system");
         }
 
@@ -258,9 +255,26 @@ public class AccountManagementService {
      */
     @Transactional
     public void setEmployeeStatus(int id, boolean is_active) {
-        Employee employee = employeeRepository.findEmployeeById(id).orElseThrow(()-> new EntityNotFoundException("Employee does not exist"));
+        Employee employee = employeeRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Employee does not exist"));
         employee.setActive(is_active);
         employeeRepository.save(employee);
+    }
+
+    /**
+     * Get an employee from id
+     *
+     * @param id
+     * @return Employee
+     *
+     * @author Camille Pouliot
+     */
+    @Transactional
+    public Employee findEmployeeById(int id){
+        Optional<Employee> employee = employeeRepository.findById(id);
+        if (employee.isPresent()) {
+            return employee.get();
+        }
+        throw new IllegalArgumentException("No Employee found");
     }
 
 
@@ -526,11 +540,7 @@ public class AccountManagementService {
      */
     @Transactional
     public Policy findPolicyById(int policyId) {
-        Optional<Policy> policy = policyRepository.findById(policyId);
-        if (!policy.isPresent()) {
-            throw new EntityNotFoundException("Policy not found");
-        }
-        return policy.get();
+        return policyRepository.findById(policyId).orElseThrow(() -> new EntityNotFoundException("Policy not found"));
     }
 
     /**
@@ -605,8 +615,11 @@ public class AccountManagementService {
     public Address createAddress(String street, String city, String province, String zip, String country, String customerEmail) {
 
         Customer customer = customerRepository.findByEmail(customerEmail).orElseThrow(() -> new EntityNotFoundException("Customer not found"));
-        if (street == null || street == "" || city == null || city == "" || province == null || province == "" || zip == null || zip == "" || country == null || country == "") {
-            throw new IllegalArgumentException("Address contains null or empty strings");}
+
+        if (street == null || street.isEmpty() || city == null || city.isEmpty() || province == null
+                || province.isEmpty() || zip == null || zip.isEmpty() || country == null || country.isEmpty()) {
+            throw new IllegalArgumentException("Address contains null or empty strings");
+        }
         Address customerAddress = new Address(street, city, province, country,zip,customer);
 
         addressRepository.save(customerAddress);

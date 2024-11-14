@@ -27,7 +27,7 @@ public class AccountManagementController {
      *
      * @author Clara Mickail
      */
-    @PutMapping("/{customerId}/wishlist/{gameId}")
+    @PutMapping("/customers/{customerId}/wishlist/{gameId}")
     public void addGameToWishlist(@PathVariable int customerId, @PathVariable int gameId) {
         accountManagementService.addGameToWishlist(customerId, gameId);
     }
@@ -40,7 +40,7 @@ public class AccountManagementController {
      *
      * @author Clara Mickail
      */
-    @DeleteMapping("/{customerId}/wishlist/{gameId}")
+    @DeleteMapping("/customers/{customerId}/wishlist/{gameId}")
     public void removeGameFromWishlist(@PathVariable int customerId, @PathVariable int gameId) {
         accountManagementService.removeGameFromWishlist(customerId, gameId);
     }
@@ -53,7 +53,7 @@ public class AccountManagementController {
      *
      * @author Tarek Namani
      */
-    @GetMapping("/{customerId}/wishlist")
+    @GetMapping("/customers/{customerId}/wishlist")
     public List<GameResponseDTO> viewWishlist(@PathVariable int customerId) {
         Set<Game> wishlist = accountManagementService.viewWishlist(customerId);
         return wishlist.stream().map(GameResponseDTO::new).collect(Collectors.toList());
@@ -67,9 +67,34 @@ public class AccountManagementController {
      *
      * @author Tarek Namani
      */
-    @PostMapping("/customers/{email}")
+    @PostMapping("/customers/customers/{email}")
     public CustomerDTO createCustomer(@RequestBody CustomerDTO customerDTO) {
         return new CustomerDTO(accountManagementService.createCustomer(customerDTO.email(), customerDTO.password() ,customerDTO.username(),customerDTO.phoneNumber()));
+    }
+
+    /**
+     * Get the list of all the customer accounts
+     *
+     * @return List of all the customers
+     *
+     * @author Tarek Namani
+     */
+    @GetMapping("/customers/")
+    public Set<CustomerDTO> getCustomers() {
+        return accountManagementService.getSetOfCustomers().stream().map(CustomerDTO::new).collect(Collectors.toSet());
+    }
+
+    /**
+     * Get a customer by their unique email
+     *
+     * @param customerEmail Customer unique email
+     * @return Customer DTO with the email
+     *
+     * @author Tarek Namani
+     */
+    @GetMapping("/customers/{customerEmail}")
+    public CustomerDTO getCustomerByEmail(@PathVariable String customerEmail) {
+        return new CustomerDTO(accountManagementService.getCustomerByEmail(customerEmail));
     }
 
     /**
@@ -110,6 +135,19 @@ public class AccountManagementController {
     }
 
     /**
+     * Return the employee with the given id
+     *
+     * @param employeeId Employee unique identifier
+     * @return Employee DTO corresponding to the unique identifier
+     *
+     * @author Camille Pouliot
+     */
+    @GetMapping("/employees/{employeeId}")
+    public EmployeeDTO getEmployeeById(@PathVariable int employeeId) {
+        return new EmployeeDTO(accountManagementService.findEmployeeById(employeeId));
+    }
+
+    /**
      * Get an employee from username
      *
      * @param username Unique username of an employee
@@ -122,30 +160,6 @@ public class AccountManagementController {
         return new EmployeeDTO(accountManagementService.getEmployeeByUsername(username));
     }
 
-    /**
-     * Get the list of all the customer accounts
-     *
-     * @return List of all the customers
-     *
-     * @author Tarek Namani
-     */
-    @GetMapping("/customers/")
-    public Set<CustomerDTO> getCustomers() {
-        return accountManagementService.getSetOfCustomers().stream().map(CustomerDTO::new).collect(Collectors.toSet());
-    }
-
-    /**
-     * Get a customer by their unique email
-     *
-     * @param customerEmail Customer unique email
-     * @return Customer DTO with the email
-     *
-     * @author Tarek Namani
-     */
-    @GetMapping("/customers/{customerEmail}")
-    public CustomerDTO getCustomerByEmail(@PathVariable String customerEmail) {
-        return new CustomerDTO(accountManagementService.getCustomerByEmail(customerEmail));
-    }
 
     /**
      * Set the status of an employee as active/inactive
@@ -239,14 +253,14 @@ public class AccountManagementController {
     /**
      * Create a new policy
      *
-     * @param policyDTO Policy DTO to add to the server
+     * @param description description of policy to add
      * @return Policy DTO of the created policy, different from the param
      *
      * @author Camille Pouliot
      */
     @PostMapping("/policies")
-    public PolicyDTO createPolicy(@RequestBody PolicyDTO policyDTO) {
-        Policy createdPolicy = accountManagementService.createPolicy(policyDTO.description());
+    public PolicyDTO createPolicy(@RequestBody String description) {
+        Policy createdPolicy = accountManagementService.createPolicy(description);
         return new PolicyDTO(createdPolicy);
     }
 
@@ -259,8 +273,8 @@ public class AccountManagementController {
      *
      * @author Camille Pouliot
      */
-    @PutMapping("/policies/{policyId}/{description}")
-    public PolicyDTO updatePolicy(@PathVariable int policyId, @PathVariable String description) {
+    @PutMapping("/policies/{policyId}")
+    public PolicyDTO updatePolicy(@PathVariable int policyId, @RequestBody String description) {
         return new PolicyDTO(accountManagementService.updatePolicy(policyId,description));
     }
 
@@ -288,8 +302,9 @@ public class AccountManagementController {
      */
     @PostMapping("/customers/{customerEmail}/addresses")
     @ResponseStatus(HttpStatus.CREATED)
-    public AddressDTO createAddress(@PathVariable String customerEmail, @RequestBody AddressDTO address) {
-        return new AddressDTO(accountManagementService.createAddress(address.street(),address.city(),address.province(),address.postalCode(),address.country(),customerEmail));
+    public AddressResponseDTO createAddress(@PathVariable String customerEmail, @RequestBody AddressRequestDTO address) {
+        return new AddressResponseDTO(accountManagementService.createAddress(address.street(),address.city(),address.province(),
+                address.postalCode(),address.country(),customerEmail));
     }
 
 

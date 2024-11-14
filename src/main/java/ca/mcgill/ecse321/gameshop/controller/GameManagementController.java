@@ -8,7 +8,6 @@ import ca.mcgill.ecse321.gameshop.serviceClasses.GameManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -175,18 +174,6 @@ public class GameManagementController {
         gameManagementService.updateStock(gameId, stockChange);
     }
 
-    /**
-     * Return the game request with the given id
-     *
-     * @param gameRequestId Game Request identifier
-     * @return Game request DTO corresponding to the id
-     *
-     * @author Camille Pouliot
-     */
-    @GetMapping("/gameRequests/{gameRequestId}")
-    public GameRequestDTO getGameRequestById(@PathVariable int gameRequestId) {
-        return new GameRequestDTO(gameManagementService.findGameRequestById(gameRequestId));
-    }
 
     /**
      * Return the game with the given id
@@ -201,31 +188,6 @@ public class GameManagementController {
         return new GameResponseDTO(gameManagementService.findGameById(gameId));
     }
 
-    /**
-     * Return the employee with the given id
-     *
-     * @param employeeId Employee unique identifier
-     * @return Employee DTO corresponding to the unique identifier
-     *
-     * @author Camille Pouliot
-     */
-    @GetMapping("/employees/{employeeId}")
-    public EmployeeDTO getEmployeeById(@PathVariable int employeeId) {
-        return new EmployeeDTO(gameManagementService.findEmployeeById(employeeId));
-    }
-
-    /**
-     * Return the promotion with the given id
-     *
-     * @param promotionId Promotion unique identifier
-     * @return Promotion DTO corresponding to the unique identifier
-     *
-     * @author Camille Pouliot
-     */
-    @GetMapping("/promotions/{promotionId}")
-    public PromotionDTO getPromotionById(@PathVariable int promotionId) {
-        return new PromotionDTO(gameManagementService.findPromotionById(promotionId));
-    }
 
     /**
      * Return the games that contains the search prompt
@@ -239,6 +201,19 @@ public class GameManagementController {
     public Set<GameResponseDTO> getGamesBySearchPrompt(@PathVariable String searchPrompt) {
         Set<Game> searchedGames = gameManagementService.searchGames(searchPrompt);
         return searchedGames.stream().map(GameResponseDTO::new).collect(Collectors.toSet());
+    }
+
+    /**
+     * Return the game request with the given id
+     *
+     * @param gameRequestId Game Request identifier
+     * @return Game request DTO corresponding to the id
+     *
+     * @author Camille Pouliot
+     */
+    @GetMapping("/gameRequests/{gameRequestId}")
+    public GameRequestDTO getGameRequestById(@PathVariable int gameRequestId) {
+        return new GameRequestDTO(gameManagementService.findGameRequestById(gameRequestId));
     }
 
     /**
@@ -256,22 +231,6 @@ public class GameManagementController {
     }
 
     /**
-     * Create a new promotion
-     *
-     * @param promotionDTO Promotion DTO to add to the server
-     * @param startDate Start date of the promotion
-     * @param endDate End date of the promotion
-     * @return Promotion DTO of the created promotion, different from the param
-     *
-     * @author Camille Pouliot
-     */
-    @PostMapping("/promotions")
-    public PromotionDTO createPromotion(@RequestBody PromotionDTO promotionDTO, @RequestParam Date startDate, @RequestParam Date endDate){
-        Promotion createdPromotion = gameManagementService.createPromotion(promotionDTO.discount(), startDate, endDate);
-        return new PromotionDTO(createdPromotion);
-    }
-
-    /**
      * Set the status of a pending game request
      *
      * @param gameRequestId Game request unique identifier
@@ -279,7 +238,7 @@ public class GameManagementController {
      *
      * @author Camille Pouliot
      */
-    @GetMapping("/gameRequests/{gameRequestId}/{status}")
+    @PutMapping("/gameRequests/{gameRequestId}/requestStatus/{status}")
     public String setGameRequestStatus(@PathVariable int gameRequestId, @PathVariable String status){
         if(status.equalsIgnoreCase("approve")){
             gameManagementService.approveGameRequest(gameRequestId);
@@ -292,18 +251,44 @@ public class GameManagementController {
     }
 
     /**
-     * Update a promotion fields
+     * Return the promotion with the given id
      *
      * @param promotionId Promotion unique identifier
-     * @param discount Updated discount
-     * @param startDate Updated start date
-     * @param endDate Updated end date
+     * @return Promotion DTO corresponding to the unique identifier
      *
      * @author Camille Pouliot
      */
-    @PutMapping("/promotions/{promotionId}/{discount}")
-    public void updatePromotion(@PathVariable int promotionId, @PathVariable int discount, @RequestParam Date startDate, @RequestParam Date endDate){
-        gameManagementService.updatePromotion(promotionId, discount, startDate, endDate);
+    @GetMapping("/promotions/{promotionId}")
+    public PromotionResponseDTO getPromotionById(@PathVariable int promotionId) {
+        return new PromotionResponseDTO(gameManagementService.findPromotionById(promotionId));
+    }
+
+    /**
+     * Create a new promotion
+     *
+     * @param promotionRequestDTO Promotion DTO to add to the server
+     * @return Promotion DTO of the created promotion, different from the param
+     *
+     * @author Camille Pouliot
+     */
+    @PostMapping("/promotions")
+    public PromotionResponseDTO createPromotion(@RequestBody PromotionRequestDTO promotionRequestDTO){
+        Promotion createdPromotion = gameManagementService.createPromotion(promotionRequestDTO.discount(), promotionRequestDTO.startDate(), promotionRequestDTO.endDate());
+        return new PromotionResponseDTO(createdPromotion);
+    }
+
+
+
+    /**
+     * Update a promotion fields
+     *
+     * @param promotionId Promotion unique identifier
+     *
+     * @author Camille Pouliot
+     */
+    @PutMapping("/promotions/{promotionId}")
+    public void updatePromotion(@PathVariable int promotionId, @RequestBody PromotionRequestDTO promotionDTO){
+        gameManagementService.updatePromotion(promotionId, promotionDTO.discount(), promotionDTO.startDate(), promotionDTO.endDate());
     }
 
     /**
@@ -326,7 +311,7 @@ public class GameManagementController {
      *
      * @author Camille Pouliot
      */
-    @PutMapping("/games/{gameId}/{promotionId}")
+    @PutMapping("/games/{gameId}/promotions/{promotionId}")
     public void addPromotionToGame(@PathVariable int gameId, @PathVariable int promotionId) {
         gameManagementService.addPromotionToGame(promotionId,gameId);
     }
@@ -339,7 +324,7 @@ public class GameManagementController {
      *
      * @author Camille Pouliot
      */
-    @DeleteMapping("/games/{gameId}/{promotionId}")
+    @DeleteMapping("/games/{gameId}/promotions/{promotionId}")
     public void removePromotionFromGame(@PathVariable int gameId, @PathVariable int promotionId) {
         gameManagementService.removePromotionFromGame(promotionId, gameId);
     }
