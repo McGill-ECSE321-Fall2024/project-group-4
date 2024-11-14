@@ -21,6 +21,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -68,6 +69,7 @@ public class testPurchaseIntegration {
     private int creditCardid =0;
     private int expiredCreditCardId = 0;
 
+    private int promotionID = 0;
 
     private GameManagementService gameManagementService;
     @Autowired
@@ -576,13 +578,41 @@ public class testPurchaseIntegration {
         Promotion promotion = new Promotion(25);
         PromotionDTO promotionDTO = new PromotionDTO(promotion);
         HttpEntity<PromotionDTO> requestEntity = new HttpEntity<>(promotionDTO);
+        Date StartDate = Date.valueOf(LocalDate.of(2000,10,10));
+        Date endDate = Date.valueOf(LocalDate.of(2050,10,10));
 
         //Act
-        client.exchange(url, HttpMethod.DELETE, null, void.class);
+        ResponseEntity<PromotionDTO> response =  client.exchange(url, HttpMethod.POST, requestEntity ,PromotionDTO.class, StartDate, endDate);
 
 
         //Assert
-        assertEquals(1,customerRepository.findByEmail(customerEmail).get().getCopyofCreditCards().size());
+        assertNotNull(response.getBody());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(promotionDTO, response.getBody());
+        assertEquals(25,response.getBody().discount());
+        promotionID = response.getBody().id();
+
+    }
+
+    /**
+     * @author Tarek Namani
+     * Tests adding a game to a promotion and checking cart price
+     */
+    @Order(22)
+    @Test
+    @Transactional
+    public void testAddGameToPromotion() {
+        //Arrange
+        client.exchange("/games/"+gameId+"/"+promotionID, HttpMethod.PUT, null ,void.class);
+        String url = "/customers/"+customerEmail+"/cart/price";
+
+        //Act
+        ResponseEntity<String> response = client.exchange(url, HttpMethod.GET, null ,String.class);
+
+
+        //Assert
+        assertNotNull(response.getBody());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
     }
 
