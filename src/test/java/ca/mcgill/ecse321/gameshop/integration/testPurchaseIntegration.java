@@ -731,7 +731,7 @@ public class testPurchaseIntegration {
 
 
 
-    @BeforeAll
+    @AfterAll
     public void cleanUp() {
         replyRepository.deleteAll();
         managerRepository.deleteAll();
