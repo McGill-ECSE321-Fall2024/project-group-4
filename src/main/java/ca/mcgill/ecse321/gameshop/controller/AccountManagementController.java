@@ -1,23 +1,17 @@
 package ca.mcgill.ecse321.gameshop.controller;
 
+import ca.mcgill.ecse321.gameshop.dto.*;
+import ca.mcgill.ecse321.gameshop.model.Game;
+import ca.mcgill.ecse321.gameshop.model.Policy;
+import ca.mcgill.ecse321.gameshop.serviceClasses.AccountManagementService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import ca.mcgill.ecse321.gameshop.model.Customer;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import ca.mcgill.ecse321.gameshop.dto.*;
-import ca.mcgill.ecse321.gameshop.model.Policy;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import ca.mcgill.ecse321.gameshop.model.Game;
-import ca.mcgill.ecse321.gameshop.serviceClasses.AccountManagementService;
-
-
-/**
- * Methods for AccountManagementController
- *
- * @author Clara Mickail, Tarek Namani, Camille Pouliot
- */
 @RestController
 @RequestMapping("/accounts")
 public class AccountManagementController {
@@ -77,8 +71,8 @@ public class AccountManagementController {
      * @author Tarek Namani
      */
     @PostMapping("/customers/{email}")
-    public CustomerDTO createCustomer(@PathVariable String email, @RequestBody String password, @RequestBody String username, @RequestBody String phoneNumber) {
-        return new CustomerDTO(accountManagementService.createCustomer(email,password,username,phoneNumber));
+    public CustomerDTO createCustomer(@RequestBody CustomerDTO customerDTO) {
+        return new CustomerDTO(accountManagementService.createCustomer(customerDTO.username(), customerDTO.password() ,customerDTO.email(),customerDTO.phoneNumber()));
     }
 
     /**
@@ -92,8 +86,8 @@ public class AccountManagementController {
      * @author Tarek Namani
      */
     @PostMapping("/employees/{username}")
-    public EmployeeDTO createEmployee(@PathVariable String username, @RequestBody String password, @RequestBody boolean is_active) {
-        return new EmployeeDTO(accountManagementService.createEmployee(username,password,is_active));
+    public EmployeeDTO createEmployee(@RequestBody EmployeeDTO employeeDTO) {
+        return new EmployeeDTO(accountManagementService.createEmployee(employeeDTO.username(),employeeDTO.password(),employeeDTO.isActive()));
     }
 
     /**
@@ -171,44 +165,17 @@ public class AccountManagementController {
         accountManagementService.setEmployeeStatus(id, status);
     }
 
-    /**
-     * Login into a customer account
-     *
-     * @param customerEmail Customer unique email
-     * @param password Customer password
-     * @return Customer DTO that logged in
-     *
-     * @author Tarek Namani
-     */
-    @GetMapping("/login/customers/{customerEmail}")
+    @PostMapping("/login/customers/{customerEmail}")
     public CustomerDTO customerLogin(@PathVariable String customerEmail, @RequestBody String password) {
         return new CustomerDTO(accountManagementService.customerLogin(customerEmail,password));
     }
 
-    /**
-     * Login into an employee account
-     *
-     * @param username Employee unique username
-     * @param password Employee password
-     * @return Employee DTO that logged in
-     *
-     * @author Tarek Namani
-     */
-    @GetMapping("/login/employees/{username}")
+    @PostMapping("/login/employees/{username}")
     public EmployeeDTO employeeLogin(@PathVariable String username, @RequestBody String password) {
         return new EmployeeDTO(accountManagementService.employeeLogin(username,password));
     }
 
-    /**
-     * Login into the manager account
-     *
-     * @param username Manager unique username
-     * @param password Manager password
-     * @return Manager DTO that logged in
-     *
-     * @author Tarek Namani
-     */
-    @GetMapping("/login/manager/{username}")
+    @PostMapping("/login/manager/{username}")
     public ManagerDTO managerLogin(@PathVariable String username, @RequestBody String password) {
         return new ManagerDTO(accountManagementService.managerLogin(username,password));
     }
@@ -256,16 +223,7 @@ public class AccountManagementController {
         return new CustomerDTO(accountManagementService.updateCustomerUsername(newPhonenumber,customerEmail));
     }
 
-    /**
-     * Initial login into an employee account
-     *
-     * @param oldUsername
-     * @param newUsername
-     * @return EmployeeDTO
-     *
-     * @author Tarek Namani
-     */
-    @PutMapping("/login/employees/{oldUsername}")
+    @PutMapping("/employees/{oldUsername}")
     public EmployeeDTO updateEmployeeUsername(@PathVariable String oldUsername, @RequestBody String newUsername) {
         return new EmployeeDTO(accountManagementService.updateEmployeeUsername(newUsername,oldUsername));
     }

@@ -6,4 +6,9 @@ public record ManagerDTO(int id, String username, String password) {
     public ManagerDTO(Manager manager) {
         this(manager.getId(), manager.getUsername(), manager.getPassword());
     }
+
+    public Manager toManager() {
+        Manager manager = new Manager(this.username, this.password);
+        return manager;
+    }
 }

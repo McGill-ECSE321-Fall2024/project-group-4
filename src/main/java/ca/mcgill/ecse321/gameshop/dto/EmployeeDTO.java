@@ -10,4 +10,8 @@ public record EmployeeDTO(int id, String username, String password, boolean isAc
         this(employee.getId(), employee.getUsername(), employee.getPassword(), employee.isActive(),
                 employee.getCopyRefundRequests().stream().map(RefundRequestDTO::new).collect(Collectors.toSet()));
     }
+    public Employee toEmployee() {
+        Employee employee = new Employee(this.username, this.password, this.isActive);
+        return employee;
+    }
 }
