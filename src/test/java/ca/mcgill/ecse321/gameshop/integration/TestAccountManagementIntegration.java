@@ -649,5 +649,34 @@ public class TestAccountManagementIntegration {
     public void testUpdateInvalidEmployeeUsername() {
     }
 
+    @Test
+    @Order(27)
+    public void testAddValidGameToWishlist() {
+    }
+
+    @Test
+    @Order(28)
+    public void testAddInvalidGameToWishlist(){
+
+    }
+
+    @Test
+    @Order(29)
+    public void testRemoveValidGameFromWishlist(){
+
+    }
+
+    @Test
+    @Order(30)
+    public void testRemoveInvalidGameFromWishlist(){
+
+    }
+
+    @Test
+    @Order(31)
+    public void testViewWishlist(){
+
+    }
+
     
 }
