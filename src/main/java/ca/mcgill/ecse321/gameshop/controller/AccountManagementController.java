@@ -105,7 +105,7 @@ public class AccountManagementController {
         return new CustomerDTO(accountManagementService.updateCustomerUsername(newPhonenumber,customerEmail));
     }
 
-    @PutMapping("/login/employees/{oldUsername}")
+    @PutMapping("/employees/{oldUsername}")
     public EmployeeDTO updateEmployeeUsername(@PathVariable String oldUsername, @RequestBody String newUsername) {
         return new EmployeeDTO(accountManagementService.updateEmployeeUsername(newUsername,oldUsername));
     }

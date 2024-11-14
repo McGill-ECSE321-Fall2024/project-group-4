@@ -63,6 +63,7 @@ public class TestAccountManagementIntegration {
     private String INVALID_PASSWORD = "testPassword Not Valid";
     private String OLD_USERNAME = "testUsername_old";
     private String OLD_PASSWORD = "testPassword_old";
+    private String OLD_PHONENUMBER = "1234567890";
 
     @Autowired
     private AccountManagementService accountManagementService;
@@ -639,20 +640,20 @@ public class TestAccountManagementIntegration {
     @Test
     @Order(21)
     public void testUpdateValidCustomerUsername() {
-        Customer customer = new Customer(USERNAME, OLD_PASSWORD, EMAIL_STRING, PHONENUMBER_STRING);
+        Customer customer = new Customer(OLD_USERNAME, PASSWORD, EMAIL_STRING, PHONENUMBER_STRING);
         customerRepository.save(customer);
 
         // Act
         ResponseEntity<String> response = account.exchange(
             "/accounts/customers/" + customer.getEmail() + "/password",
             HttpMethod.PUT,
-            new HttpEntity<>(Map.of(OLD_PASSWORD, OLD_PASSWORD, PASSWORD, PASSWORD)),
+            new HttpEntity<>(Map.of(OLD_USERNAME, OLD_USERNAME, USERNAME, USERNAME)),
             String.class
         );
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(PASSWORD, customer.getPassword());
+        assertEquals(USERNAME, customer.getUsername());
     }
     
 
@@ -689,20 +690,20 @@ public class TestAccountManagementIntegration {
     @Test
     @Order(23)
     public void testUpdateValidCustomerPhoneNumber() {
-        Customer customer = new Customer(OLD_USERNAME, PASSWORD, EMAIL_STRING, PHONENUMBER_STRING);
+        Customer customer = new Customer(USERNAME, PASSWORD, EMAIL_STRING, OLD_PHONENUMBER);
         customerRepository.save(customer);
 
         // Act
         ResponseEntity<String> response = account.exchange(
-            "/accounts/customers/" + customer.getEmail() + "/password",
+            "/accounts/customers/" + customer.getEmail() + "/phoneNumber",
             HttpMethod.PUT,
-            new HttpEntity<>(Map.of(OLD_USERNAME, OLD_USERNAME, USERNAME, USERNAME)),
+            new HttpEntity<>(Map.of(OLD_PHONENUMBER, OLD_PHONENUMBER, PHONENUMBER_STRING, PHONENUMBER_STRING)),
             String.class
         );
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(USERNAME, customer.getUsername());
+        assertEquals(PHONENUMBER_STRING, customer.getPhoneNumber());
     }
 
     /**
@@ -713,6 +714,20 @@ public class TestAccountManagementIntegration {
     @Test
     @Order(24)
     public void testUpdateInvalidCustomerPhoneNumber() {
+         // Arrange
+         Customer customer = new Customer(USERNAME, PASSWORD, EMAIL_STRING, OLD_PHONENUMBER);
+         customerRepository.save(customer);
+ 
+         // Act
+         ResponseEntity<String> response = account.exchange(
+             "/accounts/customers/" + customer.getEmail() + "/username",
+             HttpMethod.PUT,
+             new HttpEntity<>(""),
+             String.class
+         );
+ 
+         // Assert
+         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     /**
@@ -723,6 +738,20 @@ public class TestAccountManagementIntegration {
     @Test
     @Order(25)
     public void testUpdateValidEmployeeUsername() {
+        Employee employee = new Employee(OLD_USERNAME, PASSWORD, true);
+        employeeRepository.save(employee);
+
+        // Act
+        ResponseEntity<String> response = account.exchange(
+            "/accounts/employees/" + OLD_USERNAME,
+            HttpMethod.PUT,
+            new HttpEntity<>(Map.of(OLD_USERNAME, OLD_USERNAME, USERNAME, USERNAME)),
+            String.class
+        );
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(USERNAME, employee.getUsername());
     }
 
     /**
@@ -733,6 +762,19 @@ public class TestAccountManagementIntegration {
     @Test
     @Order(26)
     public void testUpdateInvalidEmployeeUsername() {
+        Employee employee = new Employee(OLD_USERNAME, PASSWORD, true);
+        employeeRepository.save(employee);
+
+        // Act
+        ResponseEntity<String> response = account.exchange(
+            "/accounts/employees/" + OLD_USERNAME,
+            HttpMethod.PUT,
+            new HttpEntity<>(""),
+            String.class
+        );
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
