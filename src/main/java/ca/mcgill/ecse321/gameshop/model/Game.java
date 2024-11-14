@@ -17,10 +17,13 @@ public class Game {
     private float price;
     private boolean isActive;
     private int stock;
+    
     @ManyToMany(mappedBy = "wishlist")
     private Set<Customer> wishlistedBy = new HashSet<>();
+
     @ManyToMany(mappedBy = "inCategory")
     private Set<Category> categories = new HashSet<>();
+
     @ManyToMany(mappedBy = "games")
     private Set<Promotion> promotions = new HashSet<>();
 
@@ -148,6 +151,7 @@ public class Game {
         return stock;
     }
 
+
     private boolean isAvailable;
 
     public boolean isAvailable() {
@@ -161,15 +165,5 @@ public class Game {
     public void setStock(int stock) {
         this.stock = stock;
         this.isAvailable = stock > 0;
-    }
-
-    private Set<Game> copyInCartOf;
-
-    public Set<Game> getCopyInCartOf() {
-        return copyInCartOf;
-    }
-
-    public void setCopyInCartOf(Set<Game> copyInCartOf) {
-        this.copyInCartOf = copyInCartOf;
     }
 }
