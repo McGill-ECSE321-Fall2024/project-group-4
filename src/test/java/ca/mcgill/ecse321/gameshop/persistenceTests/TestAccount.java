@@ -1,9 +1,6 @@
 package ca.mcgill.ecse321.gameshop.persistenceTests;
 
 import ca.mcgill.ecse321.gameshop.DAO.AccountRepository;
-import ca.mcgill.ecse321.gameshop.DAO.AddressRepository;
-import ca.mcgill.ecse321.gameshop.DAO.CreditCardRepository;
-import ca.mcgill.ecse321.gameshop.DAO.CustomerRepository;
 import ca.mcgill.ecse321.gameshop.model.Account;
 import ca.mcgill.ecse321.gameshop.model.Customer;
 import org.junit.jupiter.api.AfterEach;
@@ -24,16 +21,10 @@ public class TestAccount {
 
     @Autowired
     private AccountRepository accountRepository;
-    @Autowired
-    private AddressRepository addressRepository;
-    @Autowired
-    private CreditCardRepository creditCardRepository;
-    @Autowired
-    private CustomerRepository customerRepository;
 
     @AfterEach
     public void clearDatabase() {
-        customerRepository.deleteAll();
+        accountRepository.deleteAll();
     }
 
     @Test
