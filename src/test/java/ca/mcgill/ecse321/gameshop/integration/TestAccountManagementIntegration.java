@@ -268,7 +268,6 @@ public class TestAccountManagementIntegration {
                 USERNAME,
                 PASSWORD,
                 true,
-                Set.of(),
                 Set.of()
         );
 
@@ -298,7 +297,6 @@ public class TestAccountManagementIntegration {
                 INVALID_USERNAME,
                 PASSWORD,
                 true,
-                Set.of(),
                 Set.of()
         );
 
@@ -407,7 +405,6 @@ public class TestAccountManagementIntegration {
                 USERNAME,
                 PASSWORD,
                 true,
-                Set.of(),
                 Set.of()
         );
         employeeRepository.save(employee1.toEmployee());
@@ -501,7 +498,6 @@ public class TestAccountManagementIntegration {
                 USERNAME,
                 PASSWORD,
                 true,
-                Set.of(),
                 Set.of()
         );
         employeeRepository.save(employee1.toEmployee());
@@ -530,7 +526,6 @@ public class TestAccountManagementIntegration {
                 INVALID_USERNAME,
                 PASSWORD,
                 true,
-                Set.of(),
                 Set.of()
         );
         employeeRepository.save(employee1.toEmployee());

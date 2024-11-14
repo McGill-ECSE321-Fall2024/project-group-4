@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -144,6 +145,7 @@ public class TestGameRequestIntegration {
 
     @Test
     @Order(2)
+    @Transactional
     public void createGameRequestTest(){
         //Arrange
         GameRequest newGameRequest = new GameRequest(createGameRequestExternalReview, createGameRequestStatus, this.employee, gameManagementService.findGameById(this.game2Id));
