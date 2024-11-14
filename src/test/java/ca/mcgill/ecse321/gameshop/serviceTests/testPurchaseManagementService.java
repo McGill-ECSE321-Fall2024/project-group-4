@@ -152,6 +152,10 @@ public class testPurchaseManagementService {
 
     }
 
+    /*
+     * Tests finding a valid employee
+     * @author Aerin Brown
+     */
     @Test
     public void testFindEmployeeByEmail() {
         //Act
@@ -165,6 +169,10 @@ public class testPurchaseManagementService {
         verify(employeeRepository, times(1)).findByUsername("employee");
     }
 
+    /*
+     * Tests finding a nonexistant employee
+     * @author Aerin Brown
+     */
     @Test
     public void testFindInvalidEmployeeByUsername() {
         //Act
@@ -175,6 +183,10 @@ public class testPurchaseManagementService {
         verify(employeeRepository, times(1)).findByUsername("asdf");
     }
 
+    /*
+     * Tests finding an employee with a null username
+     * @author Aerin Brown
+     */
     @Test
     public void testFindInvalidEmployeeByUsername2() {
         //Act
@@ -184,6 +196,10 @@ public class testPurchaseManagementService {
         assertEquals("Employee username is null!", exception.getMessage());
     }
 
+    /*
+     * Tests finding a valid refund request
+     * @author Aerin Brown
+     */
     @Test
     public void testFindRefundById() {
         //Act
@@ -197,7 +213,7 @@ public class testPurchaseManagementService {
         assertEquals(validEmployee, refund.getReviewer());
         verify(refundRepository, times(1)).findById(referenceRequest.getId());
     }
-
+     
     @Test
     public void testFindInvalidGameById() {
         //Act
@@ -261,6 +277,10 @@ public class testPurchaseManagementService {
         verify(managerRepository, times(1)).findById(-1);
     }
 
+    /*
+     * Tests creating a new refund request
+     * @author Aerin Brown
+     */
     @Test
     public void testRequestRefund() {
         //Act
@@ -275,6 +295,10 @@ public class testPurchaseManagementService {
         verify(refundRepository, times(1)).save(request);
     }
 
+    /*
+     * Tests requesting a refund without a reason
+     * @author Aerin Brown
+     */
     @Test
     public void testRequestInvalidRefund() {
         //Act
@@ -284,6 +308,10 @@ public class testPurchaseManagementService {
         assertEquals("No reason given for refund.", exception.getMessage());
     }
 
+    /*
+     * Tests requesting a duplicate refund
+     * @author Aerin Brown
+     */
     @Test
     public void testRequestInvalidRefund2() {
         //Act
@@ -293,6 +321,10 @@ public class testPurchaseManagementService {
         assertEquals("Purchase already has a refund request", exception.getMessage());
     }
 
+    /*
+     * Tests approving a valid pending refund
+     * @author Aerin Brown
+     */
     @Test
     public void testApproveRefund() {
         //Act
@@ -302,6 +334,10 @@ public class testPurchaseManagementService {
         assertEquals(RequestStatus.APPROVED, toModifyRequest.getStatus());
     }
 
+    /*
+     * Tests approving an already approved refund
+     * @author Aerin Brown
+     */
     @Test
     public void testApproveInvalidRefund() {
         //Act
@@ -311,6 +347,10 @@ public class testPurchaseManagementService {
         assertEquals("Only pending requests can be approved.", exception.getMessage());
     }
 
+    /*
+     * Tests approving a denied refund
+     * @author Aerin Brown
+     */
     @Test
     public void testApproveInvalidRefund2() {
         //Act
@@ -320,6 +360,10 @@ public class testPurchaseManagementService {
         assertEquals("Only pending requests can be approved.", exception.getMessage());
     }
 
+    /*
+     * Tests denying a valid pending refund
+     * @author Aerin Brown
+     */
     @Test
     public void testDenyRefund() {
         //Act
@@ -329,6 +373,10 @@ public class testPurchaseManagementService {
         assertEquals(RequestStatus.DENIED, toModifyRequest.getStatus());
     }
 
+    /*
+     * Tests denying an approved refund
+     * @author Aerin Brown
+     */
     @Test
     public void testDenyInvalidRefund() {
         //Act
@@ -338,6 +386,10 @@ public class testPurchaseManagementService {
         assertEquals("Only pending requests can be denied.", exception.getMessage());
     }
 
+    /*
+     * Tests denying an already denied refund
+     * @author Aerin Brown
+     */
     @Test
     public void testDenyInvalidRefund2() {
         //Act
@@ -347,6 +399,10 @@ public class testPurchaseManagementService {
         assertEquals("Only pending requests can be denied.", exception.getMessage());
     }
 
+    /*
+     * Tests adding a valid reviewer to a refund request
+     * @author Aerin Brown
+     */
     @Test
     public void testAddReviewerToRefund() {
         //Act
@@ -357,6 +413,10 @@ public class testPurchaseManagementService {
         assertTrue(validEmployee.getRefundRequests().contains(referenceRequest));
     }
 
+    /*
+     * Tests adding a reviewer to a request that already has one
+     * @author Aerin Brown
+     */
     @Test
     public void testAddInvalidReviewerToRefund() {
         //Act
@@ -366,6 +426,10 @@ public class testPurchaseManagementService {
         assertEquals("Refund already has reviewer!", exception.getMessage());
     }
 
+    /*
+     * Tests adding an inactive employee as a reviewer
+     * @author Aerin Brown
+     */
     @Test
     public void testAddInvalidReviewerToRefund2() {
         //Act
@@ -375,6 +439,10 @@ public class testPurchaseManagementService {
         assertEquals("Cannot assign an inactive employee", exception.getMessage());
     }
 
+    /*
+     * Tests removing a valid reviewer
+     * @author Aerin Brown
+     */
     @Test
     public void testRemoveReviewerFromRefund() {
         //Act
@@ -385,6 +453,10 @@ public class testPurchaseManagementService {
         assertTrue(validEmployee.getRefundRequests().isEmpty());
     }
 
+    /*
+     * Tests removing a nonexistant reviewer from a refund
+     * @author Aerin Brown
+     */
     @Test
     public void testRemoveInvalidReviewerFromRefund()  {
         //Act
@@ -394,6 +466,10 @@ public class testPurchaseManagementService {
         assertEquals("Employee is not the reviewer of this refund request.", exception.getMessage());
     }
 
+    /*
+     * Tests removing a reviewer from a refund request they aren't assigned to
+     * @author Aerin Brown
+     */
     @Test 
     public void testRemoveInvalidReviewerFromRefund2() {
         //Act
