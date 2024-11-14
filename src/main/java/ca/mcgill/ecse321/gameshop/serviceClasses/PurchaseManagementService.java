@@ -15,6 +15,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * Methods for PurchaseManagementService
+ *
+ * @author
+ */
 @Service
 public class PurchaseManagementService {
 
@@ -38,7 +43,8 @@ public class PurchaseManagementService {
     private RefundRequestRepository refundRepository;
     @Autowired
     private ManagerRepository managerRepository;
-
+    @Autowired
+    private CartItemRepository cartItemRepository;
 
     /*
      * Finds refund request given id
@@ -72,6 +78,14 @@ public class PurchaseManagementService {
         throw new EntityNotFoundException("No Employee found with username " + username);
     }
 
+    /**
+     * Get a game from id
+     *
+     * @param gameId
+     * @return Game
+     *
+     * @author
+     */
     @Transactional
     public Game findGameById(int gameId) {
         Optional<Game> optGame = gameRepository.findById(gameId);
@@ -81,6 +95,14 @@ public class PurchaseManagementService {
         throw new EntityNotFoundException("No Game found with id " + gameId);
     }
 
+    /**
+     * Get review from id
+     *
+     * @param id
+     * @return Review
+     *
+     * @author
+     */
     @Transactional
     public Review findReviewById(int id) {
         Optional<Review> optReview = reviewRepository.findById(id);
@@ -90,6 +112,14 @@ public class PurchaseManagementService {
         throw new EntityNotFoundException("No Review found with id " + id);
     }
 
+    /**
+     * Get a customer from email
+     *
+     * @param email
+     * @return Customer
+     *
+     * @author
+     */
     @Transactional
     public Customer findCustomerByEmail(String email) {
         if (email == null) throw new IllegalArgumentException("Email is null!");
@@ -102,6 +132,14 @@ public class PurchaseManagementService {
 
     }
 
+    /**
+     * Get the manager from id
+     *
+     * @param id
+     * @return Manager
+     *
+     * @author
+     */
     @Transactional
     public Manager findManagerById(int id) {
         Optional<Manager> optManager = managerRepository.findById(id);
@@ -112,6 +150,14 @@ public class PurchaseManagementService {
 
     }
 
+    /**
+     * Get purchase from id
+     *
+     * @param id
+     * @return Purchase
+     *
+     * @author
+     */
     @Transactional
     public Purchase findPurchaseById(int id) {
         Optional<Purchase> optPurchase = purchaseRepository.findById(id);
@@ -121,6 +167,14 @@ public class PurchaseManagementService {
         throw new EntityNotFoundException("No Purchase found with id " + id);
     }
 
+    /**
+     * Get credit card from id
+     *
+     * @param creditCardId
+     * @return CreditCard
+     *
+     * @author
+     */
     @Transactional
     public CreditCard findCreditCardById(int creditCardId) {
         Optional<CreditCard> optionalCreditCard = creditCardRepository.findById(creditCardId);
@@ -130,6 +184,14 @@ public class PurchaseManagementService {
         throw new EntityNotFoundException("No Credit Card found with id " + creditCardId);
     }
 
+    /**
+     * Get address from id
+     *
+     * @param addressId
+     * @return Address
+     *
+     * @author
+     */
     @Transactional
     public Address findAddressById(int addressId) {
         Optional<Address> optAdress = addressRepository.findById(addressId);
@@ -140,11 +202,23 @@ public class PurchaseManagementService {
     }
 
 
-
+    /**
+     * Add a credit card to a customer wallet
+     *
+     * @param cardNumber
+     * @param cvv
+     * @param expiryDate
+     * @param customerEmail
+     * @param addressId
+     * @return CreditCard
+     *
+     * @author
+     */
     @Transactional
-    public CreditCard addCreditCardToCustomerWallet(int cardNumber, String cvv, String expiryDate, String customerEmail, int addressId) {
+    public CreditCard addCreditCardToCustomerWallet(int cardNumber, int cvv, String expiryDate, String customerEmail, int addressId) {
 
-        Matcher cvvMatcher = Pattern.compile("^\\d{3}$").matcher(cvv); //create a Regex to identify and match valid CVV patterns
+        String stringCVV = String.valueOf(cvv); //
+        Matcher cvvMatcher = Pattern.compile("^\\d{3}$").matcher(stringCVV); //create a Regex to identify and match valid CVV patterns
         if (!cvvMatcher.matches()) {
             throw new IllegalArgumentException("Invalid cvv number, enter a 3 digit CVV");
         }
@@ -168,6 +242,14 @@ public class PurchaseManagementService {
         return creditCard;
     }
 
+    /**
+     * Like a review
+     *
+     * @param customerEmail
+     * @param reviewId
+     *
+     * @author
+     */
     @Transactional
     public void likeReview(String customerEmail, int reviewId) {
 
@@ -182,6 +264,17 @@ public class PurchaseManagementService {
 
     }
 
+    /**
+     * Post a review
+     *
+     * @param reivewerEmail
+     * @param rating
+     * @param text
+     * @param purchaseId
+     * @return Review
+     *
+     * @author
+     */
     @Transactional
     public Review postReview(String reivewerEmail, int rating, String text, int purchaseId) {
         if (text == null) {
@@ -205,6 +298,15 @@ public class PurchaseManagementService {
         return review;
     }
 
+    /**
+     * Reply to a review
+     *
+     * @param reviewId
+     * @param replyText
+     * @param managerId
+     *
+     * @author
+     */
     @Transactional
     public void replyToReview(int reviewId, String replyText, int managerId) {
 
@@ -226,6 +328,15 @@ public class PurchaseManagementService {
 
     }
 
+    /**
+     * Checkout a customer cart/ Purchase a customer cart
+     *
+     * @param customerEmail
+     * @param addressId
+     * @param creditCardId
+     *
+     * @author
+     */
     @Transactional
     public void checkout(String customerEmail, int addressId, int creditCardId) {
         Customer customer = findCustomerByEmail(customerEmail);
@@ -242,31 +353,49 @@ public class PurchaseManagementService {
             throw new IllegalArgumentException("Credit card is expired");
         }
 
-        Set<Game> gamesInCart = customer.getCopyCart();
-        if (gamesInCart.isEmpty()) {
+
+        Set<CartItem> itemsInCart = cartItemRepository.findByCartItemId_Customer_Id(customer.getId());
+        if (itemsInCart.isEmpty()) {
             throw new IllegalArgumentException("Cannot checkout an empty cart!");
         }
-
-        gamesInCart.forEach(game -> {
-            game.removeInCartOf(customer);
-            customer.removeGameFromCart(game);
+        Set<Game> gamesInCart = itemsInCart.stream().map(CartItem::getGame).collect(Collectors.toSet());
+        itemsInCart.forEach(cartItem -> {
+            Game game = cartItem.getGame();
             if (!game.isActive()) throw new IllegalArgumentException("Cannot checkout an inactive game");
-            if (game.getStock() == 0) throw new IllegalArgumentException("Game is out of stock");
-            game.setStock(game.getStock() - 1);
-            gameRepository.save(game);
-        }); //remove the games from the customers cart
+            if (game.getStock() <= 0) throw new IllegalArgumentException("Game is out of stock");
+            game.setStock(game.getStock() - cartItem.getQuantity());
 
+        });
+        cartItemRepository.deleteAll(itemsInCart); //remove the game from the customers cart
+        gameRepository.saveAll(gamesInCart);
         gamesInCart.stream().map(game -> new Purchase(dateOfPurchase, getPromotionalPrice(game.getId()), game, customer, address, creditCard)).collect(Collectors.toSet()).forEach(purchaseRepository::save);
         customerRepository.save(customer);
     }
 
+    /**
+     * Get the price of a customer cart
+     *
+     * @param customerEmail
+     * @return float
+     *
+     * @author
+     */
     @Transactional
     public float getCartPrice(String customerEmail) {
+
         Customer customer = findCustomerByEmail(customerEmail);
-        long price = customer.getCopyCart().stream().mapToLong(game -> (long) getPromotionalPrice(game.getId())).sum();
+        long price = cartItemRepository.findByCartItemId_Customer_Id(customer.getId()).stream().map(CartItem::getGame).mapToLong(game -> (long) getPromotionalPrice(game.getId())).sum();
         return (float) price;
     }
 
+    /**
+     * Get price of a game with promotion
+     *
+     * @param gameId
+     * @return float
+     *
+     * @author
+     */
     @Transactional
     public float getPromotionalPrice(int gameId) {
 
@@ -286,7 +415,14 @@ public class PurchaseManagementService {
     }
 
 
-
+    /**
+     * Get credit card of a customer
+     *
+     * @param email
+     * @return Set<CreditCard>
+     *
+     * @author
+     */
     @Transactional
     public Set<CreditCard> viewCustomerCreditCards(String email) {
         Customer customer = findCustomerByEmail(email);
@@ -294,7 +430,14 @@ public class PurchaseManagementService {
     }
 
 
-
+    /**
+     * Remove a credit card from a customer wallet
+     *
+     * @param customerEmail
+     * @param creditCardId
+     *
+     * @author
+     */
     @Transactional
     public void removeCreditCardFromWallet(String customerEmail, int creditCardId) {
         Customer customer = findCustomerByEmail(customerEmail);
@@ -321,7 +464,7 @@ public class PurchaseManagementService {
     @Transactional
     public Set<Purchase> viewCustomerPurchaseHistory(String email) {
         Customer customer = findCustomerByEmail(email);
-        return customer.getCopyPurchasess();
+        return customer.getCopyPurchases();
     }
 
     /*

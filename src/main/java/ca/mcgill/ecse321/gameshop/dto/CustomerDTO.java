@@ -10,7 +10,6 @@ public record CustomerDTO(String username,
                           String password,
                           String email,
                           String phoneNumber,
-                          Set<GameDTO> cart,
                           Set<AddressDTO> addresses,
                           Set<CreditCardDTO> creditCards,
                           Set<ReviewDTO> likedReviews,
@@ -22,10 +21,9 @@ public record CustomerDTO(String username,
                 customer.getPassword(),
                 customer.getEmail(),
                 customer.getPhoneNumber()
-        ,customer.getCopyCart().stream().map(GameDTO::new).collect(Collectors.toSet())
-        ,customer.getCopyAddresses().stream().map(AddressDTO::new).collect(Collectors.toSet())
-        ,customer.getCopyofCreditCards().stream().map(CreditCardDTO::new).collect(Collectors.toSet())
-        ,customer.getCopyLikedReviews().stream().map(ReviewDTO::new).collect(Collectors.toSet())
+                ,customer.getCopyAddresses().stream().map(AddressDTO::new).collect(Collectors.toSet())
+                ,customer.getCopyofCreditCards().stream().map(CreditCardDTO::new).collect(Collectors.toSet())
+                ,customer.getCopyLikedReviews().stream().map(ReviewDTO::new).collect(Collectors.toSet())
                 ,customer.getCopyPurchases().stream().map(PurchaseDTO::new).collect(Collectors.toSet()));
     }
 

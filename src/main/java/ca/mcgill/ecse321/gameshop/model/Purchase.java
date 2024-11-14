@@ -84,12 +84,6 @@ public class Purchase {
         return customer;
     }
 
-    public boolean setCustomer(Customer customer) {
-        this.customer.getCopyPurchasess().remove(this);
-        this.customer = customer;
-        return customer.getCopyPurchasess().add(this);
-    }
-
     public Address getDeliveryAddress() {
         return deliveryAddress;
     }

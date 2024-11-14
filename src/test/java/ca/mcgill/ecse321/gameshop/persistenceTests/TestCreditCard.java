@@ -60,7 +60,7 @@ public class TestCreditCard {
 
         // Step 3: Create CreditCard object
         int cardNumber = 1234511890;
-        String cvv = "111";
+        int cvv = 111;
         LocalDate expiryDate = LocalDate.of(2025, 12, 31);
         CreditCard creditCard = new CreditCard(cardNumber, cvv, expiryDate, customer, address);
 

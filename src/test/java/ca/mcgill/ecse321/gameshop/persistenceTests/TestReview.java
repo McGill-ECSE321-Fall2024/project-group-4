@@ -33,7 +33,7 @@ public class TestReview {
 
     private final Customer customer = new Customer("customer", "password", "customer@email.com", "0123456789");
     private final Address address = new Address("street", "city", "province", "country", "1A2 B3C", customer);
-    private final CreditCard creditCard = new CreditCard(1234, "123", LocalDate.now(), customer, address);
+    private final CreditCard creditCard = new CreditCard(1234, 123, LocalDate.now(), customer, address);
     private final Game game = new Game("game", "description", "picture", 12, true, 1);
     private final Purchase purchase = new Purchase(LocalDate.now(), 12, game, customer, address, creditCard);
     private Review review;

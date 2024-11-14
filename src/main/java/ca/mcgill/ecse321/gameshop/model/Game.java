@@ -19,8 +19,6 @@ public class Game {
     private int stock;
     @ManyToMany(mappedBy = "wishlist")
     private Set<Customer> wishlistedBy = new HashSet<>();
-    @ManyToMany(mappedBy = "cart")
-    private Set<Customer> inCartOf = new HashSet<>();
     @ManyToMany(mappedBy = "inCategory")
     private Set<Category> categories = new HashSet<>();
     @ManyToMany(mappedBy = "games")
@@ -59,28 +57,6 @@ public class Game {
 
     public Set<Customer> getCopyWishlistedBy(){
         return new HashSet<>(wishlistedBy);
-    }
-
-    protected Set<Customer> getInCartOf() {
-        return inCartOf;
-    }
-
-    public boolean addInCartOf(Customer customer){
-        customer.getCart().add(this);
-        return inCartOf.add(customer);
-    }
-
-    public boolean removeInCartOf(Customer customer){
-        customer.getCart().remove(this);
-        return inCartOf.remove(customer);
-    }
-
-    public boolean containsInCartOf(Customer customer){
-        return inCartOf.contains(customer);
-    }
-
-    public Set<Customer> getCopyInCartOf(){
-        return new HashSet<>(inCartOf);
     }
     
 
@@ -172,7 +148,19 @@ public class Game {
         return stock;
     }
 
+
+    private boolean isAvailable;
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(boolean available) {
+        isAvailable = available;
+    }
+
     public void setStock(int stock) {
         this.stock = stock;
+        this.isAvailable = stock > 0;
     }
 }

@@ -35,7 +35,7 @@ public class TestReply {
     private Reply reply;
     private Customer customer = new Customer("customer", "password", "customer@email.com", "0123456789");
     private Address address = new Address("street", "city", "province", "country", "1A2 B3C", customer);
-    private CreditCard creditCard = new CreditCard(1234, "123", LocalDate.now(), customer, address);
+    private CreditCard creditCard = new CreditCard(1234, 123, LocalDate.now(), customer, address);
     private Game game = new Game("game", "description", "picture", 12, true, 1);
     private Purchase purchase;
     private Review review;
