@@ -560,7 +560,49 @@ public class GameManagementService {
         return searchedGames;
     }
 
+    /**
+     * Add a promotion to a game and vice versa
+     *
+     * @param promotionId
+     * @param gameId
+     *
+     * @author Camille Pouliot
+     */
+    @Transactional
+    public void addPromotionToGame(int promotionId, int gameId) {
+        Game game = findGameById(gameId);
+        Promotion promotion = findPromotionById(promotionId);
 
+        if(promotion.getCopyGames().contains(game) || game.containsPromotion(promotion)) {
+            throw new IllegalArgumentException("Promotion already applied to game");
+        }
+
+        game.addPromotion(promotion);
+        promotionRepository.save(promotion);
+        gameRepository.save(game);
+    }
+
+    /**
+     * Remove a promotion from a game and vice versa
+     *
+     * @param promotionId
+     * @param gameId
+     *
+     * @author Camille Pouliot
+     */
+    @Transactional
+    public void removePromotionFromGame(int promotionId, int gameId) {
+        Game game = findGameById(gameId);
+        Promotion promotion = findPromotionById(promotionId);
+
+        if(!promotion.getCopyGames().contains(game) || !game.containsPromotion(promotion)) {
+            throw new IllegalArgumentException("Promotion not applied to game");
+        }
+
+        game.removePromotion(promotion);
+        promotionRepository.save(promotion);
+        gameRepository.save(game);
+    }
 
 
     

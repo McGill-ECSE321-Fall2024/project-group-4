@@ -322,4 +322,30 @@ public class GameManagementController {
     public void deletePromotion(@PathVariable int promotionId){
         gameManagementService.deletePromotion(promotionId);
     }
+
+    /**
+     * Add a promotion to a game
+     *
+     * @param gameId
+     * @param promotionId
+     *
+     * @author Camille Pouliot
+     */
+    @PutMapping("/games/{gameId}/{promotionId}")
+    public void addPromotionToGame(@PathVariable int gameId, @PathVariable int promotionId) {
+        gameManagementService.addPromotionToGame(gameId, promotionId);
+    }
+
+    /**
+     * Remove a promotion from a game
+     *
+     * @param gameId
+     * @param promotionId
+     *
+     * @author Camille Pouliot
+     */
+    @PutMapping("/games/{gameId}/{promotionId}")
+    public void removePromotionFromGame(@PathVariable int gameId, @PathVariable int promotionId) {
+        gameManagementService.removePromotionFromGame(gameId, promotionId);
+    }
 }
