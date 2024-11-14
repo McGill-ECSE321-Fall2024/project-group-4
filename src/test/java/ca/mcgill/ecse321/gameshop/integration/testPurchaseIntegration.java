@@ -194,7 +194,8 @@ public class testPurchaseIntegration {
     @Order(5)
     public void testCreateCustomer() throws JSONException {
         //Arrange
-        customerDTO = new CustomerDTO(customerUsername,customerPassword,customerEmail,customerPhoneNumber,null,null,null,null);
+        Customer customer = new Customer(customerUsername,customerPassword,customerEmail,customerPhoneNumber);
+        customerDTO = new CustomerDTO(customer);
         //Act
         ResponseEntity<String> response = client.postForEntity("/accounts/customers/", customerDTO, String.class);
 

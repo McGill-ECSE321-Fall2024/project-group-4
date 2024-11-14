@@ -45,11 +45,13 @@ public class PurchaseManagementService {
     @Autowired
     private CartItemRepository cartItemRepository;
 
-    /*
-     * Finds refund request given id
-     * @param id the id in question
-     * @return RefundRequest with given id
-     * @author Aerin Brown
+    /**
+     * Get a refund request from id
+     *
+     * @param id
+     * @return RefundRequest
+     *
+     * @author
      */
     @Transactional 
     public RefundRequest findRefundById(int id) {
@@ -60,11 +62,14 @@ public class PurchaseManagementService {
         }
         throw new EntityNotFoundException("No Refund Request found with id " + id);
     }
-    /*
-     * Finds employee given a username
-     * @param username the employee's username
-     * @return Employee with given username
-     * @author Aerin Brown
+
+    /**
+     * Find an employee from username
+     *
+     * @param username
+     * @return Employee
+     *
+     * @author
      */
     @Transactional
     public Employee findEmployeeByUsername(String username) {
@@ -449,12 +454,13 @@ public class PurchaseManagementService {
         creditCardRepository.delete(creditCardToRemove);
     }
 
-    /*
-     * Gets a customer's full purchase history
-     * @param email the customer's email
-     * @return Set<Purchase> the set of all purchases made by this customer
-     * @throws IllegalArgumentException if the request is invalid
-     * @author Aerin Brown
+    /**
+     * Get a customer's list of purchase
+     *
+     * @param email
+     * @return Set<Purchase>
+     *
+     * @author
      */
     @Transactional
     public Set<Purchase> viewCustomerPurchaseHistory(String email) {
@@ -462,13 +468,14 @@ public class PurchaseManagementService {
         return customer.getCopyPurchases();
     }
 
-    /*
-     * Gets a customer's full purchase history given a requestor
-     * @param email the customer's email
-     * @param requestingEmployee the username of the employee making the request
-     * @return Set<Purchase> the set of all purchases made by this customer
-     * @throws IllegalArgumentException if the request is invalid
-     * @author Aerin Brown
+    /**
+     * Get a customer's list of purchase only if user connected is an employee
+     *
+     * @param customerEmail
+     * @param requestingEmployee
+     * @return Set<Purchase>
+     *
+     * @author
      */
     @Transactional
     public Set<Purchase> requestCustomersPurchaseHistory(String customerEmail, String requestingEmployee) {
@@ -479,13 +486,14 @@ public class PurchaseManagementService {
         return viewCustomerPurchaseHistory(customerEmail);
     }
 
-    /*
-     * Creates a refund request
-     * @param purchaseId the id of the purchase to be refunded
-     * @param reason the reason for the refund
-     * @return RefundRequest the newly created refund request
-     * @throws IllegalArgumentException if the request is invalid
-     * @author Aerin Brown
+    /**
+     * Create a refund request
+     *
+     * @param purchaseId
+     * @param reason
+     * @return RefundRequest
+     *
+     * @author
      */
     @Transactional
     public RefundRequest requestRefund(int purchaseId, String reason) {
@@ -503,57 +511,51 @@ public class PurchaseManagementService {
         return request;
     }
 
-    /*
-     * Approves a pending refund request
-     * @param refundId the id of the refund to be approved
-     * @param approverUsername the username of the approving employee
-     * @throws IllegalArgumentException if the request is invalid
-     * @author Aerin Brown
+    /**
+     * Approve a refund request
+     *
+     * @param refundId
+     *
+     * @author
      */
     @Transactional
-    public void approveRefund(int refundId, String approverUsername) {
-        Employee approver = findEmployeeByUsername(approverUsername);
+    public void approveRefund(int refundId) {
         RefundRequest refund = findRefundById(refundId);
 
         if (refund.getStatus() != RequestStatus.PENDING) {
             throw new IllegalArgumentException("Only pending requests can be approved.");
         }
-        if (refund.getReviewer() != approver) {
-            throw new IllegalArgumentException("Only employees assigned to the refund request can approve it.");
-        }
 
         refund.setStatus(RequestStatus.APPROVED);
         refundRepository.save(refund);
     }
-    /*
-     * Denies a pending refund request
-     * @param refundId the id of the refund to be denied
-     * @param approverUsername the username of the denying employee
-     * @throws IllegalArgumentException if the request is invalid
-     * @author Aerin Brown
+
+    /**
+     * Deny a refund request
+     *
+     * @param refundId
+     *
+     * @author
      */
     @Transactional
-    public void denyRefund(int refundId, String employeeUsername) {
-        Employee employee = findEmployeeByUsername(employeeUsername);
+    public void denyRefund(int refundId) {
         RefundRequest refund = findRefundById(refundId);
 
         if (refund.getStatus() != RequestStatus.PENDING) {
             throw new IllegalArgumentException("Only pending requests can be denied.");
-        }
-        if (refund.getReviewer() != employee) {
-            throw new IllegalArgumentException("Only employees assigned to the refund request can deny it.");
         }
 
         refund.setStatus(RequestStatus.DENIED);
         refundRepository.save(refund);
     }
 
-    /*
-     * Adds an employee as the reviewer of a refund request
-     * @param refundId the refund to add the reviewer to
-     * @param reviewerUsername the username of the employee to add as a reviewer
-     * @throws IllegalArgumentException if the request is invalid
-     * @author Aerin Brown
+    /**
+     * Assign an employee to review a refund request
+     *
+     * @param refundId
+     * @param reviewerUsername
+     *
+     * @author
      */
     @Transactional
     public void addReviewerToRefundRequest(int refundId, String reviewerUsername) {
@@ -574,12 +576,13 @@ public class PurchaseManagementService {
         employeeRepository.save(reviewer);
     }
 
-    /*
-     * Removes an employee as the reviewer of a refund request
-     * @param refundId the refund to remove the reviewer from
-     * @param reviewerUsername the username of the employee to remove as a reviewer
-     * @throws IllegalArgumentException if the request is invalid
-     * @author Aerin Brown
+    /**
+     * Remove the employee assigned to review the refund request
+     *
+     * @param refundId
+     * @param reviewerUsername
+     *
+     * @author
      */
     @Transactional
     public void removeReviewerFromRefundRequest(int refundId, String reviewerUsername) {

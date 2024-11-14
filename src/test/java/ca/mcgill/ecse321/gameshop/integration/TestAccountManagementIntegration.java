@@ -7,13 +7,9 @@ import ca.mcgill.ecse321.gameshop.DAO.ManagerRepository;
 import ca.mcgill.ecse321.gameshop.dto.CustomerDTO;
 import ca.mcgill.ecse321.gameshop.dto.EmployeeDTO;
 import ca.mcgill.ecse321.gameshop.dto.ManagerDTO;
-import ca.mcgill.ecse321.gameshop.model.Account;
 import ca.mcgill.ecse321.gameshop.model.Customer;
 import ca.mcgill.ecse321.gameshop.model.Employee;
-import ca.mcgill.ecse321.gameshop.model.Manager;
 import ca.mcgill.ecse321.gameshop.serviceClasses.AccountManagementService;
-
-import org.checkerframework.checker.units.qual.s;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,14 +19,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
