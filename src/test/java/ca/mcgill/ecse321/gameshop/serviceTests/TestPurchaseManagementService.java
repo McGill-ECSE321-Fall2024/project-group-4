@@ -89,8 +89,8 @@ public class testPurchaseManagementService {
         customer2 = new Customer("customer2", "password", "secondCustomer@email.com", "0123456789");
         manager = new Manager();
         cusomterAddress = new Address("Rue University","Montreal", "Quebec","Canada", "123 4h4", customer);
-        creditCard = new CreditCard(123123, "123", LocalDate.of(2025, 10,1),customer, cusomterAddress);
-        creditCard2 = new CreditCard(12312233, "124", LocalDate.of(2025, 10,1),customer2, cusomterAddress);
+        creditCard = new CreditCard(123123, 123, LocalDate.of(2025, 10,1),customer, cusomterAddress);
+        creditCard2 = new CreditCard(12312233, 124, LocalDate.of(2025, 10,1),customer2, cusomterAddress);
         game = new Game("testGame", "An average game", "example.url",15,true, 5);
         game2 = new Game("testGame2", "A good game", "example.url",30,true, 1);
         purchase = new Purchase(date,15,game,customer,cusomterAddress,creditCard);
