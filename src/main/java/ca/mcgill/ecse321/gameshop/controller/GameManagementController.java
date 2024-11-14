@@ -333,7 +333,7 @@ public class GameManagementController {
      */
     @PutMapping("/games/{gameId}/{promotionId}")
     public void addPromotionToGame(@PathVariable int gameId, @PathVariable int promotionId) {
-        gameManagementService.addPromotionToGame(gameId, promotionId);
+        gameManagementService.addPromotionToGame(promotionId, gameId);
     }
 
     /**
@@ -344,8 +344,8 @@ public class GameManagementController {
      *
      * @author Camille Pouliot
      */
-    @PutMapping("/games/{gameId}/{promotionId}")
-    public void removePromotionFromGame(@PathVariable int gameId, @PathVariable int promotionId) {
-        gameManagementService.removePromotionFromGame(gameId, promotionId);
+    @PutMapping("/games/{promotionId}/{gameId}")
+    public void removePromotionFromGame(@PathVariable int promotionId, @PathVariable int gameId) {
+        gameManagementService.removePromotionFromGame(promotionId, gameId);
     }
 }
