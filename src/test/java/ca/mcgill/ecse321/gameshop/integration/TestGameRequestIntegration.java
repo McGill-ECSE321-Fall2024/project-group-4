@@ -9,6 +9,8 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -189,7 +191,7 @@ public class TestGameRequestIntegration {
         String searchPrompt = "Game";
 
         //Act
-        ResponseEntity<Set<GameResponseDTO>> response = restTemplate.getForEntity("/catalogue/games/" + searchPrompt, null, Set.class);
+        ResponseEntity<Set<GameResponseDTO>> response = restTemplate.exchange("/catalogue/games/" + searchPrompt, HttpMethod.GET,null, new ParameterizedTypeReference<>() {});
 
         //Assert
         assertNotNull(response);
@@ -212,7 +214,8 @@ public class TestGameRequestIntegration {
     @Order(5)
     public void approveGameRequestTest(){
         //Act
-        ResponseEntity<String> response = restTemplate.getForEntity("/gameRequests/" + this.createGameRequestId + "/approve", null, String.class);
+        ResponseEntity<String> response = restTemplate.exchange("/gameRequests/" + this.createGameRequestId +
+                "/requestStatus?status=approve", HttpMethod.PUT, null, String.class);
 
         //Assert
         assertNotNull(response);
@@ -232,7 +235,8 @@ public class TestGameRequestIntegration {
         String searchPrompt = "Game";
 
         //Act
-        ResponseEntity<Set<GameResponseDTO>> response = restTemplate.getForEntity("/catalogue/games/" + searchPrompt, null, String.class);
+        ResponseEntity<Set<GameResponseDTO>> response = restTemplate.exchange("/catalogue/games/" + searchPrompt,
+                HttpMethod.GET,null, new ParameterizedTypeReference<>() {});
 
         //Assert
         assertNotNull(response);

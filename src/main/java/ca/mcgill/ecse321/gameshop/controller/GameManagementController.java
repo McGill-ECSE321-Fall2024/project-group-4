@@ -238,8 +238,8 @@ public class GameManagementController {
      *
      * @author Camille Pouliot
      */
-    @PutMapping("/gameRequests/{gameRequestId}/requestStatus/{status}")
-    public String setGameRequestStatus(@PathVariable int gameRequestId, @PathVariable String status){
+    @PutMapping("/gameRequests/{gameRequestId}/requestStatus")
+    public String setGameRequestStatus(@PathVariable int gameRequestId, @RequestParam String status){
         if(status.equalsIgnoreCase("approve")){
             gameManagementService.approveGameRequest(gameRequestId);
             return "Approved";
