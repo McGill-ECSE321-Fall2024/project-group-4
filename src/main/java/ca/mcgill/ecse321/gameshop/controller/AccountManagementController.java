@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import ca.mcgill.ecse321.gameshop.model.Customer;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -63,25 +62,20 @@ public class AccountManagementController {
     /**
      * Create a customer account
      *
-     * @param email
-     * @param password
-     * @param username
-     * @param phoneNumber
+     * @param customerDTO
      * @return CustomerDTO
      *
      * @author Tarek Namani
      */
     @PostMapping("/customers/{email}")
     public CustomerDTO createCustomer(@RequestBody CustomerDTO customerDTO) {
-        return new CustomerDTO(accountManagementService.createCustomer(customerDTO.username(), customerDTO.password() ,customerDTO.email(),customerDTO.phoneNumber()));
+        return new CustomerDTO(accountManagementService.createCustomer(customerDTO.email(), customerDTO.password() ,customerDTO.username(),customerDTO.phoneNumber()));
     }
 
     /**
      *  Create an employee account
      *
-     * @param username
-     * @param password
-     * @param is_active
+     * @param employeeDTO
      * @return EmployeeDTO
      *
      * @author Tarek Namani

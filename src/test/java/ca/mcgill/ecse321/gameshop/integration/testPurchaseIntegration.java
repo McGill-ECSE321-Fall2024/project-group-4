@@ -197,10 +197,10 @@ public class testPurchaseIntegration {
         Customer customer = new Customer(customerUsername,customerPassword,customerEmail,customerPhoneNumber);
         customerDTO = new CustomerDTO(customer);
         //Act
-        ResponseEntity<String> response = client.postForEntity("/accounts/customers/", customerDTO, String.class);
+        ResponseEntity<String> response = client.postForEntity("/accounts/customers/"+customerEmail, customerDTO, String.class);
 
         //Assert
-        Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
         JSONObject clientParams = new JSONObject(response.getBody());
         assertEquals(customerUsername, clientParams.getString("username"));
         assertEquals(customerPassword, clientParams.getString("password"));
