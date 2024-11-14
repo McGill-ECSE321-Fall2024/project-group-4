@@ -382,7 +382,7 @@ public class testPurchaseManagementService {
 
         //Assert
         assertNull(approvedRequest.getReviewer());
-        assertEquals(0, validEmployee.getRefundRequests().size());
+        assertTrue(validEmployee.getRefundRequests().isEmpty());
     }
 
     @Test
