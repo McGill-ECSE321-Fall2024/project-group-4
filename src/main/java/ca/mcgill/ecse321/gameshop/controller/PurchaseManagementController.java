@@ -3,6 +3,7 @@ package ca.mcgill.ecse321.gameshop.controller;
 
 import ca.mcgill.ecse321.gameshop.dto.*;
 import ca.mcgill.ecse321.gameshop.model.CreditCard;
+import ca.mcgill.ecse321.gameshop.model.Purchase;
 import ca.mcgill.ecse321.gameshop.serviceClasses.PurchaseManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -219,4 +220,56 @@ public class PurchaseManagementController {
         return purchaseManagementService.getCartPrice(customerEmail);
     }
 
+    @GetMapping("refunds/{refundId}")
+    @ResponseStatus(HttpStatus.FOUND)
+    public RefundRequestDTO getRefundById(@PathVariable int refundId) {
+        return new RefundRequestDTO(purchaseManagementService.findRefundById(refundId));
+    }
+
+    @GetMapping("employees/{employeeUsername}")
+    @ResponseStatus(HttpStatus.FOUND)
+    public EmployeeDTO getEmployeeByUsername(@PathVariable String employeeUsername) {
+        return new EmployeeDTO(purchaseManagementService.findEmployeeByUsername(employeeUsername));
+    }
+    
+    @GetMapping("customers/{customerEmail}/purchaseHistory")
+    @ResponseStatus(HttpStatus.FOUND)
+    public Set<PurchaseDTO> requestCustomerPurchaseHistory(@PathVariable String customerEmail, @RequestParam String requestor) {
+        Set<Purchase> purchases;
+        if (!requestor.isEmpty()) {
+            purchases = purchaseManagementService.requestCustomersPurchaseHistory(customerEmail, requestor);
+        }
+        else {
+            purchases = purchaseManagementService.viewCustomerPurchaseHistory(customerEmail);
+        }
+            return purchases.stream().map(PurchaseDTO::new).collect(Collectors.toSet());
+    }
+
+    @PostMapping("refunds")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public RefundRequestDTO requestRefund(@RequestParam int purchaseId, @RequestParam String reason) {
+        return new RefundRequestDTO(purchaseManagementService.requestRefund(purchaseId, reason));
+    }
+
+    @PutMapping("refunds/{refundId}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void processRefund(@PathVariable int refundId, @RequestParam String employeeUsername, @RequestParam boolean approve) {
+        if (approve) { // Put is to approve, not deny
+            purchaseManagementService.approveRefund(refundId, employeeUsername);
+        }
+        else { // approve = false, therefore deny, not approve
+            purchaseManagementService.denyRefund(refundId, employeeUsername);
+        }
+    }
+
+    @PutMapping("refunds/{refundId}/reviewer")
+    @ResponseStatus(HttpStatus.ACCEPTED) 
+    public void updateRefundReviewer(@PathVariable int refundId, @RequestParam String reviewerUsername, @RequestParam boolean add) {
+        if (add) { // Adding reviewer, not removing
+            purchaseManagementService.addReviewerToRefundRequest(refundId, reviewerUsername);
+        }
+        else { // Removing reviewer, not adding
+            purchaseManagementService.removeReviewerFromRefundRequest(refundId, reviewerUsername);
+        }
+    }
 }
