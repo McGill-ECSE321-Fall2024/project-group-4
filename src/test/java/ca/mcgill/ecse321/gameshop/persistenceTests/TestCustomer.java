@@ -1,7 +1,7 @@
 package ca.mcgill.ecse321.gameshop.persistenceTests;
 
-import ca.mcgill.ecse321.gameshop.DAO.CustomerRepository;
-import ca.mcgill.ecse321.gameshop.DAO.GameRepository;
+import ca.mcgill.ecse321.gameshop.DAO.*;
+import ca.mcgill.ecse321.gameshop.model.CartItem;
 import ca.mcgill.ecse321.gameshop.model.Customer;
 import ca.mcgill.ecse321.gameshop.model.Game;
 import jakarta.transaction.Transactional;
@@ -10,10 +10,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Author: Clara Mickail
@@ -26,9 +27,21 @@ public class TestCustomer {
     private CustomerRepository customerRepository;
     @Autowired
     private GameRepository gameRepository;
+    @Autowired
+    private CartItemRepository cartItemRepository;
+    @Autowired
+    private CreditCardRepository creditCardRepository;
+    @Autowired
+    private AddressRepository addressRepository;
+    @Autowired
+    private PurchaseRepository purchaseRepository;
 
     @AfterEach
     public void clearDatabase() {
+        cartItemRepository.deleteAll();
+        purchaseRepository.deleteAll();
+        creditCardRepository.deleteAll();
+        addressRepository.deleteAll();
         customerRepository.deleteAll();
         gameRepository.deleteAll();
     }
@@ -143,18 +156,22 @@ public class TestCustomer {
         String email = "testEmail3@gmail.com";
         String phoneNumber = "5143333333";
         Customer customer = new Customer(username, password, email, phoneNumber);
-        customer.addGameToCart(game);
 
         // Save
         gameRepository.save(game);
         customerRepository.save(customer);
 
+        CartItem cartItem = new CartItem(1, customer, game);
+        cartItemRepository.save(cartItem);
+
+
         // Read
-        Customer customerFromDb = customerRepository.findByEmail(email).orElse(null);
-        List<Game> cartFromDb = new ArrayList<>(customerFromDb.getCopyCart()); //make a list to access the game in cart
+        Optional<CartItem> cartItemFromDbOpt = cartItemRepository.findByCartItemId_Customer_IdAndCartItemId_Game_Id(customer.getId(), game.getId());
 
         //Assert
-        assertFalse(cartFromDb.isEmpty());
-        assertEquals(game.getName(), cartFromDb.get(0).getName());
+        assertTrue(cartItemFromDbOpt.isPresent());
+        CartItem cartItemFromDb = cartItemFromDbOpt.get();
+        assertEquals(customer.getId(), cartItemFromDb.getCustomer().getId());
+        assertEquals(game.getId(), cartItemFromDb.getGame().getId());
     }
 }

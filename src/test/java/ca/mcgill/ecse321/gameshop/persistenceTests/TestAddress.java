@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.gameshop.persistenceTests;
 
 import ca.mcgill.ecse321.gameshop.DAO.AddressRepository;
+import ca.mcgill.ecse321.gameshop.DAO.CreditCardRepository;
 import ca.mcgill.ecse321.gameshop.DAO.CustomerRepository;
 import ca.mcgill.ecse321.gameshop.model.Address;
 import ca.mcgill.ecse321.gameshop.model.Customer;
@@ -9,11 +10,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
 import java.util.Set;
 
-import java.lang.reflect.Field;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Author: Clara Mickail
@@ -26,11 +27,15 @@ public class TestAddress {
 
     @Autowired
     private CustomerRepository customerRepository;
+    @Autowired
+    private CreditCardRepository creditCardRepository;
 
     @AfterEach
     public void clearDatabase() {
-        addressRepository.deleteAll();
         customerRepository.deleteAll();
+        creditCardRepository.deleteAll();
+        addressRepository.deleteAll();
+
     }
 
     @Test
