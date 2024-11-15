@@ -4,10 +4,15 @@ import ca.mcgill.ecse321.gameshop.DAO.AccountRepository;
 import ca.mcgill.ecse321.gameshop.DAO.CustomerRepository;
 import ca.mcgill.ecse321.gameshop.DAO.EmployeeRepository;
 import ca.mcgill.ecse321.gameshop.DAO.ManagerRepository;
+import ca.mcgill.ecse321.gameshop.DAO.GameRepository;
+import ca.mcgill.ecse321.gameshop.DAO.GameRepository;
 import ca.mcgill.ecse321.gameshop.dto.*;
 import ca.mcgill.ecse321.gameshop.model.Customer;
 import ca.mcgill.ecse321.gameshop.model.Employee;
+import ca.mcgill.ecse321.gameshop.model.Game;
 import ca.mcgill.ecse321.gameshop.serviceClasses.AccountManagementService;
+import jakarta.transaction.Transactional;
+
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +22,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,6 +48,9 @@ public class TestAccountManagementIntegration {
     @Autowired
     private ManagerRepository managerRepository;
 
+    @Autowired
+    private GameRepository gameRepository;
+
     private String USERNAME = "testUsernameValid";
     private String PASSWORD = "testPasswordValid";
     private String EMAIL_STRING = "emailvalid@email.com";
@@ -53,6 +63,8 @@ public class TestAccountManagementIntegration {
     private String OLD_USERNAME = "testUsername_old";
     private String OLD_PASSWORD = "testPassword_old";
     private String OLD_PHONENUMBER = "1234567890";
+    private static final String TEST_CATEGORY_NAME1 = "test category name1";
+    private int gameId;
 
     @Autowired
     private AccountManagementService accountManagementService;
@@ -757,32 +769,150 @@ public class TestAccountManagementIntegration {
 
     @Test
     @Order(27)
+    @Transactional
     public void testAddValidGameToWishlist() {
+        // Arrange
+        Customer customer = accountManagementService.createCustomer(USERNAME, PASSWORD, EMAIL_STRING, PHONENUMBER_STRING);
+        customer = customerRepository.save(customer);
+        System.out.println(customer.getId());
+        System.out.println("123");
+    
+        Game game = new Game("Test Game", "Test Description", "test.jpg", 29.99f, true, 11);
+        gameRepository.save(game);
+        assertNotNull(game.getId(), "Game ID should not be null after saving.");
+
+        // Act
+        ResponseEntity<Void> response = account.exchange(
+            "/accounts/customers/" + customer.getId() + "/wishlist/" + game.getId(), HttpMethod.PUT,
+                null,
+                Void.class
+        );
+    
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        // Customer updatedCustomer = customerRepository.findById(customer.getId()).orElse(null);
+        // assertNotNull(updatedCustomer);
+        // assertTrue(
+        //     updatedCustomer.getCopyWishlist().stream().anyMatch(g -> g.getId() == gameId));
+    
     }
+    
 
     @Test
     @Order(28)
-    public void testAddInvalidGameToWishlist(){
+    public void testAddInvalidGameToWishlist() {
+        // Arrange
+        Customer customer = accountManagementService.createCustomer(USERNAME, PASSWORD, EMAIL_STRING, PHONENUMBER_STRING);
+        customerRepository.save(customer);
 
+        int invalidGameId = 9999994; // Assuming this game ID doesn't exist
+    
+        // Act
+        ResponseEntity<Void> response = account.exchange(
+            "/accounts/customers/" + customer.getId() + "/wishlist/" + invalidGameId,
+            HttpMethod.PUT,
+            null,
+            Void.class
+        );
+    
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
+    
 
     @Test
     @Order(29)
-    public void testRemoveValidGameFromWishlist(){
-
+    @Transactional
+    public void testRemoveValidGameFromWishlist() {
+        // Arrange
+        Customer customer = accountManagementService.createCustomer(USERNAME, PASSWORD, EMAIL_STRING, PHONENUMBER_STRING);
+        customer = customerRepository.save(customer);
+    
+        Game game = new Game("Test Game", "Test Description", "test.jpg", 29.99f, true, 11);
+        gameRepository.save(game);
+    
+        //Act
+        // Add the game to the customer's wishlist
+        ResponseEntity<Void> response = account.exchange(
+            "/accounts/customers/" + customer.getId() + "/wishlist/" + game.getId(),
+            HttpMethod.PUT,
+            null,
+            Void.class
+        );
+    
+        // Remove the game from the customer's wishlist
+       account.exchange(
+            "/accounts/customers/" + customer.getId() + "/wishlist/" + game.getId(),
+            HttpMethod.DELETE,
+            null,
+            Void.class
+        );
+    
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    
+        // Reload the customer and verify the wishlist
+        Customer updatedCustomer = customerRepository.findById(customer.getId()).orElse(null);
+        assertNotNull(updatedCustomer);
+        assertFalse(updatedCustomer.getCopyWishlist().stream().anyMatch(g -> g.getId() == game.getId()));
     }
-
+    
     @Test
     @Order(30)
-    public void testRemoveInvalidGameFromWishlist(){
-
+    public void testRemoveInvalidGameFromWishlist() {
+        // Arrange
+        Customer customer = accountManagementService.createCustomer(USERNAME, PASSWORD, EMAIL_STRING, PHONENUMBER_STRING);
+        customerRepository.save(customer);
+    
+        int invalidGameId = 99999123; // Assuming this game ID doesn't exist
+    
+        // Act: Try removing the invalid game from the customer's wishlist
+        ResponseEntity<Void> response = account.exchange(
+            "/accounts/customers/" + customer.getId() + "/wishlist/" + invalidGameId,
+            HttpMethod.DELETE,
+            null,
+            Void.class
+        );
+    
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
+    
 
     @Test
     @Order(31)
-    public void testViewWishlist(){
-
+    @Transactional
+    public void testViewWishlist() {
+        // Arrange
+        Customer customer = accountManagementService.createCustomer(USERNAME, PASSWORD, EMAIL_STRING, PHONENUMBER_STRING);
+        customer = customerRepository.save(customer);
+    
+        Game game = new Game("Test Game", "Test Description", "test.jpg", 29.99f, true, 10);
+        gameRepository.save(game);
+    
+        account.exchange(
+            "/accounts/customers/" + customer.getId() + "/wishlist/" + game.getId(),
+            HttpMethod.PUT,
+            null,
+            Void.class
+        );
+    
+        // Act
+        ResponseEntity<GameResponseDTO[]> response = account.exchange(
+            "/accounts/customers/" + customer.getId() + "/wishlist",
+            HttpMethod.GET,
+            null,
+            GameResponseDTO[].class
+        );
+    
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(
+            Arrays.stream(response.getBody()).anyMatch(g -> g.id() == game.getId())
+        );
     }
+    
 
     
 }
