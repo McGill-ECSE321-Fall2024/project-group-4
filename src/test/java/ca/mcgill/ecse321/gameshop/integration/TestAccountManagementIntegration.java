@@ -4,6 +4,7 @@ import ca.mcgill.ecse321.gameshop.DAO.AccountRepository;
 import ca.mcgill.ecse321.gameshop.DAO.CustomerRepository;
 import ca.mcgill.ecse321.gameshop.DAO.EmployeeRepository;
 import ca.mcgill.ecse321.gameshop.DAO.ManagerRepository;
+import ca.mcgill.ecse321.gameshop.controller.GameManagementController;
 import ca.mcgill.ecse321.gameshop.DAO.GameRepository;
 import ca.mcgill.ecse321.gameshop.DAO.GameRepository;
 import ca.mcgill.ecse321.gameshop.dto.*;
@@ -50,6 +51,9 @@ public class TestAccountManagementIntegration {
 
     @Autowired
     private GameRepository gameRepository;
+
+    @Autowired
+    private GameManagementController gameController;
 
     private String USERNAME = "testUsernameValid";
     private String PASSWORD = "testPasswordValid";
@@ -769,33 +773,30 @@ public class TestAccountManagementIntegration {
 
     @Test
     @Order(27)
-    @Transactional
     public void testAddValidGameToWishlist() {
         // Arrange
         Customer customer = accountManagementService.createCustomer(USERNAME, PASSWORD, EMAIL_STRING, PHONENUMBER_STRING);
         customer = customerRepository.save(customer);
-        System.out.println(customer.getId());
-        System.out.println("123");
-    
+
         Game game = new Game("Test Game", "Test Description", "test.jpg", 29.99f, true, 11);
         gameRepository.save(game);
-        assertNotNull(game.getId(), "Game ID should not be null after saving.");
 
         // Act
         ResponseEntity<Void> response = account.exchange(
-            "/accounts/customers/" + customer.getId() + "/wishlist/" + game.getId(), HttpMethod.PUT,
-                null,
-                Void.class
+            "/accounts/customers/" + customer.getId() + "/wishlist/" + game.getId(),
+            HttpMethod.PUT,
+            null,  
+            Void.class
         );
-    
+   
         // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode());  
 
-        // Customer updatedCustomer = customerRepository.findById(customer.getId()).orElse(null);
-        // assertNotNull(updatedCustomer);
-        // assertTrue(
-        //     updatedCustomer.getCopyWishlist().stream().anyMatch(g -> g.getId() == gameId));
-    
+        // Reload and assert
+        game = gameRepository.findById(game.getId()).orElse(null);
+        assertNotNull(game);
+
+        assertTrue(game.getCopyWishlistedBy().contains(customer));
     }
     
 
@@ -852,9 +853,11 @@ public class TestAccountManagementIntegration {
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
     
-        // Reload the customer and verify the wishlist
+        // Reload
         Customer updatedCustomer = customerRepository.findById(customer.getId()).orElse(null);
         assertNotNull(updatedCustomer);
+
+        //This part is the part that does not work:
         assertFalse(updatedCustomer.getCopyWishlist().stream().anyMatch(g -> g.getId() == game.getId()));
     }
     
@@ -912,7 +915,4 @@ public class TestAccountManagementIntegration {
             Arrays.stream(response.getBody()).anyMatch(g -> g.id() == game.getId())
         );
     }
-    
-
-    
 }
