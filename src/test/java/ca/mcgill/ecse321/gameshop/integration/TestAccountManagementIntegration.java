@@ -54,13 +54,15 @@ public class TestAccountManagementIntegration {
     private String EMAIL_STRING = "emailvalid@email.com";
     private String EMAIL_STRING_INVALID = "invalid email";
     private String PHONENUMBER_STRING = "0123456789";
-    private int ID = 0;
-    private int INVALID_ID = -1;
-    int gameID;
+
+    private final String employeeUsername = "employee";
+    private final String employeePassword = "safePassword";
+    private int employeeID = 0;
+
+    private int customerID = 0;
     private String INVALID_USERNAME = "testUsername Not Valid";
     private String INVALID_PASSWORD = "testPassword Not Valid";
     private String OLD_USERNAME = "testUsername_old";
-    private String OLD_PASSWORD = "testPassword_old";
     private String OLD_PHONENUMBER = "1234567890";
     private static final String TEST_CATEGORY_NAME1 = "test category name1";
     private int gameId;
@@ -69,15 +71,15 @@ public class TestAccountManagementIntegration {
     private AccountManagementService accountManagementService;
 
     
-    @BeforeEach
-    @AfterEach
-    public void clearDatabase() {
-        customerRepository.deleteAll();
-        employeeRepository.deleteAll();
-        managerRepository.deleteAll();
-        accountRepository.deleteAll();
-        gameRepository.deleteAll();
-    }
+//    @BeforeEach
+//    @AfterEach
+//    public void clearDatabase() {
+//        customerRepository.deleteAll();
+//        employeeRepository.deleteAll();
+//        managerRepository.deleteAll();
+//        accountRepository.deleteAll();
+//        gameRepository.deleteAll();
+//    }
 
     @AfterAll
     public void clear() {
@@ -88,7 +90,28 @@ public class TestAccountManagementIntegration {
         gameRepository.deleteAll();
     }
 
-    // Login tests //
+
+
+    @Test
+    @Order(0)
+    public void testCreateCustomerAccount() {
+        //Arrange
+        Customer customer = new Customer(USERNAME, PASSWORD, EMAIL_STRING, PHONENUMBER_STRING);
+        CustomerRequestDTO customerDto = new CustomerRequestDTO(customer);
+
+
+        //Act
+        ResponseEntity<CustomerResponseDTO> response = account.postForEntity("/accounts/customers", customerDto, CustomerResponseDTO.class);
+
+
+        //Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(USERNAME, response.getBody().username());
+        customerID = response.getBody().id();
+    }
+
+
 
     /**
      * 
@@ -97,13 +120,9 @@ public class TestAccountManagementIntegration {
      * @author Ana Gordon
      */
     @Test
-    @Order(0)
+    @Order(1)
     public void testLoginValidCustomerAccount() {
-        //create a customer account
-        Customer customer = accountManagementService.createCustomer(EMAIL_STRING, PASSWORD, USERNAME, PHONENUMBER_STRING);
-        customerRepository.save(customer);
-
-        //login to this customer account
+        //login to a customer account
         ResponseEntity<CustomerResponseDTO> response = account.postForEntity("/accounts/login/customers/" + EMAIL_STRING, PASSWORD , CustomerResponseDTO.class);
 
 
@@ -118,16 +137,38 @@ public class TestAccountManagementIntegration {
      * @Author Ana Gordon
      */
     @Test
-    @Order(1)
+    @Order(2)
     public void testLoginInvalidCustomerAccount() {
-        //create a customer account
-        Customer customer = accountManagementService.createCustomer(EMAIL_STRING, PASSWORD, USERNAME, PHONENUMBER_STRING);
-        customerRepository.save(customer);
 
         //login to this customer account with invalid email
         ResponseEntity<CustomerResponseDTO> response = account.postForEntity("/accounts/login/customers/" + EMAIL_STRING_INVALID, PASSWORD , CustomerResponseDTO.class);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+
+    /**
+     * @Author Tarek Namani
+     * Test the creation of an employee account
+     */
+    @Test
+    @Order(3)
+    public void testCreateEmployeeAccount() {
+        //Arrange
+        Employee employee = new Employee(employeeUsername,employeePassword,true);
+        EmployeeRequestDTO employeeDto = new EmployeeRequestDTO(employee);
+
+
+        //Act
+        ResponseEntity<EmployeeResponseDTO> response = account.postForEntity("/accounts/employees", employeeDto, EmployeeResponseDTO.class);
+
+
+        //Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isActive());
+        employeeID = response.getBody().id();
+
     }
 
     /**
@@ -137,13 +178,10 @@ public class TestAccountManagementIntegration {
      * @Author Ana Gordon
      */
     @Test
-    @Order(2)
+    @Order(4)
     public void testLoginValidEmployeeAccount() {
-        //create an employee account
-        accountManagementService.createEmployee(USERNAME, PASSWORD, true);
-        
         //login to this employee account
-        ResponseEntity<EmployeeResponseDTO> response = account.postForEntity("/accounts/login/employees/" + USERNAME, PASSWORD , EmployeeResponseDTO.class);
+        ResponseEntity<EmployeeResponseDTO> response = account.postForEntity("/accounts/login/employees/" + employeeUsername,employeePassword , EmployeeResponseDTO.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -156,16 +194,32 @@ public class TestAccountManagementIntegration {
      * @Author Ana Gordon
      */
     @Test
-    @Order(3)
+    @Order(5)
     public void testLoginInvalidEmployeeAccount() {
-        //create an employee account
-        accountManagementService.createEmployee(USERNAME, PASSWORD, true);
-        
-        //login to this employee account with invalid username
+        //login to an employee account with invalid username
         ResponseEntity<EmployeeResponseDTO> response = account.postForEntity("/accounts/login/employees/" + INVALID_USERNAME, PASSWORD , EmployeeResponseDTO.class);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
+
+
+    /**
+     * Test the creation of a manager account
+     * @author Tarek Namani
+     */
+    @Test
+    @Order(6)
+    public void testCreateManagerAccount() {
+        //Act
+        ResponseEntity<ManagerDTO> response = account.postForEntity("/accounts/manager/", null,ManagerDTO.class);
+
+
+        //Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("manager", response.getBody().username());
+    }
+
 
     /**
      * 
@@ -174,10 +228,9 @@ public class TestAccountManagementIntegration {
      * @Author Ana Gordon
      */
     @Test
-    @Order(4)
+    @Order(7)
     public void testLoginValidManagerAccount() {
-        //create a manager account
-        accountManagementService.createManager();
+
         
         //login to this manager account
         ResponseEntity<ManagerDTO> response = account.postForEntity("/accounts/login/manager/manager", "manager" ,ManagerDTO.class);
@@ -186,6 +239,7 @@ public class TestAccountManagementIntegration {
         assertNotNull(response.getBody());
     }
 
+
     /**
      * 
      * Login test for an invalid manager account
@@ -193,46 +247,12 @@ public class TestAccountManagementIntegration {
      * @Author Ana Gordon
      */
     @Test
-    @Order(5)
+    @Order(8)
     public void testLoginInvalidManagerAccount() {
-        //create a manager account
-        accountManagementService.createManager();
-        
-        //login to this manager account with invalid username
+        //login to manager account with invalid username
         ResponseEntity<ManagerDTO> response = account.postForEntity("/accounts/login/manager/" + INVALID_USERNAME, PASSWORD ,ManagerDTO.class);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    }
-
-    // Create Account tests //
-
-    /**
-     * 
-     * Create a valid customer account
-     * 
-     * @Author Ana Gordon
-     */
-    @Test
-    @Order(6)
-    public void testCreateValidCustomerAccount() {
-        CustomerRequestDTO customer = new CustomerRequestDTO(
-            USERNAME,
-            PASSWORD,
-            EMAIL_STRING,
-            PHONENUMBER_STRING,
-            Set.of(),
-            Set.of(),
-            Set.of(),
-            Set.of()
-        );
-
-        ResponseEntity<CustomerResponseDTO> response = account.postForEntity(
-            "/accounts/customers",
-            customer, CustomerResponseDTO.class);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertNotNull(customerRepository.findByEmail(EMAIL_STRING));
     }
 
     /**
@@ -242,7 +262,7 @@ public class TestAccountManagementIntegration {
      * @Author Ana Gordon
      */
     @Test
-    @Order(7)
+    @Order(9)
     public void testCreateInvalidCustomerAccount() {
         CustomerRequestDTO customer = new CustomerRequestDTO(
             INVALID_USERNAME,
@@ -261,34 +281,6 @@ public class TestAccountManagementIntegration {
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
-
-        /**
-     * 
-     * Create a valid employee account (this method is not working)
-     * 
-     * @Author Clara Mickail
-     */
-    @Test
-    @Order(8)
-    public void testCreateValidEmployeeAccount() {
-        EmployeeRequestDTO employeeRequestDTO = new EmployeeRequestDTO(
-                USERNAME,
-                PASSWORD,
-                true,
-                Set.of()
-        );
-
-        ResponseEntity<EmployeeResponseDTO> response = account.postForEntity(
-                "/accounts/employees",
-                employeeRequestDTO,
-                EmployeeResponseDTO.class
-        );
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertTrue(employeeRepository.findByUsername(USERNAME).isPresent());
-    }
-    
 
     /**
      * 
@@ -314,41 +306,13 @@ public class TestAccountManagementIntegration {
     }
 
     /**
-     * 
-     * Create a valid manager account (this method is not working)
-     * 
-     * @Author Ana Gordon
-     */
-    @Test
-    @Order(10)
-    public void testCreateValidManagerAccount() {
-        ManagerDTO managerDTO = new ManagerDTO(
-                1, 
-                "manager",
-                "manager"
-        );
-
-        ResponseEntity<ManagerDTO> response = account.postForEntity(
-            "/accounts/manager/",
-            managerDTO, ManagerDTO.class);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        // assertNotNull(response.getBody());
-        assertNotNull(managerRepository.findByUsername("manager"));
-    }
-
-    /**
      * Create an invalid manager account
      * 
      * @Author Clara Mickail
      */
     @Test
-    @Order(11)
+    @Order(10)
     public void testCreateInvalidManagerAccount() {
-        // Arrange
-        // No need to send ManagerDTO since `createManager` doesn't take any input in the controller
-        account.postForEntity("/accounts/manager/", null, ManagerDTO.class); // Creating the first (valid) manager
-    
         // Act: Attempt to create another manager (which is invalid cuz only one manager is allowed)
         ResponseEntity<ManagerDTO> response = account.postForEntity(
             "/accounts/manager/",
@@ -368,33 +332,19 @@ public class TestAccountManagementIntegration {
      * @Author Ana Gordon
      */
     @Test
-    @Order(12)
+    @Order(11)
     public void testGetAllCustomerAccounts() {
-        CustomerResponseDTO customer1 = new CustomerResponseDTO(
-            USERNAME,
-            PASSWORD,
-            EMAIL_STRING,
-            PHONENUMBER_STRING,
-            Set.of(),
-            Set.of(),
-            Set.of(),
-            Set.of(),
-            ID
-        );
-        customerRepository.save(customer1.toCustomer());
                 
-        ResponseEntity<CustomerResponseDTO[]> response = account.getForEntity(
-            "/accounts/customers/",
-            CustomerResponseDTO[].class);
+        ResponseEntity<Set<CustomerResponseDTO>> response = account.exchange("/accounts/customers/", HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        CustomerResponseDTO[] responseAccount = response.getBody();
-        assertNotNull(responseAccount);
-        assertEquals(EMAIL_STRING, responseAccount[0].email());
-        assertEquals(PHONENUMBER_STRING, responseAccount[0].phoneNumber());
-        assertEquals(USERNAME, responseAccount[0].username());
-        assertEquals(PASSWORD, responseAccount[0].password());
+        Set<CustomerResponseDTO> customers = response.getBody();
+        assertNotNull(customers);
+        assertEquals(EMAIL_STRING, customers.iterator().next().email());
+        assertEquals(PHONENUMBER_STRING, customers.iterator().next().phoneNumber());
+        assertEquals(USERNAME, customers.iterator().next().username());
+        assertEquals(PASSWORD, customers.iterator().next().password());
     }
 
     /**
@@ -405,26 +355,15 @@ public class TestAccountManagementIntegration {
     @Test
     @Order(13)
     public void testGetAllEmployeeAccounts() {
-        //create employee account
-        EmployeeResponseDTO employee1 = new EmployeeResponseDTO(
-                ID, 
-                USERNAME,
-                PASSWORD,
-                true,
-                Set.of()
-        );
-        employeeRepository.save(employee1.toEmployee());
 
-        ResponseEntity<EmployeeResponseDTO[]> response = account.getForEntity(
-            "/accounts/employees/",
-            EmployeeResponseDTO[].class);
+        ResponseEntity<Set<EmployeeResponseDTO>> response = account.exchange("/accounts/employees/", HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        EmployeeResponseDTO[] responseAccount = response.getBody();
-        assertNotNull(responseAccount);
-        assertEquals(USERNAME, responseAccount[0].username());
-        assertEquals(PASSWORD, responseAccount[0].password());
+        Set<EmployeeResponseDTO> employees = response.getBody();
+        assertNotNull(employees);
+        assertEquals(employeeUsername, employees.iterator().next().username());
+        assertEquals(employeePassword, employees.iterator().next().password());
     }
 
     /**
@@ -435,23 +374,8 @@ public class TestAccountManagementIntegration {
     @Test
     @Order(14)
     public void testGetCustomerByValidEmail() {
-        //create customer
-        CustomerResponseDTO customer1 = new CustomerResponseDTO(
-            USERNAME,
-            PASSWORD,
-            EMAIL_STRING,
-            PHONENUMBER_STRING,
-            Set.of(),
-            Set.of(),
-            Set.of(),
-            Set.of(),
-            ID
-        );
-        customerRepository.save(customer1.toCustomer());
-
-        ResponseEntity<CustomerResponseDTO> response = account.getForEntity(
-            "/accounts/customers/" + EMAIL_STRING,
-            CustomerResponseDTO.class);
+        //Act
+        ResponseEntity<CustomerResponseDTO> response = account.getForEntity("/accounts/customers/" + EMAIL_STRING, CustomerResponseDTO.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -469,19 +393,6 @@ public class TestAccountManagementIntegration {
     @Test
     @Order(15)
     public void testGetCustomerByInvalidEmail() {
-        //create customer
-        CustomerResponseDTO customer1 = new CustomerResponseDTO(
-            USERNAME,
-            PASSWORD,
-            EMAIL_STRING_INVALID,
-            PHONENUMBER_STRING,
-            Set.of(),
-            Set.of(),
-            Set.of(),
-            Set.of(),
-            ID
-        );
-        customerRepository.save(customer1.toCustomer());
 
         ResponseEntity<CustomerResponseDTO> response = account.getForEntity(
             "/accounts/customers/" + EMAIL_STRING_INVALID,
@@ -498,21 +409,15 @@ public class TestAccountManagementIntegration {
     @Test
     @Order(16)
     public void testGetEmployeeByValidUsername() {
-        Employee employee = new Employee(
-                USERNAME,
-                PASSWORD,
-                true
-        );
-        employeeRepository.save(employee);
 
         ResponseEntity<EmployeeResponseDTO> response = account.getForEntity(
-            "/accounts/employees/username/" + USERNAME,
+            "/accounts/employees/username/" + employeeUsername,
             EmployeeResponseDTO.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(USERNAME, response.getBody().username());
-        assertEquals(PASSWORD, response.getBody().password());
+        assertEquals(employeeUsername, response.getBody().username());
+        assertEquals(employeePassword, response.getBody().password());
     }
 
     /**
@@ -523,16 +428,6 @@ public class TestAccountManagementIntegration {
     @Test
     @Order(17)
     public void testGetEmployeeByInvalidUsername() {
-        //create employee account
-        EmployeeResponseDTO employee1 = new EmployeeResponseDTO(
-                ID, 
-                INVALID_USERNAME,
-                PASSWORD,
-                true,
-                Set.of()
-        );
-        employeeRepository.save(employee1.toEmployee());
-
         ResponseEntity<EmployeeResponseDTO> response = account.getForEntity(
             "/accounts/employees/username/" + INVALID_USERNAME,
             EmployeeResponseDTO.class);
@@ -550,24 +445,14 @@ public class TestAccountManagementIntegration {
     @Test
     @Order(18)
     public void testUpdateEmployeeStatus() {
-        // create employee account
-        // EmployeeDTO employee1 = new EmployeeDTO(
-        //     ID, 
-        //     USERNAME,
-        //     PASSWORD,
-        //     true,
-        //     Set.of(),
-        //     Set.of()
-        // );
-        // Employee emp = employee1.toEmployee();
-        // employeeRepository.save(emp);
-        // emp.setActive(false);
 
-        // ResponseEntity<EmployeeDTO> response = account.exchange(
-        // "/accounts/employees/" + ID + "/is_active/" + false, HttpMethod.PUT, new HttpEntity<>(employee1),
-        // EmployeeDTO.class);
+         ResponseEntity<Void> response = account.exchange("/accounts/employees/" + employeeID + "/is_active/" + false, HttpMethod.PUT,null, Void.class);
     
-        // assertEquals(HttpStatus.OK, response.getStatusCode());
+         assertEquals(HttpStatus.OK, response.getStatusCode());
+         assertFalse(employeeRepository.findById(employeeID).get().isActive());
+
+         //Reset to active
+        account.exchange("/accounts/employees/" + employeeID + "/is_active/" + true, HttpMethod.PUT,null, Void.class);
 
     }
 
@@ -579,14 +464,13 @@ public class TestAccountManagementIntegration {
     @Test
     @Order(19)
     public void testUpdateValidCustomerPassword() {
-        Customer customer = new Customer(USERNAME, OLD_PASSWORD, EMAIL_STRING, PHONENUMBER_STRING);
-        customerRepository.save(customer);
-
-        ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO(OLD_PASSWORD, PASSWORD);
+        //Arrange
+        String newPassword = "saferPassword";
+        ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO(PASSWORD, newPassword);
 
         // Act
         ResponseEntity<CustomerResponseDTO> response = account.exchange(
-            "/accounts/customers/" + customer.getEmail() + "/password",
+            "/accounts/customers/" + EMAIL_STRING + "/password",
             HttpMethod.PUT,
             new HttpEntity<>(changePasswordDTO),
             CustomerResponseDTO.class
@@ -594,8 +478,8 @@ public class TestAccountManagementIntegration {
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        customer = customerRepository.findById(customer.getId()).get();
-        assertEquals(PASSWORD, customer.getPassword());
+        Customer customer = customerRepository.findById(customerID).get();
+        assertEquals(newPassword, customer.getPassword());
     }
 
 
@@ -609,15 +493,12 @@ public class TestAccountManagementIntegration {
     @Order(20)
     public void testUpdateInvalidCustomerPassword() {
         // Arrange
-        Customer customer = new Customer("Guy", "oldPassword", "guy@email.com", "1234567890");
-        customerRepository.save(customer);
-
         ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO(INVALID_PASSWORD, "newpass");
 
 
         // Act
         ResponseEntity<String> response = account.exchange(
-            "/accounts/customers/" + customer.getEmail() + "/password",
+            "/accounts/customers/" + EMAIL_STRING_INVALID + "/password",
             HttpMethod.PUT,
                 new HttpEntity<>(changePasswordDTO),
             String.class
@@ -636,12 +517,12 @@ public class TestAccountManagementIntegration {
     @Test
     @Order(21)
     public void testUpdateValidCustomerUsername() {
-        Customer customer = new Customer(OLD_USERNAME, PASSWORD, EMAIL_STRING, PHONENUMBER_STRING);
-        customerRepository.save(customer);
+        //Arrange
+        String newUsername = "newUsername";
 
         // Act
         ResponseEntity<String> response = account.exchange(
-            "/accounts/customers/" + customer.getEmail() + "/username/" + USERNAME,
+            "/accounts/customers/" + EMAIL_STRING + "/username/"+newUsername,
             HttpMethod.PUT,
             null,
             String.class
@@ -649,8 +530,8 @@ public class TestAccountManagementIntegration {
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        customer = customerRepository.findById(customer.getId()).get();
-        assertEquals(USERNAME, customer.getUsername());
+        Customer customer = customerRepository.findById(customerID).get();
+        assertEquals(newUsername, customer.getUsername());
     }
     
 
@@ -662,9 +543,6 @@ public class TestAccountManagementIntegration {
     @Test
     @Order(22)
     public void testUpdateInvalidCustomerUsername() {
-        // Arrange
-        Customer customer = new Customer(OLD_USERNAME, PASSWORD, EMAIL_STRING, PHONENUMBER_STRING);
-        customerRepository.save(customer);
 
         // Act
         ResponseEntity<String> response = account.exchange(
@@ -687,12 +565,9 @@ public class TestAccountManagementIntegration {
     @Test
     @Order(23)
     public void testUpdateValidCustomerPhoneNumber() {
-        Customer customer = new Customer(USERNAME, PASSWORD, EMAIL_STRING, OLD_PHONENUMBER);
-        customerRepository.save(customer);
-
         // Act
         ResponseEntity<String> response = account.exchange(
-            "/accounts/customers/" + customer.getEmail() + "/phoneNumber/" + PHONENUMBER_STRING,
+            "/accounts/customers/" + EMAIL_STRING + "/phoneNumber/" + PHONENUMBER_STRING,
             HttpMethod.PUT,
             null,
             String.class
@@ -700,7 +575,7 @@ public class TestAccountManagementIntegration {
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        customer = customerRepository.findById(customer.getId()).get();
+        Customer customer = customerRepository.findById(customerID).get();
         assertEquals(PHONENUMBER_STRING, customer.getPhoneNumber());
     }
 
@@ -761,12 +636,9 @@ public class TestAccountManagementIntegration {
     @Test
     @Order(26)
     public void testUpdateInvalidEmployeeUsername() {
-        Employee employee = new Employee(OLD_USERNAME, PASSWORD, true);
-        employeeRepository.save(employee);
-
         // Act
         ResponseEntity<String> response = account.exchange(
-            "/accounts/employees/" + OLD_USERNAME + "/username/ ",
+            "/accounts/employees/" + employeeUsername + "/username/" + " ",
             HttpMethod.PUT,
             null,
             String.class
@@ -781,16 +653,12 @@ public class TestAccountManagementIntegration {
     @Transactional
     public void testAddValidGameToWishlist() {
         // Arrange
-        Customer customer = new Customer(OLD_USERNAME, PASSWORD, EMAIL_STRING, PHONENUMBER_STRING);
-        CustomerRequestDTO customerDto = new CustomerRequestDTO(customer);
-        ID = account.postForEntity("/accounts/customers", customerDto, CustomerResponseDTO.class).getBody().id();
-
         GameInputDTO gameDTO = new GameInputDTO("Test Game", "Test Description", "test.jpg", 29.99f, true, 11,new ArrayList<>());
         gameId = account.postForEntity("/games", gameDTO, GameResponseDTO.class).getBody().id();
 
         // Act
         ResponseEntity<Void> response = account.exchange(
-            "/accounts/customers/" + ID + "/wishlist/" + gameId,
+            "/accounts/customers/" + customerID + "/wishlist/" + gameId,
             HttpMethod.PUT,
             null,  
             Void.class
@@ -800,7 +668,7 @@ public class TestAccountManagementIntegration {
         assertEquals(HttpStatus.OK, response.getStatusCode());  
 
         // Reload and assert
-        Customer customer1 = customerRepository.findById(ID).get();
+        Customer customer1 = customerRepository.findById(customerID).get();
         assertTrue(customer1.getCopyWishlist().stream().map(game -> game.getName()).anyMatch( name -> name.equals("Test Game")));
     }
     
@@ -813,7 +681,7 @@ public class TestAccountManagementIntegration {
     
         // Act
         ResponseEntity<Void> response = account.exchange(
-            "/accounts/customers/" + ID + "/wishlist/" + invalidGameId,
+            "/accounts/customers/" + customerID + "/wishlist/" + invalidGameId,
             HttpMethod.PUT,
             null,
             Void.class
@@ -828,18 +696,11 @@ public class TestAccountManagementIntegration {
     @Order(29)
     @Transactional
     public void testRemoveValidGameFromWishlist() {
-        // Arrange
-        Customer customer = new Customer(OLD_USERNAME, PASSWORD, EMAIL_STRING, PHONENUMBER_STRING);
-        CustomerRequestDTO customerDto = new CustomerRequestDTO(customer);
-        ID = account.postForEntity("/accounts/customers", customerDto, CustomerResponseDTO.class).getBody().id();
-
-        GameInputDTO gameDTO = new GameInputDTO("Test Game", "Test Description", "test.jpg", 29.99f, true, 11,new ArrayList<>());
-        gameId = account.postForEntity("/games", gameDTO, GameResponseDTO.class).getBody().id();
     
         //Act
         // Add the game to the customer's wishlist
         ResponseEntity<Void> response = account.exchange(
-            "/accounts/customers/" + ID + "/wishlist/" + gameId,
+            "/accounts/customers/" + customerID + "/wishlist/" + gameId,
             HttpMethod.PUT,
             null,
             Void.class
@@ -847,7 +708,7 @@ public class TestAccountManagementIntegration {
     
         // Remove the game from the customer's wishlist
        account.exchange(
-            "/accounts/customers/" + ID + "/wishlist/" + gameId,
+            "/accounts/customers/" + customerID + "/wishlist/" + gameId,
             HttpMethod.DELETE,
             null,
             Void.class
@@ -857,10 +718,8 @@ public class TestAccountManagementIntegration {
         assertEquals(HttpStatus.OK, response.getStatusCode());
     
         // Reload
-        Customer updatedCustomer = customerRepository.findById(ID).orElse(null);
+        Customer updatedCustomer = customerRepository.findById(customerID).orElse(null);
         assertNotNull(updatedCustomer);
-
-        //This part is the part that does not work:
         assertFalse(updatedCustomer.getCopyWishlist().stream().anyMatch(g -> g.getId() == gameId));
     }
     
@@ -873,7 +732,7 @@ public class TestAccountManagementIntegration {
     
         // Act: Try removing the invalid game from the customer's wishlist
         ResponseEntity<Void> response = account.exchange(
-            "/accounts/customers/" + ID + "/wishlist/" + invalidGameId,
+            "/accounts/customers/" + customerID + "/wishlist/" + invalidGameId,
             HttpMethod.DELETE,
             null,
             Void.class
@@ -887,22 +746,13 @@ public class TestAccountManagementIntegration {
     @Order(31)
     @Transactional
     public void testViewWishlist() {
-        // Arrange
-        Customer customer = new Customer(OLD_USERNAME, PASSWORD, EMAIL_STRING, PHONENUMBER_STRING);
-        CustomerRequestDTO customerDto = new CustomerRequestDTO(customer);
-
-        GameInputDTO gameDTO = new GameInputDTO("Test Game", "Test Description", "test.jpg", 29.99f, true, 11,new ArrayList<>());
-        gameId = account.postForEntity("/games", gameDTO, GameResponseDTO.class).getBody().id();
-
-
-        ID = account.postForEntity("/accounts/customers", customerDto, CustomerResponseDTO.class).getBody().id();
         account.exchange(
-            "/accounts/customers/" + ID + "/wishlist/" + gameId,
+            "/accounts/customers/" + customerID + "/wishlist/" + gameId,
             HttpMethod.PUT,
             null,
             Void.class
         );
-        String uri = "/accounts/customers/" + ID + "/wishlist";
+        String uri = "/accounts/customers/" + customerID + "/wishlist";
         // Act
         ResponseEntity<List<GameResponseDTO>> response = account.exchange(uri, HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
         List<GameResponseDTO> wishlish = response.getBody();
