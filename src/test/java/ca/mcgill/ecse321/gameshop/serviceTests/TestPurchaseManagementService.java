@@ -87,100 +87,60 @@ public class TestPurchaseManagementService {
     public void setUp() {
         //initialize all fields
         customer = new Customer("customer", "password", "customer@email.com", "0123456789");
-
         Customer originalCustomer2 = new Customer("customer2", "password", "secondCustomer@email.com", "0123456789");
         customer2 = spy(originalCustomer2);
         when(customer2.getId()).thenReturn(customer.getId() + 1);
-
         manager = new Manager();
         cusomterAddress = new Address("Rue University","Montreal", "Quebec","Canada", "123 4h4", customer);
-
         creditCard = new CreditCard(123123, 123, LocalDate.of(2025, 10,1),customer, cusomterAddress);
         CreditCard originalCreditCard2 = new CreditCard(12312233, 124, LocalDate.of(2025, 10,1),customer2, cusomterAddress);
         creditCard2 = spy(originalCreditCard2);
         when(creditCard2.getId()).thenReturn(creditCard.getId() + 1);
-
         game = new Game("testGame", "An average game", "example.url",15,true, 5);
-
         Game originalGame2 = new Game("testGame2", "A good game", "example.url",30,true, 2);
         game2 = spy(originalGame2);
         when(game2.getId()).thenReturn(game.getId() + 1);
-
         purchase = new Purchase(date,15,game,customer,cusomterAddress,creditCard);
         Purchase originalPurchase2 = new Purchase(date,15,game,customer,cusomterAddress,creditCard);
         purchase2 = spy(originalPurchase2);
         when(purchase2.getId()).thenReturn(purchase.getId() + 1);
-
         referenceReview = new Review(rating, reviewText, purchase);
         validEmployee = new Employee("employee", "password", true);
-        inactiveEmployee = new Employee("inactive", "password", false);
-
         cartItem1 = new CartItem(1, customer,game);
         cartItem2 = new CartItem(1, customer,game2);
-
-
-
         referenceRequest = new RefundRequest(purchase, RequestStatus.PENDING, refundText, null);
-
         RefundRequest originalApprovedRequest = new RefundRequest(purchase, RequestStatus.APPROVED, refundText, validEmployee);
         approvedRequest = spy(originalApprovedRequest);
         when(approvedRequest.getId()).thenReturn(referenceRequest.getId()+1);
-
         RefundRequest originalDeniedRequest = new RefundRequest(purchase, RequestStatus.DENIED, refundText, validEmployee);
         deniedRequest = spy(originalDeniedRequest);
         when(deniedRequest.getId()).thenReturn(referenceRequest.getId()+2);
-
         validEmployee.addRefundRequest(approvedRequest);
-
         customer.addAddress(cusomterAddress);
         customer.addCreditCardToWallet(creditCard);
         purchase.setPurchasePrice(30);
         when(reviewRepository.save(any(Review.class))).thenReturn(referenceReview);
-
         when(purchaseRepository.findById(purchase.getId())).thenReturn(Optional.of(purchase));
         when(purchaseRepository.findById(purchase2.getId())).thenReturn(Optional.of(purchase2));
-        when(purchaseRepository.findById(-5)).thenReturn(Optional.empty());
-
         when(customerRepository.save(any(Customer.class))).thenReturn(customer);
         when(customerRepository.findByEmail(customer.getEmail())).thenReturn(Optional.of(customer));
         when(customerRepository.findByEmail(customer2.getEmail())).thenReturn(Optional.of(customer2));
-        when(customerRepository.findByEmail("invalidEmail")).thenReturn(Optional.empty());
-
         when(reviewRepository.findById(referenceReview.getId())).thenReturn(Optional.of(referenceReview));
-        when(reviewRepository.findById(-5)).thenReturn(Optional.empty());
-
         when(addressRepository.findById(cusomterAddress.getId())).thenReturn(Optional.of(cusomterAddress));
-        when(addressRepository.findById(-5)).thenReturn(Optional.empty());
-
         when(creditCardRepository.findById(0)).thenReturn(Optional.of(creditCard));
         when(creditCardRepository.findById(1)).thenReturn(Optional.of(creditCard2));
-        when(creditCardRepository.findById(-5)).thenReturn(Optional.empty());
-
         when(gameRepository.findById(game.getId())).thenReturn(Optional.of(game));
         when(gameRepository.findById(game2.getId())).thenReturn(Optional.of(game2));
-        when(gameRepository.findById(-5)).thenReturn(Optional.empty());
-
         when(refundRepository.save(any(RefundRequest.class))).thenReturn(referenceRequest);
         when(employeeRepository.save(any(Employee.class))).thenReturn(validEmployee);
-
         when(employeeRepository.findByUsername(validEmployee.getUsername())).thenReturn(Optional.of(validEmployee));
-        when(employeeRepository.findByUsername((inactiveEmployee.getUsername()))).thenReturn(Optional.of(inactiveEmployee));
-        when(employeeRepository.findByUsername("invalidUsername")).thenReturn(Optional.empty());
-
         when(refundRepository.findById(referenceRequest.getId())).thenReturn(Optional.of(referenceRequest));
         when(refundRepository.findById(approvedRequest.getId())).thenReturn(Optional.of(approvedRequest));
         when(refundRepository.findById(deniedRequest.getId())).thenReturn(Optional.of(deniedRequest));
-        when(refundRepository.findById(-1)).thenReturn(Optional.empty());
-
-        when(managerRepository.findById(manager.getId())).thenReturn(Optional.of(manager));
-        when(managerRepository.findById(-1)).thenReturn(Optional.empty());
-
         Set<CartItem> cartItems = new HashSet<>();
         cartItems.add(cartItem1);
         cartItems.add(cartItem2);
         when(cartItemRepository.findByCartItemId_Customer_Id(customer.getId())).thenReturn(cartItems);
-
-
 
     }
 
@@ -232,6 +192,9 @@ public class TestPurchaseManagementService {
 
     @Test
     public void testFindInvalidGameById() {
+        //Arrange
+        when(gameRepository.findById(-5)).thenReturn(Optional.empty());
+
         //Act
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> purchaseManagementService.findGameById(-5));
 
@@ -260,6 +223,9 @@ public class TestPurchaseManagementService {
 
     @Test
     public void testFindInvalidRefundById() {
+        //Arrange
+        when(refundRepository.findById(-1)).thenReturn(Optional.empty());
+
         //Act
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> purchaseManagementService.findRefundById(-1));
 
@@ -271,6 +237,9 @@ public class TestPurchaseManagementService {
 
     @Test
     public void testFindManagerById() {
+        //Arrange
+        when(managerRepository.findById(manager.getId())).thenReturn(Optional.of(manager));
+
         //Act
         Manager loadedManager = purchaseManagementService.findManagerById(manager.getId());
 
@@ -399,6 +368,12 @@ public class TestPurchaseManagementService {
 
     @Test
     public void testAddInvalidReviewerToRefund2() {
+        //Arrange
+        inactiveEmployee = new Employee("inactive", "password", false);
+        when(employeeRepository.findByUsername((inactiveEmployee.getUsername()))).thenReturn(Optional.of(inactiveEmployee));
+
+
+
         //Act
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> purchaseManagementService.addReviewerToRefundRequest(referenceRequest.getId(), inactiveEmployee.getUsername()));
 
@@ -453,6 +428,9 @@ public class TestPurchaseManagementService {
 
     @Test
     public void testFindInvalidCustomerByEmail() {
+        //Arrange
+        when(customerRepository.findByEmail("invalidEmail")).thenReturn(Optional.empty());
+
         //Act
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> purchaseManagementService.findCustomerByEmail("invalidEmail"));
 
@@ -493,6 +471,9 @@ public class TestPurchaseManagementService {
 
     @Test
     public void testFindInvalidPurchaseById() {
+        //Arrange
+        when(purchaseRepository.findById(-5)).thenReturn(Optional.empty());
+
         //Act
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> purchaseManagementService.findPurchaseById(-5));
 
@@ -522,6 +503,9 @@ public class TestPurchaseManagementService {
 
     @Test
     public void testFindInvalidReviewByID() {
+        //Arrange
+        when(reviewRepository.findById(-5)).thenReturn(Optional.empty());
+
         //Act
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> purchaseManagementService.findReviewById(-5));
 
@@ -550,6 +534,9 @@ public class TestPurchaseManagementService {
 
     @Test
     public void testFindInvalidAddressById() {
+        //Arrange
+        when(addressRepository.findById(-5)).thenReturn(Optional.empty());
+
         //Act
         EntityNotFoundException exception = assertThrows( EntityNotFoundException.class ,()->purchaseManagementService.findAddressById(-5));
 
@@ -578,6 +565,9 @@ public class TestPurchaseManagementService {
 
     @Test
     public void testFindInvalidCreditCardById() {
+        //Arrange
+        when(creditCardRepository.findById(-5)).thenReturn(Optional.empty());
+
         //Act
         EntityNotFoundException exception = assertThrows( EntityNotFoundException.class ,()->purchaseManagementService.findCreditCardById(-5));
 
@@ -734,13 +724,14 @@ public class TestPurchaseManagementService {
     }
 
     @Test
-    public void testRplyToReview() {
+    public void testReplyToReview() {
         //Arrange
         String replyText = "I do not approve of this review";
         Reply referenceReply = new Reply(replyText, referenceReview);
 
         when(replyRepository.findById(anyInt())).thenReturn(Optional.of(referenceReply));
         when(replyRepository.save(any(Reply.class))).thenReturn(referenceReply);
+        when(managerRepository.findById(manager.getId())).thenReturn(Optional.of(manager));
 
         //Act
         purchaseManagementService.replyToReview(referenceReview.getId(),replyText, manager.getId());

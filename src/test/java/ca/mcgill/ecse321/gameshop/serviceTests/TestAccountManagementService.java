@@ -40,9 +40,6 @@ public class TestAccountManagementService {
     private GameRepository gameRepository;
 
     @Mock
-    private AccountRepository accountRepository;
-
-    @Mock
     private ManagerRepository managerRepository;
 
     @Mock
@@ -53,7 +50,6 @@ public class TestAccountManagementService {
 
     // Initialize the examples
     Account account1;
-    Account account2;
     Customer customer1;
     Customer customer2;
     Employee employee1;
@@ -67,7 +63,6 @@ public class TestAccountManagementService {
 
     @AfterEach
     public void tearDown() {
-        accountRepository.deleteAll();
         customerRepository.deleteAll();
         employeeRepository.deleteAll();
         managerRepository.deleteAll();
@@ -88,11 +83,6 @@ public class TestAccountManagementService {
         employee2 = new Employee("employee2", "password2", false);
         manager = new Manager("manager", "manager");
 
-        when(accountRepository.save(any(Account.class))).thenReturn(account1);
-        when(accountRepository.findByUsername(anyString())).thenReturn(account1);
-        when(accountRepository.findAccountById(anyInt())).thenReturn(account1);
-        when(accountRepository.findByUsername("invalidUsername")).thenReturn(null);
-
         when(customerRepository.save(any(Customer.class))).thenReturn(customer1);
         when(customerRepository.findCustomerById(0)).thenReturn(Optional.of(customer1));
 
@@ -109,7 +99,6 @@ public class TestAccountManagementService {
         when(employeeRepository.save(any(Employee.class))).thenReturn(employee1);
         when(employeeRepository.findById(0)).thenReturn(Optional.of(employee1));
         when(employeeRepository.findById(1)).thenReturn(Optional.of(employee2));
-//        when(employeeRepository.findById(-1)).thenReturn(Optional.empty());
         when(employeeRepository.findByUsername("uniqueUsername")).thenReturn(Optional.empty());
         when(employeeRepository.findByUsername("employee1")).thenReturn(Optional.of(employee1));
         when(employeeRepository.findByUsername("employee2")).thenReturn(Optional.of(employee2));
