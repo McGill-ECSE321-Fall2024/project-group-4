@@ -1,5 +1,29 @@
 @import './base.css';
 
+.custom-navbar {
+  background-color: #85abff; /* Custom text color */
+}
+
+.search-btn {
+  background-color: #3428ba;
+  border-color: #B6E7EC;
+  color: #B6E7EC;
+}
+
+.search-btn:hover {
+  background-color: #B6E7EC;
+  border-color: #B6E7EC;
+  color: #3428ba;
+}
+
+.BNavItem:hover {
+  color: #B6E7EC;
+}
+
+.BNavItem {
+  color: black;
+}
+
 #app {
   max-width: 1280px;
   margin: 0 auto;

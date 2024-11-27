@@ -1,37 +1,52 @@
+<script setup>
+  // import { BAvatar } from 'bootstrap-vue-next/dist/bootstrap-vue-next.umd';
+import { RouterView } from 'vue-router';
+</script>
+
 <template>
   <div id="app">
-    <b-navbar toggleable="lg" type="dark" variant="info">
-      <b-navbar-brand href="#">NavBar</b-navbar-brand>
-      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-      <b-collapse id="nav-collapse" is-nav>
-        <b-navbar-nav>
-          <b-nav-item href="#">Link</b-nav-item>
-          <b-nav-item-dropdown text="Dropdown" right>
-            <b-dropdown-item href="#">Action</b-dropdown-item>
-            <b-dropdown-item href="#">Another action</b-dropdown-item>
-            <b-dropdown-item href="#">Something else here...</b-dropdown-item>
-            <b-dropdown-divider></b-dropdown-divider>
-            <b-dropdown-item href="#">Separated link</b-dropdown-item>
-          </b-nav-item-dropdown>
-        </b-navbar-nav>
-      </b-collapse>
-    </b-navbar>
+    <BNavbar toggleable="lg" class="fixed-top custom-navbar">
+      <BNavbarBrand href="/" class="BNavItem">Logo</BNavbarBrand>
+      <BNavbarToggle target="nav-collapse" />
+      <BCollapse id="nav-collapse" is-nav>
+        <BNavbarNav>
+          <BNavItem href="/games" class="BNavItem">Catalogue</BNavItem>
+          <BNavItem href="/" class="BNavItem">Refund Requests</BNavItem>
+          <BNavItem href="/" class="BNavItem">Reviews</BNavItem>
+
+        </BNavbarNav>
+        <!-- Right aligned nav items -->
+        <BNavbarNav class="ms-auto mb-2 mb-lg-0">
+          <BNavForm class="d-flex">
+            <BFormInput class="me-2" placeholder="Search" />
+            <BButton type="submit" class="search-btn">Search</BButton>
+          </BNavForm>
+          <BNavItemDropdown text="Profile" right>
+            <template #button-content>
+                <BAvatar class="mb-1" />
+                
+            </template>
+            <BDropdownItem href="#">Account</BDropdownItem>
+            <BDropdownItem href="#">Purchase History</BDropdownItem>
+            <BDropdownItem href="#">Wishlist</BDropdownItem>
+            <BDropdownItem href="#">Logout</BDropdownItem>
+          </BNavItemDropdown>
+         
+          <BNavItemDropdown text="Cart" right>
+            
+            <BDropdownItem href="#">Check-Out</BDropdownItem>
+          </BNavItemDropdown>
+        </BNavbarNav>
+        
+      </BCollapse>
+    </BNavbar>
+  
+  <main class="container mt-5 pt-5">
+      <RouterView />
+  </main>
+
   </div>
 </template>
 
-<script>
-
-export default {
-  name: 'app',
-  data() {
-    return {
-      username: localStorage.getItem('username') || '',
-      loggedIn: localStorage.getItem('loggedIn') === 'true',
-      time: localStorage.getItem('time') || (new Date()).getDate() + "/" + ((new Date()).getMonth() + 1) + "/" + (new Date()).getFullYear(),
-    };
-  }
-  
-}
-</script>
-
-<style scoped src="./assets/main.css"></style>
+<style scoped src="./assets/main.css">
+</style>
