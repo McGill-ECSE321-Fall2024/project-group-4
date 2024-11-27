@@ -710,6 +710,41 @@ public class TestPurchaseIntegration {
 
     }
 
+    @Order(27)
+    @Test
+    @Transactional
+    public void testAddThenRemoveGamesFromCart() {
+        //Arrange
+        String url = "/customers/"+customerId+"/cart/" + gameId;
+
+        //Act
+        ResponseEntity<Void> response = client.exchange(url,HttpMethod.PUT, null,void.class);
+        client.exchange(url, HttpMethod.PUT, null,void.class);
+
+        //Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertFalse(cartItemRepository.findByCartItemId_Customer_Id(customerId).isEmpty());
+        assertEquals(2, cartItemRepository.findByCartItemId_Customer_IdAndCartItemId_Game_Id(customerId,gameId).get().getQuantity());
+
+    }
+
+    @Order(28)
+    @Test
+    @Transactional
+    public void testRemoveGamesFromCart() {
+        //Arrange
+        String url = "/customers/"+customerId+"/cart/" + gameId;
+
+        //Act
+        ResponseEntity<Void> response = client.exchange(url,HttpMethod.DELETE, null,void.class);
+        client.exchange(url, HttpMethod.DELETE, null,void.class);
+
+        //Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(cartItemRepository.findByCartItemId_Customer_Id(customerId).isEmpty());
+
+    }
+
 
 
 

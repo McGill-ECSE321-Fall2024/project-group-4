@@ -52,7 +52,7 @@ public class TestGameManagementIntegration {
 
     @Test
     @Order(1)
-    public void testCreateNewCategory1(){
+    public void testCreateInvalidCategory1(){
         ResponseEntity<Void> response = client.postForEntity("/categories/" + TEST_CATEGORY_NAME1, null, void.class);
 
         assertNotNull(response);
@@ -62,6 +62,15 @@ public class TestGameManagementIntegration {
 
     @Test
     @Order(2)
+    public void testCreateInvalidCategory(){
+        ResponseEntity<Void> response = client.postForEntity("/categories/" + TEST_CATEGORY_NAME1, null, void.class);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+    }
+
+    @Test
+    @Order(3)
     public void testCreateNewCategory2(){
         ResponseEntity<Void> response = client.postForEntity("/categories/" + TEST_CATEGORY_NAME2, null, void.class);
 
@@ -71,7 +80,7 @@ public class TestGameManagementIntegration {
     }
 
     @Test
-    @Order(3)
+    @Order(4)
     public void testCreateNewGame(){
         //Arrange
         GameInputDTO gameToMake = new GameInputDTO("test game", "test description",
@@ -97,7 +106,23 @@ public class TestGameManagementIntegration {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
+    public void testCreateNewGameInInvalidCategory(){
+        //Arrange
+        GameInputDTO gameToMake = new GameInputDTO("new game", "test description",
+                "test coverPicture", 24.99f, true, 100, List.of("INVALID CATEGORY"));
+
+        //Act
+        ResponseEntity<GameResponseDTO> response = client.postForEntity("/games", gameToMake, GameResponseDTO.class);
+
+        //Assert
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    @Order(6)
     @Transactional
     public void testAddGameToCategory(){
         ResponseEntity response = client.exchange("/categories/" + TEST_CATEGORY_NAME2 + "/games/" + gameId, HttpMethod.PUT, null, ResponseEntity.class);
@@ -111,7 +136,16 @@ public class TestGameManagementIntegration {
     }
 
     @Test
-    @Order(5)
+    @Order(7)
+    public void testAddGameToInvalidCategory(){
+        ResponseEntity<Void> response = client.exchange("/categories/" + "INVALIDCATEGORY" + "/games/" + gameId, HttpMethod.PUT, null, Void.class);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    @Order(8)
     @Transactional
     public void testRemoveGameFromCategory(){
         ResponseEntity response = client.exchange("/categories/" + TEST_CATEGORY_NAME2 + "/games/" + gameId, HttpMethod.DELETE, null, ResponseEntity.class);
@@ -125,7 +159,16 @@ public class TestGameManagementIntegration {
     }
 
     @Test
-    @Order(6)
+    @Order(9)
+    public void testRemoveGameFromInvalidCategory(){
+        ResponseEntity<Void> response = client.exchange("/categories/" + "INVALIDCATEGORY" + "/games/" + gameId, HttpMethod.DELETE, null, Void.class);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    @Order(10)
     @Transactional
     public void testGetGamesInCategory(){
         ResponseEntity<List<GameResponseDTO>> response = client.exchange("/categories/" + TEST_CATEGORY_NAME1 + "/games", HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
@@ -144,7 +187,7 @@ public class TestGameManagementIntegration {
 
 
     @Test
-    @Order(7)
+    @Order(11)
     @Transactional
     public void testDeleteCategory(){
         ResponseEntity response = client.exchange("/categories/" + TEST_CATEGORY_NAME1, HttpMethod.DELETE, null, ResponseEntity.class);
@@ -159,7 +202,7 @@ public class TestGameManagementIntegration {
     }
 
     @Test
-    @Order(8)
+    @Order(12)
     @Transactional
     public void testViewInventory(){
         ResponseEntity<List<GameResponseDTO>> response = client.exchange("/games", HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
@@ -175,7 +218,7 @@ public class TestGameManagementIntegration {
     }
 
     @Test
-    @Order(9)
+    @Order(13)
     @Transactional
     public void testUpdateStock(){
         int newStockNum = 40;
@@ -189,7 +232,7 @@ public class TestGameManagementIntegration {
     }
 
     @Test
-    @Order(10)
+    @Order(14)
     @Transactional
     public void testDeleteGame(){
         ResponseEntity response = client.exchange("/games/" + gameId, HttpMethod.DELETE, null, ResponseEntity.class);

@@ -1,26 +1,25 @@
 package ca.mcgill.ecse321.gameshop.serviceTests;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-
-import jakarta.persistence.EntityExistsException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.AfterEach;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-
-import org.springframework.boot.test.context.SpringBootTest;
-import jakarta.persistence.EntityNotFoundException;
-
 import ca.mcgill.ecse321.gameshop.DAO.*;
 import ca.mcgill.ecse321.gameshop.model.*;
 import ca.mcgill.ecse321.gameshop.serviceClasses.AccountManagementService;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit test for AccountManagementService
@@ -90,9 +89,6 @@ public class TestAccountManagementService {
         when(customerRepository.findByEmail(customer1.getEmail())).thenReturn(Optional.of(customer1));
         when(customerRepository.findByEmail(customer2.getEmail())).thenReturn(Optional.of(customer2));
         when(customerRepository.findByEmail("uniqueEmail")).thenReturn(Optional.empty());
-        customers.add(customer1);
-        customers.add(customer2);
-        when(customerRepository.findAll()).thenReturn(customers);
         when(customerRepository.findByEmail("invalidEmail")).thenReturn(Optional.empty());
         when(customerRepository.save(customer1)).thenReturn(customer1);
 
@@ -403,6 +399,11 @@ public class TestAccountManagementService {
      */
     @Test
     public void testGetSetOfCustomers(){
+        //Arrange
+        customers.add(customer1);
+        customers.add(customer2);
+        when(customerRepository.findAll()).thenReturn(customers);
+
 
         //Act
         Set<Customer> loadedCustomers = accountManagementService.getSetOfCustomers();

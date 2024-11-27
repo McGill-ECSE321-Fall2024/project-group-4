@@ -61,33 +61,31 @@ public class TestAccountManagementIntegration {
 
     private int customerID = 0;
     private String INVALID_USERNAME = "testUsername Not Valid";
-    private String INVALID_PASSWORD = "testPassword Not Valid";
     private String OLD_USERNAME = "testUsername_old";
     private String OLD_PHONENUMBER = "1234567890";
     private static final String TEST_CATEGORY_NAME1 = "test category name1";
     private int gameId;
 
+
+    private final String policyDescription = "Employees should be at the office on time";
+    private int policyID = 0;
+
     @Autowired
     private AccountManagementService accountManagementService;
-
-    
-//    @BeforeEach
-//    @AfterEach
-//    public void clearDatabase() {
-//        customerRepository.deleteAll();
-//        employeeRepository.deleteAll();
-//        managerRepository.deleteAll();
-//        accountRepository.deleteAll();
-//        gameRepository.deleteAll();
-//    }
+    @Autowired
+    private PolicyRepository policyRepository;
+    @Autowired
+    private AddressRepository addressRepository;
 
     @AfterAll
     public void clear() {
+        addressRepository.deleteAll();
         customerRepository.deleteAll();
         employeeRepository.deleteAll();
         managerRepository.deleteAll();
         accountRepository.deleteAll();
         gameRepository.deleteAll();
+        policyRepository.deleteAll();
     }
 
 
@@ -127,7 +125,9 @@ public class TestAccountManagementIntegration {
 
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());    
+        assertNotNull(response.getBody());
+        assertEquals(EMAIL_STRING, response.getBody().email());
+        assertEquals(PASSWORD, response.getBody().password());
     }
 
     /**
@@ -185,6 +185,8 @@ public class TestAccountManagementIntegration {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
+        assertEquals(employeeUsername, response.getBody().username());
+        assertEquals(employeeUsername, response.getBody().username());
     }
 
     /**
@@ -232,11 +234,12 @@ public class TestAccountManagementIntegration {
     public void testLoginValidManagerAccount() {
 
         
-        //login to this manager account
+        //login to  manager account
         ResponseEntity<ManagerDTO> response = account.postForEntity("/accounts/login/manager/manager", "manager" ,ManagerDTO.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
+        assertEquals("manager",response.getBody().username());
     }
 
 
@@ -493,6 +496,7 @@ public class TestAccountManagementIntegration {
     @Order(20)
     public void testUpdateInvalidCustomerPassword() {
         // Arrange
+        String INVALID_PASSWORD = "testPassword Not Valid";
         ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO(INVALID_PASSWORD, "newpass");
 
 
@@ -587,9 +591,7 @@ public class TestAccountManagementIntegration {
     @Test
     @Order(24)
     public void testUpdateInvalidCustomerPhoneNumber() {
-         // Arrange
-         Customer customer = new Customer(USERNAME, PASSWORD, EMAIL_STRING, OLD_PHONENUMBER);
-         customerRepository.save(customer);
+
  
          // Act
          ResponseEntity<String> response = account.exchange(
@@ -761,5 +763,98 @@ public class TestAccountManagementIntegration {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(wishlish.stream().anyMatch(gameResponseDTO -> gameResponseDTO.id() == gameId));
+    }
+
+    @Test
+    @Order(32)
+    public void testGetInvalidPolicy() {
+        //Arrange
+        String uri = "/accounts/policies/" + policyID;
+
+        //Act
+        ResponseEntity<PolicyDTO> response = account.getForEntity(uri, PolicyDTO.class);
+
+        //Arrange
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    @Order(33)
+    public void testCreatePolicy() {
+        //Arrange
+        String uri = "/accounts/policies";
+
+        //Act
+        ResponseEntity<PolicyDTO> response = account.postForEntity(uri, policyDescription, PolicyDTO.class);
+
+        //Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(policyDescription, response.getBody().description());
+        policyID = response.getBody().id();
+        assertEquals(policyDescription, policyRepository.findById(policyID).get().getDescription());
+    }
+
+    @Test
+    @Order(34)
+    public void testUpdatePolicy() {
+        //Arrange
+        String updatedPolicy = "updated policy";
+        String uri = "/accounts/policies/" + policyID;
+
+        //Act
+        ResponseEntity<PolicyDTO> response = account.exchange(uri,HttpMethod.PUT, new HttpEntity<>(updatedPolicy), PolicyDTO.class, updatedPolicy);
+
+        //Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(updatedPolicy, response.getBody().description());
+        assertEquals(updatedPolicy, policyRepository.findById(policyID).get().getDescription());
+    }
+
+    @Test
+    @Order(35)
+    public void testDeletePolicy() {
+        //Arrange
+        String uri = "/accounts/policies/" + policyID;
+
+        //Act
+        ResponseEntity<Void> response = account.exchange(uri, HttpMethod.DELETE, null, Void.class);
+
+        //Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertFalse(policyRepository.findById(policyID).isPresent());
+    }
+
+    @Test
+    @Order(36)
+    public void testDeleteInvalidPolicy() {
+        //Arrange
+        String uri = "/accounts/policies/" + policyID;
+
+        //Act
+        ResponseEntity<Void> response = account.exchange(uri, HttpMethod.DELETE, null, Void.class);
+
+        //Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+
+    @Test
+    @Order(37)
+    @Transactional
+    public void testCreateCustomerAddress() {
+        //Arrange
+        AddressRequestDTO dto = new AddressRequestDTO("Rue McGill", "Montreal", "Quebec", "Canada", "123456");
+        String uri = "/accounts/customers/"+ EMAIL_STRING + "/addresses";
+
+        //Act
+        ResponseEntity<AddressResponseDTO> response = account.postForEntity(uri, dto, AddressResponseDTO.class);
+
+        //Assert
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("Rue McGill", response.getBody().street());
+
     }
 }

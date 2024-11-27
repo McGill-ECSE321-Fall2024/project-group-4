@@ -27,23 +27,23 @@ public class TestPurchaseManagementService {
     PurchaseManagementService purchaseManagementService;
 
     @Mock
-    ReviewRepository reviewRepository;
+    private CustomerRepository customerRepository;
     @Mock
-    CustomerRepository customerRepository;
+    private ReviewRepository reviewRepository;
     @Mock
-    PurchaseRepository purchaseRepository;
+    private PurchaseRepository purchaseRepository;
     @Mock
-    ReplyRepository replyRepository;
-    @Mock
-    AddressRepository addressRepository;
-    @Mock
-    CreditCardRepository creditCardRepository;
+    private ReplyRepository replyRepository;
     @Mock
     private GameRepository gameRepository;
     @Mock
-    EmployeeRepository employeeRepository;
+    private CreditCardRepository creditCardRepository;
     @Mock
-    RefundRequestRepository refundRepository;
+    private AddressRepository addressRepository;
+    @Mock
+    private EmployeeRepository employeeRepository;
+    @Mock
+    private RefundRequestRepository refundRepository;
     @Mock
     private ManagerRepository managerRepository;
     @Mock
@@ -134,13 +134,11 @@ public class TestPurchaseManagementService {
         when(refundRepository.save(any(RefundRequest.class))).thenReturn(referenceRequest);
         when(employeeRepository.save(any(Employee.class))).thenReturn(validEmployee);
         when(employeeRepository.findByUsername(validEmployee.getUsername())).thenReturn(Optional.of(validEmployee));
+
         when(refundRepository.findById(referenceRequest.getId())).thenReturn(Optional.of(referenceRequest));
         when(refundRepository.findById(approvedRequest.getId())).thenReturn(Optional.of(approvedRequest));
         when(refundRepository.findById(deniedRequest.getId())).thenReturn(Optional.of(deniedRequest));
-        Set<CartItem> cartItems = new HashSet<>();
-        cartItems.add(cartItem1);
-        cartItems.add(cartItem2);
-        when(cartItemRepository.findByCartItemId_Customer_Id(customer.getId())).thenReturn(cartItems);
+
 
     }
 
@@ -930,6 +928,10 @@ public class TestPurchaseManagementService {
     @Test
     public void testCheckoutInacitveGame() {
         //Arrange
+        Set<CartItem> cartItems = new HashSet<>();
+        cartItems.add(cartItem1);
+        cartItems.add(cartItem2);
+        when(cartItemRepository.findByCartItemId_Customer_Id(customer.getId())).thenReturn(cartItems);
         game.setActive(false);
         cartItemRepository.findByCartItemId_Customer_Id(customer.getId()).add(new CartItem(1,customer,game));
 
@@ -944,6 +946,10 @@ public class TestPurchaseManagementService {
     @Test
     public void testCheckoutOutOfStockgame() {
         //Arrange
+        Set<CartItem> cartItems = new HashSet<>();
+        cartItems.add(cartItem1);
+        cartItems.add(cartItem2);
+        when(cartItemRepository.findByCartItemId_Customer_Id(customer.getId())).thenReturn(cartItems);
         cartItemRepository.findByCartItemId_Customer_Id(customer.getId()).add(new CartItem(1,customer,game)); //create a new Cart item and link it to a customer
         game.setStock(0);
 
@@ -958,6 +964,10 @@ public class TestPurchaseManagementService {
     @Test
     public void testCheckoutCart1() {
         //Arrange
+        Set<CartItem> cartItems = new HashSet<>();
+        cartItems.add(cartItem1);
+        cartItems.add(cartItem2);
+        when(cartItemRepository.findByCartItemId_Customer_Id(customer.getId())).thenReturn(cartItems);
         int initialStockGame1 = game.getStock();
         int initialStockGame2 = game2.getStock();
 
@@ -980,6 +990,10 @@ public class TestPurchaseManagementService {
     @Test
     public void testGetCartPrice() {
         //Arrange
+        Set<CartItem> cartItems = new HashSet<>();
+        cartItems.add(cartItem1);
+        cartItems.add(cartItem2);
+        when(cartItemRepository.findByCartItemId_Customer_Id(customer.getId())).thenReturn(cartItems);
         float price = game.getPrice() + game2.getPrice();
 
         //Act
