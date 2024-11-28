@@ -1,26 +1,25 @@
 package ca.mcgill.ecse321.gameshop.serviceTests;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-
-import jakarta.persistence.EntityExistsException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.AfterEach;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-
-import org.springframework.boot.test.context.SpringBootTest;
-import jakarta.persistence.EntityNotFoundException;
-
 import ca.mcgill.ecse321.gameshop.DAO.*;
 import ca.mcgill.ecse321.gameshop.model.*;
 import ca.mcgill.ecse321.gameshop.serviceClasses.AccountManagementService;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit test for AccountManagementService
@@ -40,9 +39,6 @@ public class TestAccountManagementService {
     private GameRepository gameRepository;
 
     @Mock
-    private AccountRepository accountRepository;
-
-    @Mock
     private ManagerRepository managerRepository;
 
     @Mock
@@ -53,7 +49,6 @@ public class TestAccountManagementService {
 
     // Initialize the examples
     Account account1;
-    Account account2;
     Customer customer1;
     Customer customer2;
     Employee employee1;
@@ -67,7 +62,6 @@ public class TestAccountManagementService {
 
     @AfterEach
     public void tearDown() {
-        accountRepository.deleteAll();
         customerRepository.deleteAll();
         employeeRepository.deleteAll();
         managerRepository.deleteAll();
@@ -88,11 +82,6 @@ public class TestAccountManagementService {
         employee2 = new Employee("employee2", "password2", false);
         manager = new Manager("manager", "manager");
 
-        when(accountRepository.save(any(Account.class))).thenReturn(account1);
-        when(accountRepository.findByUsername(anyString())).thenReturn(account1);
-        when(accountRepository.findAccountById(anyInt())).thenReturn(account1);
-        when(accountRepository.findByUsername("invalidUsername")).thenReturn(null);
-
         when(customerRepository.save(any(Customer.class))).thenReturn(customer1);
         when(customerRepository.findCustomerById(0)).thenReturn(Optional.of(customer1));
 
@@ -100,16 +89,12 @@ public class TestAccountManagementService {
         when(customerRepository.findByEmail(customer1.getEmail())).thenReturn(Optional.of(customer1));
         when(customerRepository.findByEmail(customer2.getEmail())).thenReturn(Optional.of(customer2));
         when(customerRepository.findByEmail("uniqueEmail")).thenReturn(Optional.empty());
-        customers.add(customer1);
-        customers.add(customer2);
-        when(customerRepository.findAll()).thenReturn(customers);
         when(customerRepository.findByEmail("invalidEmail")).thenReturn(Optional.empty());
         when(customerRepository.save(customer1)).thenReturn(customer1);
 
         when(employeeRepository.save(any(Employee.class))).thenReturn(employee1);
         when(employeeRepository.findById(0)).thenReturn(Optional.of(employee1));
         when(employeeRepository.findById(1)).thenReturn(Optional.of(employee2));
-//        when(employeeRepository.findById(-1)).thenReturn(Optional.empty());
         when(employeeRepository.findByUsername("uniqueUsername")).thenReturn(Optional.empty());
         when(employeeRepository.findByUsername("employee1")).thenReturn(Optional.of(employee1));
         when(employeeRepository.findByUsername("employee2")).thenReturn(Optional.of(employee2));
@@ -414,6 +399,11 @@ public class TestAccountManagementService {
      */
     @Test
     public void testGetSetOfCustomers(){
+        //Arrange
+        customers.add(customer1);
+        customers.add(customer2);
+        when(customerRepository.findAll()).thenReturn(customers);
+
 
         //Act
         Set<Customer> loadedCustomers = accountManagementService.getSetOfCustomers();
