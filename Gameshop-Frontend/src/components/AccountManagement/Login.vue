@@ -27,13 +27,10 @@
     
     <br>
     <BFormGroup v-if="this.customSelect == 'Customer'" id="email-label" label="Email:" label-for="input-0">
-        
-        <BFormInput id="input-0" type="email" placeholder="Enter email" required />
+        <BFormInput id="input-0" type="email" v-model="email" placeholder="Enter email" required />
         <br>
     </BFormGroup>
 
-
-    
     <BFormGroup
       id="username-label"
       label="Username:"
@@ -93,6 +90,7 @@ export default{
             username: null,
             password: null,
             customSelect: null,
+            email: null,
         }
     },
     methods:{
@@ -116,7 +114,7 @@ export default{
         // },
         async loginCustomer(){
             try{
-                const response = await axios.get('/login/customers' + this.username);
+                const response = await axios.post('accounts/login/customers' + this.email);
                 console.log(response.data);
 
                 if (response.status == 200){
@@ -124,7 +122,7 @@ export default{
                     this.setUsername(this.username);
 
                     let id='0';
-                    const responseId = await axios.get('/customers');
+                    const responseId = await axios.get('accounts/customers/');
                     console.log(responseId.data);
 
                     for (const account of responseId.data){

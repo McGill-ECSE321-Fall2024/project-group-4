@@ -13,7 +13,7 @@
   <BForm>
    
     <BFormGroup  id="email-label" label="Email:" label-for="input-0">
-        <BFormInput id="input-0" type="email" placeholder="Enter email" required />
+        <BFormInput id="input-0" type="text" v-model="email" placeholder="Enter email" required />
     </BFormGroup>
 
     <br>
@@ -30,9 +30,14 @@
         required
       />
     </BFormGroup>
+
+    <br>
+    <BFormGroup id="phonenumber-label" label="Phone Number:" label-for="input-4">
+        <BFormInput id="input-4" v-model="phoneNumber" type="text" placeholder="Enter phone number" required/>
+    </BFormGroup>
     <br>
     <BFormGroup id="password-label" label="Password:" label-for="input-2">
-      <BFormInput id="input-2" v-model="password" placeholder="Enter password" required />
+      <BFormInput id="input-2" v-model="password" type="text" placeholder="Enter password" required />
     </BFormGroup>
 
     <br>
@@ -50,31 +55,51 @@ import axios from 'axios';
 const frontendURL = 'http://localhost:8087';
 const backendURL = 'http://localhost:8080';
 
+// const AXIOS = axios.create({
+//     baseURL: backendURL,
+//     headers: {
+//         'Access-Control-Allow-Origin': frontendURL,
+//     }
+// });
+
 const AXIOS = axios.create({
-    baseURL: backendURL,
-    headers: {
-        'Access-Control-Allow-Origin': frontendURL,
-    }
+	// NOTE: it's baseURL, not baseUrl
+	baseURL: backendURL,
+//     headers: {
+//     'Access-Control-Allow-Origin': frontendURL,
+//   },
 });
+
 export default{
     name: 'Signup',
     data() {
         return {
             email: null,
-            username: null,
             password: null,
+            username: null,
+            
+            phoneNumber: null,
         }
     },
     methods:{
         async signUpCustomer(){
             let response = '';
-
-            try{
-                response = await AXIOS.post("/customers", {
-                    email: this.email,
+            // console.log("AAAAAAAA")
+            const credentials = {
                     username: this.username,
-                    password: this.password
-                });
+                    email: this.email,
+                    password: this.password,
+                    phoneNumber: this.phoneNumber,
+                    addresses : [],
+                    creditCards : [],
+                    likedReviews : [],
+                    purchases : [],
+                    
+                };
+            
+            try{
+                console.log(credentials)
+                response = await AXIOS.post("/accounts/customers", credentials);
                 console.log(response.data) ;
 
                 console.log(response.status);

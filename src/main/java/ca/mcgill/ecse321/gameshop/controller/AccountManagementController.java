@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:8087")
 @RequestMapping("/accounts")
 public class AccountManagementController {
 
