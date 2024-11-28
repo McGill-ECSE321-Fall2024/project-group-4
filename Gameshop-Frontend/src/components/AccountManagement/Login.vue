@@ -1,9 +1,3 @@
-<template>
-    JHELLO
-</template>
-
-
-<!-- 
 
 <template>
     <div id="mainContainer">
@@ -12,11 +6,34 @@
   </div>
   <div align="center">
     New to Gameshop? 
-    <a href="/sign-up" class="email-link">Sign Up</a>
+    <a @click="goCreateAccount()" class="email-link">Sign Up</a>
   </div>
   <br>
   
-  <BForm @submit="onSubmit" @reset="onReset" v-if="show">
+  <BForm>
+    <BFormGroup id="input-group-3" label="Account Type:" label-for="input-3">
+        <BFormSelect
+          id="inline-form-custom-select-pref"
+          v-model="customSelect"
+          required
+          @change="logCustomSelect"
+        >
+        <BFormSelectOption :value="null" selected>Please select an option</BFormSelectOption>
+        <BFormSelectOption value="Customer">Customer</BFormSelectOption>
+        <BFormSelectOption value="Employee">Employee</BFormSelectOption>
+        <BFormSelectOption value="Manager">Manager</BFormSelectOption>
+        </BFormSelect>
+    </BFormGroup>
+    
+    <br>
+    <BFormGroup v-if="this.customSelect == 'Customer'" id="email-label" label="Email:" label-for="input-0">
+        
+        <BFormInput id="input-0" type="email" placeholder="Enter email" required />
+        <br>
+    </BFormGroup>
+
+
+    
     <BFormGroup
       id="username-label"
       label="Username:"
@@ -30,45 +47,44 @@
         required
       />
     </BFormGroup>
-
+    <br>
     <BFormGroup id="password-label" label="Password:" label-for="input-2">
       <BFormInput id="input-2" v-model="password" placeholder="Enter password" required />
     </BFormGroup>
 
-    <BFormGroup id="input-group-3" label="Account Type:" label-for="input-3">
-      <BFormSelect id="input-3" v-model="accountType" :options="accountTypes" required />
-    </BFormGroup>
+    <br>
     
-    <BButton type="submit" variant="primary">Login</BButton>
+    <BButton v-if="this.customSelect == 'Customer'" @click="loginCustomer()" variant="primary">Login</BButton>
+    <BButton v-else-if="this.customSelect == 'Employee'" @click="loginEmployee()" variant="primary">Login</BButton>
+    <BButton v-else-if="this.customSelect == 'Manager'" @click="loginManager()" variant="primary">Login</BButton>
+    <BButton v-else disabled>Login</BButton>
   </BForm>
 
-
+<br>
     </div>
 </template>
 
-<script setup>
-
+<!-- <script setup>
 import { ref } from 'vue';
-import axios from 'axios';
-import router from '../../router';
 
-const accountTypes = [{ text: 'Select One', value: null }, 'Customer', 'Employee', 'Manager'];
-
-const frontendURL = window.location.origin;
-const backendURL = `http://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}`;
-
-const AXIOS = axios.create({
-  baseURL: backendURL,
-  headers: {
-    'Access-Control-Allow-Origin': frontendURL,
-  },
-});
+const accountTypes = ['Customer', 'Employee', 'Manager'];
 
 const show = ref(true);
-</script>
+</script> -->
 
 
 <script>
+import axios from 'axios';
+
+const frontendURL = 'http://localhost:8087';
+const backendURL = 'http://localhost:8080';
+
+const AXIOS = axios.create({
+    baseURL: backendURL,
+    headers: {
+        'Access-Control-Allow-Origin': frontendURL,
+    }
+});
 
 export default{
     name: 'Login',
@@ -76,12 +92,31 @@ export default{
         return {
             username: null,
             password: null,
+            customSelect: null,
         }
     },
     methods:{
+        logCustomSelect(){
+            console.log(this.customSelect);
+        },
+        // login(){
+        //     const params = new FormData();
+        //     params.append('username', this.username);
+        //     params.append('password', this.password);
+
+        //     const basicAuth = 'Basic ' + btoa(this.username + ':' + this.password);
+
+        //     fetch('http://localhost:8080/login', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Authorization': basicAuth,
+        //         },
+        //         body: params
+        //     })
+        // },
         async loginCustomer(){
             try{
-                const response = await AXIOS.get('/login/customers' + this.username);
+                const response = await axios.get('/login/customers' + this.username);
                 console.log(response.data);
 
                 if (response.status == 200){
@@ -89,7 +124,7 @@ export default{
                     this.setUsername(this.username);
 
                     let id='0';
-                    const responseId = await AXIOS.get('/customers');
+                    const responseId = await axios.get('/customers');
                     console.log(responseId.data);
 
                     for (const account of responseId.data){
@@ -210,4 +245,4 @@ export default{
     }
 }
 
-</script> --> 
+</script>  
