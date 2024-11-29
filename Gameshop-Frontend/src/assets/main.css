@@ -16,6 +16,18 @@
   color: #3428ba;
 }
 
+.add-btn {
+  background-color: #3428ba;
+  border-color: #3428ba;
+  color: white;
+}
+
+.add-btn:hover {
+  background-color: #85abff;
+  border-color: #85abff;
+  color: white;
+}
+
 .BNavItem:hover {
   color: #B6E7EC;
 }
