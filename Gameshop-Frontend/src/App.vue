@@ -69,7 +69,7 @@ import { RouterView } from 'vue-router';
   
   <main class="container mt-5 pt-5">
       <RouterView />
-  </main>
+    </main>
 
   </div>
 </template>
