@@ -3,5 +3,5 @@ import TheWelcome from '../components/TheWelcome.vue';
 </script>
 
 <template>
-  Home
+  Home view for everyone
 </template>

@@ -28,17 +28,17 @@
     <br>
     <BFormGroup v-if="this.customSelect == 'Customer'" id="email-label" label="Email:" label-for="input-0">
         <BFormInput id="input-0" type="email" v-model="email" placeholder="Enter email" required />
-        <br>
+        
     </BFormGroup>
 
-    <BFormGroup
+    <BFormGroup v-if="this.customSelect == 'Employee' || this.customSelect == 'Manager'"
       id="username-label"
       label="Username:"
       label-for="input-1"
     >
       <BFormInput
         id="input-1"
-        v-model="username"
+        
         type="text"
         placeholder="Enter username"
         required
@@ -87,7 +87,7 @@ export default{
     name: 'Login',
     data() {
         return {
-            username: null,
+            // username: null,
             password: null,
             customSelect: null,
             email: null,
@@ -97,26 +97,24 @@ export default{
         logCustomSelect(){
             console.log(this.customSelect);
         },
-        // login(){
-        //     const params = new FormData();
-        //     params.append('username', this.username);
-        //     params.append('password', this.password);
-
-        //     const basicAuth = 'Basic ' + btoa(this.username + ':' + this.password);
-
-        //     fetch('http://localhost:8080/login', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Authorization': basicAuth,
-        //         },
-        //         body: params
-        //     })
-        // },
         async loginCustomer(){
             try{
-                const response = await axios.post('accounts/login/customers' + this.email);
+                let response='';
+                const credentials = {
+                    // username: this.username,
+                    email: this.email,
+                    password: this.password,
+                    // phoneNumber: null,
+                    // addresses : [],
+                    // creditCards : [],
+                    // likedReviews : [],
+                    // purchases : [],
+                };
+                console.log(credentials);
+                response = await axios.post('accounts/login/customers/' + this.email + credentials);
                 console.log(response.data);
 
+                console.log(response.status);
                 if (response.status == 200){
                     this.setLoggedIn(true);
                     this.setUsername(this.username);

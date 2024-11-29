@@ -5,7 +5,7 @@ import { RouterView } from 'vue-router';
 
 <template>
   <div id="app">
-    <div v-if="loggedIn">
+    <div v-if="!loggedIn">
         <BNavbar toggleable="lg" class="fixed-top custom-navbar">
           <BNavbarBrand @click="goToHome()" class="BNavItem">Logo</BNavbarBrand>
           <BNavbarToggle target="nav-collapse" />
@@ -130,7 +130,7 @@ export default {
       this.setLoggedIn(false);
       this.setUsername('');
       this.setAccountId('');
-      this.$router.push('/logout');
+      this.$router.push('/');
     },
     goCart(){
       this.$router.push('/cart');

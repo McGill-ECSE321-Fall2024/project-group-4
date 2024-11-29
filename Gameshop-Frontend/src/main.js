@@ -11,6 +11,12 @@ import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';
 import * as BootstrapVueNext from 'bootstrap-vue-next';
 // import { BootstrapVueNext } from 'bootstrap-vue-next';
 
+if (!localStorage.getItem('username')){
+    localStorage.setItem('username', '')
+    localStorage.setItem('loggedIn', 'false')
+    localStorage.setItem('id', '0')
+}
+
 const app = createApp(App)
 
 app.use(BootstrapVueNext);

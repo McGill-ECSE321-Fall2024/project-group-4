@@ -2,8 +2,8 @@
 <template>
     <div id="mainContainer">
         <div class="display-6 my-3" align="center">
-    Sign Up
-  </div>
+            Sign Up
+        </div>
   <div align="center">
     Already have an account?
     <a @click="goLogin()" class="email-link">Login</a>
@@ -55,13 +55,6 @@ import axios from 'axios';
 const frontendURL = 'http://localhost:8087';
 const backendURL = 'http://localhost:8080';
 
-// const AXIOS = axios.create({
-//     baseURL: backendURL,
-//     headers: {
-//         'Access-Control-Allow-Origin': frontendURL,
-//     }
-// });
-
 const AXIOS = axios.create({
 	// NOTE: it's baseURL, not baseUrl
 	baseURL: backendURL,
@@ -77,14 +70,12 @@ export default{
             email: null,
             password: null,
             username: null,
-            
             phoneNumber: null,
         }
     },
     methods:{
         async signUpCustomer(){
             let response = '';
-            // console.log("AAAAAAAA")
             const credentials = {
                     username: this.username,
                     email: this.email,
