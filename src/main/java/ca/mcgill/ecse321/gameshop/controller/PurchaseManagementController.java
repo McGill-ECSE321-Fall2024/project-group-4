@@ -24,13 +24,11 @@ public class PurchaseManagementController {
 
 
     @GetMapping("/games/{gameId}/price")
-    @ResponseStatus(HttpStatus.FOUND)
     public float getPromotionalPrice(@PathVariable int gameId) {
         return purchaseManagementService.getPromotionalPrice(gameId);
     }
 
     @GetMapping("/reviews/{reviewId}")
-    @ResponseStatus(HttpStatus.FOUND)
     public ReviewDTO getReviewById(@PathVariable int reviewId) {
         return new ReviewDTO(purchaseManagementService.findReviewById(reviewId));
     }
@@ -89,7 +87,6 @@ public class PurchaseManagementController {
      * @author
      */
     @GetMapping("customers/{customerEmail}")
-    @ResponseStatus(HttpStatus.FOUND)
     public CustomerResponseDTO getCustomerByEmail(@PathVariable String customerEmail) {
         return new CustomerResponseDTO(purchaseManagementService.findCustomerByEmail(customerEmail));
     }
@@ -103,7 +100,6 @@ public class PurchaseManagementController {
      * @author
      */
     @GetMapping("purchases/{purchaseId}")
-    @ResponseStatus(HttpStatus.FOUND)
     public PurchaseDTO getPurchaseById(@PathVariable int purchaseId) {
         return new PurchaseDTO(purchaseManagementService.findPurchaseById(purchaseId));
     }
@@ -117,7 +113,6 @@ public class PurchaseManagementController {
      * @author
      */
     @GetMapping("addresses/{addressId}")
-    @ResponseStatus(HttpStatus.FOUND)
     public AddressResponseDTO getAddressById(@PathVariable int addressId) {
         return new AddressResponseDTO(purchaseManagementService.findAddressById(addressId));
     }
@@ -131,7 +126,6 @@ public class PurchaseManagementController {
      * @author
      */
     @GetMapping("credit-cards/{creditCardId}")
-    @ResponseStatus(HttpStatus.FOUND)
     public CreditCardResponseDTO getCreditCardById(@PathVariable int creditCardId) {
         return new CreditCardResponseDTO(purchaseManagementService.findCreditCardById(creditCardId));
     }
@@ -153,7 +147,6 @@ public class PurchaseManagementController {
      * @author
      */
     @GetMapping("customers/{customerEmail}/credit-cards")
-    @ResponseStatus(HttpStatus.FOUND)
     public Set<CreditCardResponseDTO> getCreditCardsByCustomer(@PathVariable String customerEmail) {
         Set<CreditCard> wallet = purchaseManagementService.viewCustomerCreditCards(customerEmail);
         return wallet.stream().map(CreditCardResponseDTO::new).collect(Collectors.toSet());
@@ -168,7 +161,6 @@ public class PurchaseManagementController {
      * @author
      */
     @DeleteMapping("customers/{customerEmail}/credit-cards/{creditCardId}")
-    @ResponseStatus(HttpStatus.OK)
     public void removeCreditCardFromWallet(@PathVariable String customerEmail, @PathVariable int creditCardId) {
         purchaseManagementService.removeCreditCardFromWallet(customerEmail, creditCardId);
     }
@@ -188,7 +180,6 @@ public class PurchaseManagementController {
      * @author
      */
     @GetMapping("customers/{customerEmail}/cart/price")
-    @ResponseStatus(HttpStatus.FOUND)
     public float getCartPrice(@PathVariable String customerEmail) {
         return purchaseManagementService.getCartPrice(customerEmail);
     }

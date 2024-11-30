@@ -5,7 +5,7 @@ import Login from '../components/AccountManagement/Login.vue'
 import Signup from '../components/AccountManagement/Signup.vue'
 import Account from '../views/Account.vue'
 import Wishlist from '../components/AccountManagement/Wishlist.vue'
-import Cart from '../components/AccountManagement/Cart.vue'
+import Cart from '../components/GameManagement/Cart.vue'
  
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

@@ -1,5 +1,4 @@
 <script setup>
-  // import { BAvatar } from 'bootstrap-vue-next/dist/bootstrap-vue-next.umd';
 import { RouterView } from 'vue-router';
 import logo from './assets/logo.png'; // Adjust the path if the image is in a different directory
 
@@ -23,8 +22,8 @@ import logo from './assets/logo.png'; // Adjust the path if the image is in a di
             </BNavbarNav>
             <!-- Right aligned nav items -->
             <BNavbarNav class="ms-auto mb-2 mb-lg-0">
-              <BNavForm class="d-flex">
-                <BFormInput class="me-2" placeholder="Search" />
+              <BNavForm :onsubmit="search" class="d-flex">
+                <BFormInput v-model="searchQuery" class="me-2" placeholder="Search" />
                 <BButton type="submit" class="search-btn">Search</BButton>
               </BNavForm>
                 <BNavItemDropdown text="Profile" right>
@@ -90,11 +89,12 @@ import logo from './assets/logo.png'; // Adjust the path if the image is in a di
 <script>
 export default {
   name: 'App',
-  // data() {
-  //   return {
-  //     loggedIn: localStorage.getItem('loggedIn') === 'true',
-  //   };
-  // },
+  data() {
+    return {
+      loggedIn: localStorage.getItem('loggedIn') === 'true',
+      searchQuery: ''
+    };
+  },
   methods: {
     //global variables
     getLoggedIn() {
@@ -163,6 +163,13 @@ export default {
     goManageEmployees(){
       this.$router.push('/manage-employees');
     },
+    search(e){
+      if(this.searchQuery.length > 0){
+        console.log(e);
+        this.$router.push(`/games?search=${this.searchQuery}`);
+      }
+
+    }
     
   },
   watch: {

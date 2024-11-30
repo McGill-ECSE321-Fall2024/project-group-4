@@ -78,12 +78,11 @@ public class GameManagementService {
      *
      * @author
      */
-    public Set<Game> viewGamesInCart(int customerId){
+    public Set<CartItem> viewGamesInCart(int customerId){
         if(!customerRepository.existsById(customerId)){
             throw new EntityNotFoundException("Customer to add game to cart of not found");
         }
-        Set<CartItem> itemsInCart = cartItemRepository.findByCartItemId_Customer_Id(customerId);
-        return itemsInCart.stream().map((CartItem::getGame)).collect(Collectors.toSet());
+        return cartItemRepository.findByCartItemId_Customer_Id(customerId);
     }
 
     /**
@@ -103,7 +102,12 @@ public class GameManagementService {
         CartItem existingCartItem = cartItemRepository.findByCartItemId_Customer_IdAndCartItemId_Game_Id(customerId, gameId)
                 .orElseThrow(() -> new EntityNotFoundException("Game to remove was not in customer's cart"));
 
-        cartItemRepository.delete(existingCartItem);
+        if(existingCartItem.getQuantity() > 1){
+            existingCartItem.setQuantity(existingCartItem.getQuantity()-1);
+            cartItemRepository.save(existingCartItem);
+        } else{
+            cartItemRepository.delete(existingCartItem);
+        }
     }
 
     /**

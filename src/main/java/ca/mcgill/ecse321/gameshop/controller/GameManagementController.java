@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.gameshop.controller;
 
 import ca.mcgill.ecse321.gameshop.dto.*;
+import ca.mcgill.ecse321.gameshop.model.CartItem;
 import ca.mcgill.ecse321.gameshop.model.Game;
 import ca.mcgill.ecse321.gameshop.model.GameRequest;
 import ca.mcgill.ecse321.gameshop.model.Promotion;
@@ -31,9 +32,9 @@ public class GameManagementController {
      * @author Jake Kogut
      */
     @GetMapping("/customers/{customerId}/cart")
-    public List<GameResponseDTO> getGamesInCart(@PathVariable int customerId){
-        Set<Game> gamesInCart = gameManagementService.viewGamesInCart(customerId);
-        return gamesInCart.stream().map(GameResponseDTO::new).collect(Collectors.toList());
+    public List<CartItemResponseDTO> getGamesInCart(@PathVariable int customerId){
+        Set<CartItem> gamesInCart = gameManagementService.viewGamesInCart(customerId);
+        return gamesInCart.stream().map(CartItemResponseDTO::new).collect(Collectors.toList());
     }
 
     /**
@@ -198,9 +199,9 @@ public class GameManagementController {
      * @author Camille Pouliot
      */
     @GetMapping("catalogue/games/{searchPrompt}")
-    public Set<GameResponseDTO> getGamesBySearchPrompt(@PathVariable String searchPrompt) {
+    public List<GameResponseDTO> getGamesBySearchPrompt(@PathVariable String searchPrompt) {
         Set<Game> searchedGames = gameManagementService.searchGames(searchPrompt);
-        return searchedGames.stream().map(GameResponseDTO::new).collect(Collectors.toSet());
+        return searchedGames.stream().map(GameResponseDTO::new).collect(Collectors.toList());
     }
 
     /**

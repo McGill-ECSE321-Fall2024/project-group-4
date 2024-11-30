@@ -97,7 +97,7 @@ export default{
                 console.log(response.data) ;
 
                 console.log(response.status);
-                if (response.status == 201){
+                if (response.status === 200){
                     this.setLoggedIn(true);
                     this.setUsername(this.username);
                     this.setAccountId(response.data.id);

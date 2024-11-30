@@ -101,38 +101,22 @@ export default{
         },
         async loginCustomer(){
             try{
-                let response='';
-                const credentials = {
-                    // username: this.username,
-                    email: this.email,
-                    password: this.password,
-                    // phoneNumber: null,
-                    // addresses : [],
-                    // creditCards : [],
-                    // likedReviews : [],
-                    // purchases : [],
-                };
-                console.log(credentials);
-                response = await axiosClient.post(`accounts/login/customers/${this.email}`, this.password);
-                console.log(response.data);
+                const response = await axiosClient.post(
+                    `accounts/login/customers/${this.email}`,
+                    this.password,
+                    {
+                      headers: {
+                        'Content-Type': 'text/plain',
+                      },
+                    }
+                );
+                console.log(response.data)
 
-                console.log(response.status);
-                if (response.status == 200){
+                if (response.status === 200){
                     this.setLoggedIn(true);
                     this.setUsername(this.username);
-
-                    let id='0';
-                    const responseId = await axiosClient.get('accounts/customers/');
-                    console.log(responseId.data);
-
-                    for (const account of responseId.data){
-                        if (account.username == this.username && account.password == this.password){
-                            id = account.id;
-                            break;
-                        }
-                    }
-
-                    this.setAccountId(id);
+                    this.setAccountId(response.data.id);
+                    this.setEmail(response.data.email);
 
                     this.clearInputs();
                     this.$router.push('/');
@@ -148,24 +132,11 @@ export default{
         async loginEmployee() {
             try{
                 const response = await axiosClient.get(`/login/employees/${this.username}`, this.password);
-                console.log(response.data);
 
-                if (response.status == 200){
+                if (response.status === 200){
                     this.setLoggedIn(true);
-                    this.setUsername(this.username);
-
-                    let id='0';
-                    const responseId = await axiosClient.get('/employees');
-                    console.log(responseId.data);
-
-                    for (const account of responseId.data){
-                        if (account.username == this.username && account.password == this.password){
-                            id = account.id;
-                            break;
-                        }
-                    }
-
-                    this.setAccountId(id);
+                    this.setUsername(response.data.username);
+                    this.setAccountId(response.data.id);
 
                     this.clearInputs();
                     this.$router.push('/');
@@ -180,24 +151,11 @@ export default{
         async loginManager(){
             try{
                 const response = await axiosClient.get(`/login/managers/${this.username}`, this.password);
-                console.log(response.data);
 
                 if (response.status == 200){
-                    this.setLoggedIn(true);
-                    this.setUsername(this.username);
-
-                    let id='0';
-                    const responseId = await axiosClient.get('/managers');
-                    console.log(responseId.data);
-
-                    for (const account of responseId.data){
-                        if (account.username == this.username && account.password == this.password){
-                            id = account.id;
-                            break;
-                        }
-                    }
-
-                    this.setAccountId(id);
+                  this.setLoggedIn(true);
+                  this.setUsername(response.data.username);
+                  this.setAccountId(response.data.id);
 
                     this.clearInputs();
                     this.$router.push('/');
@@ -238,6 +196,12 @@ export default{
         },
         getAccountId(){
             return localStorage.getItem('accountId');
+        },
+        setEmail(email){
+          localStorage.setItem('email', email);
+        },
+        getEmail(){
+          return localStorage.getItem('email');
         },
 
     }

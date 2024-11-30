@@ -9,7 +9,22 @@ export default {
           'name' in value &&
           'price' in value &&
           'coverPicture' in value &&
-          'stock' in value
+          'stock' in value &&
+          'id' in value
+    },
+    enableAddToCart: {
+      type: Boolean,
+      default: false
+    }
+  },
+  methods: {
+    async handleAddToCart(){
+      const response = await fetch("http://localhost:8080/customers/"+localStorage.getItem('accountId')+"/cart/"+this.game.id, {
+        method: "PUT",
+      })
+      if(!response.ok){
+        console.log(response)
+      }
     }
   }
 };
@@ -26,6 +41,13 @@ export default {
           ? `${game.stock} copies remaining`
           : 'Out of stock'
         }}
+        <button v-if="enableAddToCart"
+            class="add-to-cart"
+            :disabled="game.stock <= 0"
+            @click="handleAddToCart"
+        >
+          Add to Cart
+        </button>
       </p>
     </div>
   </div>

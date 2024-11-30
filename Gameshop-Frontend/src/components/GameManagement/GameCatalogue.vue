@@ -1,25 +1,34 @@
 <script>
-import { ref, onMounted } from "vue";
-import GamePreview from "./GamePreview.vue";
+import {ref, onMounted, watch, computed} from "vue";
+import GameBrowser from "@/components/GameManagement/GameBrowser.vue";
+import {useRoute} from "vue-router";
 
 export default {
   name: "GameCatalogue",
-  components: { GamePreview },
+  components: { GameBrowser },
   setup() {
+    const route = useRoute(); // Access the route object
     const games = ref([]);
     const loading = ref(true);
     const error = ref(null);
 
-    const fetchGames = async () => {
+    const fetchGames = async (searchQuery = "") => {
       try {
-        const response = await fetch("http://localhost:8080/games");
+        loading.value = true; // Start loading
+        error.value = null; // Reset error
+
+        const url = searchQuery
+            ? `http://localhost:8080/catalogue/games/${searchQuery}`
+            : "http://localhost:8080/games";
+
+        const response = await fetch(url);
+        const data = await response.json();
+
         if (!response.ok) {
           throw new Error(`Error fetching games: ${response.statusText}`);
         }
 
-        games.value = await response.json();
-        console.log(games.value)
-
+        games.value = data;
       } catch (err) {
         error.value = err.message;
       } finally {
@@ -27,7 +36,17 @@ export default {
       }
     };
 
-    onMounted(fetchGames);
+    const searchQuery = computed(() => route.query.search || ""); // Reactive search query
+
+    // Watch for changes in the search query
+    watch(searchQuery, (newSearchQuery) => {
+      fetchGames(newSearchQuery); // Fetch games when the search query changes
+    });
+
+    // Fetch games on initial mount
+    onMounted(() => {
+      fetchGames(searchQuery.value);
+    });
 
     return {
       games,
@@ -44,13 +63,9 @@ export default {
     <h1>Game Catalogue</h1>
     <div v-if="loading" class="loading">Loading games...</div>
     <div v-else-if="error" class="error">{{ error }}</div>
-    <div v-else class="game-grid">
-      <GamePreview
-          v-for="game in games"
-          :key="game.id"
-          :game="game"
-      />
-    </div>
+    <GameBrowser
+        :games="games"
+    />
   </div>
 </template>
 
@@ -75,9 +90,4 @@ export default {
   color: #d9534f;
 }
 
-.game-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 15px;
-}
 </style>

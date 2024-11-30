@@ -223,11 +223,11 @@ public class TestGameManagementService {
                                 (cartItem -> cartItem.getCustomer().getId() == referenceCustomer.getId()))
                         .collect(Collectors.toSet()));
 
-        Set<Game> gamesInCart = gameManagementService.viewGamesInCart(referenceCustomer.getId());
+        Set<CartItem> gamesInCart = gameManagementService.viewGamesInCart(referenceCustomer.getId());
 
         assertNotNull(gamesInCart);
         assertEquals(1, gamesInCart.size());
-        assertTrue(gamesInCart.contains(referenceGame1));
+        assertTrue(gamesInCart.stream().anyMatch((cartItem -> cartItem.getGame().getId() == referenceGame1.getId())));
     }
 
     @Test
