@@ -130,7 +130,7 @@
 
                 <div class="mb-3">
                     <BFormGroup  id="username-label" label="Username:" label-for="input-1">
-                        <BFormInput id="input-1" type="text" >{{ this.username }} </BFormInput>
+                        <BFormInput id="input-1" type="text" v-model="username" @input="handleInputChange('username')">{{ this.username }} </BFormInput>
                     </BFormGroup>  
                 </div>  
 
@@ -140,14 +140,31 @@
                     </BFormGroup>  
                 </div> 
 
-                <BButton v-if="showSaveInfoButton" class="save-info-btn" @click="saveInfo">Save Info</BButton>
+                <BButton v-if="showSaveInfoButton" class="save-info-btn" @click="saveInfoEmployee">Save Info</BButton>
+            </BForm>
+        </div>
+
+        <div class="shadow p-3 mb-5 bg-body rounded"> <!-- this is for manager -->
+            <BForm > 
+                <div class="mb-3">
+                    <BFormGroup  id="username-label" label="Username:" label-for="input-1">
+                        <BFormInput id="input-1" type="text" readonly>{{ this.username }} </BFormInput>
+                    </BFormGroup>  
+                </div>  
+
+                <div class="mb-3">
+                    <BFormGroup  id="password-label" label="Password:" label-for="input-3">
+                        <BFormInput id="input-3" type="text" readonly>{{ this.password }} </BFormInput>
+                    </BFormGroup>  
+                </div> 
+
             </BForm>
         </div>
 
     </div>
 </template>
 
-<style scoped src="../assets/main.css">
+<style scoped src="../../assets/main.css">
 </style>
 
 <script>
@@ -222,6 +239,17 @@ export default {
       } catch (error) {
         console.error('Error saving info:', error);
       }
+    },
+    async saveInfoEmployee(){
+        try {
+            const response = await AXIOS.put('/accounts/employees/' + this.username + '/username/' + username, {
+                oldUsername: this.username,
+                newUsername: username,
+            });
+            console.log(response.data);
+        } catch (error) {
+            console.error('Error saving info:', error);
+        }
     },
     toggleAddressForm() {
       this.showAddressForm = !this.showAddressForm;

@@ -69,8 +69,8 @@ export default{
     data(){
         return{
             wishlists: [
-                {id:1, title: "Game 1", description: "Game 1 description", price: 50, stock: 5},
-                {id:2, title: "Game 2", description: "Game 2 description", price: 60, stock: 3},
+                // {id:1, title: "Game 1", description: "Game 1 description", price: 50, stock: 5},
+                // {id:2, title: "Game 2", description: "Game 2 description", price: 60, stock: 3},
             ],
             cart: [],
         };

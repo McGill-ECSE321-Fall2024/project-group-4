@@ -1,6 +1,6 @@
 <template>
   <div class="cart">
-    <h1>Your Cart</h1>
+    <div class="display-6 my-3" align="center">Your Cart</div>
     <div v-if="loading" class="loading">Loading your cart...</div>
     <div v-else-if="error" class="error">{{ error }}</div>
     <div v-else>

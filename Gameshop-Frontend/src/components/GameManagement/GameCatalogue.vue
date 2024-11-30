@@ -60,7 +60,7 @@ export default {
 
 <template>
   <div class="game-catalogue">
-    <h1>Game Catalogue</h1>
+    <div class="display-6 my-3" align="center">Game Catalogue</div>
     <div v-if="loading" class="loading">Loading games...</div>
     <div v-else-if="error" class="error">{{ error }}</div>
     <GameBrowser

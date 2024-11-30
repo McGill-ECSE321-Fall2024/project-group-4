@@ -3,7 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import GameCatalogue from '../components/GameManagement/GameCatalogue.vue'
 import Login from '../components/AccountManagement/Login.vue'
 import Signup from '../components/AccountManagement/Signup.vue'
-import Account from '../views/Account.vue'
+import Account from '../components/AccountManagement/Account.vue'
 import Wishlist from '../components/AccountManagement/Wishlist.vue'
 import Cart from '../components/GameManagement/Cart.vue'
  
