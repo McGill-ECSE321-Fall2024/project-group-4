@@ -1,13 +1,19 @@
 <script setup>
   // import { BAvatar } from 'bootstrap-vue-next/dist/bootstrap-vue-next.umd';
 import { RouterView } from 'vue-router';
+import logo from './assets/logo.png'; // Adjust the path if the image is in a different directory
+
 </script>
 
 <template>
   <div id="app">
-    <div v-if="!loggedIn">
+    <div v-if="loggedIn">
         <BNavbar toggleable="lg" class="fixed-top custom-navbar">
-          <BNavbarBrand @click="goToHome()" class="BNavItem">Logo</BNavbarBrand>
+          <BNavbarBrand @click="goToHome()" class="navbar-brand">
+            <router-link to="/">
+              <img :src="logo" alt="Logo2" class="navbar-logo" />
+            </router-link>
+          </BNavbarBrand>
           <BNavbarToggle target="nav-collapse" />
           <BCollapse id="nav-collapse" is-nav >
             <BNavbarNav>
@@ -42,7 +48,11 @@ import { RouterView } from 'vue-router';
 
       <div v-else>
         <BNavbar toggleable="lg" class="fixed-top custom-navbar">
-          <BNavbarBrand @click="goToHome()" class="BNavItem">Logo</BNavbarBrand>
+          <BNavbarBrand @click="goToHome()" class="navbar-brand">
+            <router-link to="/">
+              <img :src="logo" alt="Logo2" class="navbar-logo" />
+            </router-link>
+          </BNavbarBrand>
           <BNavbarToggle target="nav-collapse" />
             <BCollapse id="nav-collapse" is-nav >
             <BNavbarNav>

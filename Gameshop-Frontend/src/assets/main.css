@@ -48,6 +48,17 @@
   color: black;
 }
 
+.custom-navbar {
+  height: 75px; /* Adjust the height as needed */
+  display: flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.navbar-logo {
+  height: 65px;
+}
+
 a,
 .green {
   text-decoration: none;

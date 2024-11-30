@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import GamesViewAll from '../components/GameManagement/GameCatalogue.vue'
+import GameCatalogue from '../components/GameManagement/GameCatalogue.vue'
 import Login from '../components/AccountManagement/Login.vue'
 import Signup from '../components/AccountManagement/Signup.vue'
 import Account from '../views/Account.vue'
@@ -17,7 +17,7 @@ const router = createRouter({
     {
       path: '/games',
       name: 'games',
-      component: GamesViewAll
+      component: GameCatalogue
     },
     {
       path: '/login',
