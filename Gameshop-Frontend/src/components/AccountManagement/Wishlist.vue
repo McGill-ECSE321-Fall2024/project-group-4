@@ -1,0 +1,3 @@
+<template>
+HELLOOOOOO Wishlist
+</template>

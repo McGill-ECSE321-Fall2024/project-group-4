@@ -4,8 +4,8 @@ import GameCatalogue from '../components/GameManagement/GameCatalogue.vue'
 import Login from '../components/AccountManagement/Login.vue'
 import Signup from '../components/AccountManagement/Signup.vue'
 import Account from '../views/Account.vue'
+import Wishlist from '../components/AccountManagement/Wishlist.vue'
  
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -33,6 +33,10 @@ const router = createRouter({
       path: '/account',
       name: 'account',
       component: Account
+    },
+    {path: '/wishlist',
+    name: 'wishlist',
+    component: Wishlist
     }
     
   ],

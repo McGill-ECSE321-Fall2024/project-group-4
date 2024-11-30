@@ -18,7 +18,7 @@
           required
           @change="logCustomSelect"
         >
-        <BFormSelectOption :value="null" selected>Please select an option</BFormSelectOption>
+        <BFormSelectOption :value="null" selected disabled>Please select an option</BFormSelectOption>
         <BFormSelectOption value="Customer">Customer</BFormSelectOption>
         <BFormSelectOption value="Employee">Employee</BFormSelectOption>
         <BFormSelectOption value="Manager">Manager</BFormSelectOption>
