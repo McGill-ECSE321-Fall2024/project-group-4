@@ -42,13 +42,16 @@
 
     <br>
     
-    <BButton @click="signUpCustomer()" variant="primary">Sign Up</BButton>
+    <BButton @click="signUpCustomer()" class="save-info-btn">Sign Up</BButton>
     
   </BForm>
 
     <br>
     </div>
 </template>
+
+<style scoped src="../../assets/main.css">
+</style>
 
 <script>
 import axios from 'axios';

@@ -1,3 +1,5 @@
+<style scoped src="../../assets/main.css">
+</style>
 
 <template>
     <div id="mainContainer">
@@ -51,9 +53,9 @@
 
     <br>
     
-    <BButton v-if="this.customSelect == 'Customer'" @click="loginCustomer()" variant="primary">Login</BButton>
-    <BButton v-else-if="this.customSelect == 'Employee'" @click="loginEmployee()" variant="primary">Login</BButton>
-    <BButton v-else-if="this.customSelect == 'Manager'" @click="loginManager()" variant="primary">Login</BButton>
+    <BButton v-if="this.customSelect == 'Customer'" @click="loginCustomer()" class="save-info-btn">Login</BButton>
+    <BButton v-else-if="this.customSelect == 'Employee'" @click="loginEmployee()" class="save-info-btn">Login</BButton>
+    <BButton v-else-if="this.customSelect == 'Manager'" @click="loginManager()" class="save-info-btn">Login</BButton>
     <BButton v-else disabled>Login</BButton>
   </BForm>
 

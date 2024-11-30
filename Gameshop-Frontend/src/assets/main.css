@@ -45,8 +45,8 @@
 }
 
 .save-info-btn:hover{
-  background-color: #cfbdff;
-  border-color: #cfbdff;
+  background-color: #795ac6;
+  border-color: #795ac6;
   color: white;
 }
 
@@ -83,6 +83,20 @@ a,
 .green {
   text-decoration: none;
   color: hsla(160, 100%, 37%, 1);
+  transition: 0.4s;
+  padding: 3px;
+}
+
+.email-link{
+  text-decoration: none;
+  color: #3428ba;
+  transition: 0.4s;
+  padding: 3px;
+}
+
+.email-link:hover{
+  text-decoration: none;
+  color: #85abff;
   transition: 0.4s;
   padding: 3px;
 }
