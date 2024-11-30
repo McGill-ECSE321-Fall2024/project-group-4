@@ -1,12 +1,16 @@
 <script setup>
+import { ref } from 'vue';
 import { RouterView } from 'vue-router';
 import logo from './assets/logo.png'; // Adjust the path if the image is in a different directory
 
+const userRole = ref('');
+userRole.value = localStorage.getItem('userRole');
+localStorage.setItem('userRole', 'employee');
 </script>
 
 <template>
   <div id="app">
-    <div v-if="loggedIn">
+    <div v-if="userRole === 'customer'"> <!-- if customer logged in-->
         <BNavbar toggleable="lg" class="fixed-top custom-navbar">
           <BNavbarBrand @click="goToHome()" class="navbar-brand">
             <router-link to="/">
@@ -30,9 +34,83 @@ import logo from './assets/logo.png'; // Adjust the path if the image is in a di
                   <template #button-content>
                       <BAvatar class="mb-1" />
                   </template>
-                  <BDropdownItem @click="goCreateAccount()">Account</BDropdownItem>
+                  <BDropdownItem @click="goAccount()">Account</BDropdownItem>
                   <BDropdownItem @click="goHistory()">Purchase History</BDropdownItem>
                   <BDropdownItem @click="goWishlist()">Wishlist</BDropdownItem>
+                  <BDropdownItem @click="goLogout()">Logout</BDropdownItem>
+                </BNavItemDropdown>
+            
+              <BNavItemDropdown text="Cart" right>
+                <BDropdownItem @click="goCart()">Check-Out</BDropdownItem>
+              </BNavItemDropdown>
+            </BNavbarNav>
+            
+          </BCollapse>
+        </BNavbar>
+    </div>
+
+      <div v-else-if="userRole === 'employee'"> <!-- if employee logged in-->
+        <BNavbar toggleable="lg" class="fixed-top custom-navbar">
+          <BNavbarBrand @click="goToHome()" class="navbar-brand">
+            <router-link to="/">
+              <img :src="logo" alt="Logo2" class="navbar-logo" />
+            </router-link>
+          </BNavbarBrand>
+          <BNavbarToggle target="nav-collapse" />
+          <BCollapse id="nav-collapse" is-nav >
+            <BNavbarNav>
+              <BNavItem @click="goCatalogue" class="BNavItem">Catalogue</BNavItem>
+              <BNavItem @click="goRefundRequests" class="BNavItem">Refund Requests</BNavItem>
+              <BNavItem @click="goReviews" class="BNavItem">View History</BNavItem>
+            </BNavbarNav>
+            <!-- Right aligned nav items -->
+            <BNavbarNav class="ms-auto mb-2 mb-lg-0">
+              <BNavForm :onsubmit="search" class="d-flex">
+                <BFormInput v-model="searchQuery" class="me-2" placeholder="Search" />
+                <BButton type="submit" class="search-btn">Search</BButton>
+              </BNavForm>
+                <BNavItemDropdown text="Profile" right>
+                  <template #button-content>
+                      <BAvatar class="mb-1" />
+                  </template>
+                  <BDropdownItem @click="goAccount()">Account</BDropdownItem>
+                  <BDropdownItem @click="goLogout()">Logout</BDropdownItem>
+                </BNavItemDropdown>
+            
+              <BNavItemDropdown text="Cart" right>
+                <BDropdownItem @click="goCart()">Check-Out</BDropdownItem>
+              </BNavItemDropdown>
+            </BNavbarNav>
+            
+          </BCollapse>
+        </BNavbar>
+      </div>
+
+      <div v-else-if="userRole === 'manager'"> <!-- if manager logged in-->
+        <BNavbar toggleable="lg" class="fixed-top custom-navbar">
+          <BNavbarBrand @click="goToHome()" class="navbar-brand">
+            <router-link to="/">
+              <img :src="logo" alt="Logo2" class="navbar-logo" />
+            </router-link>
+          </BNavbarBrand>
+          <BNavbarToggle target="nav-collapse" />
+          <BCollapse id="nav-collapse" is-nav >
+            <BNavbarNav>
+              <BNavItem @click="goCatalogue" class="BNavItem">Catalogue</BNavItem>
+              <BNavItem @click="goRefundRequests" class="BNavItem">Refund Requests</BNavItem>
+              <BNavItem @click="goReviews" class="BNavItem">Reviews</BNavItem>
+            </BNavbarNav>
+            <!-- Right aligned nav items -->
+            <BNavbarNav class="ms-auto mb-2 mb-lg-0">
+              <BNavForm :onsubmit="search" class="d-flex">
+                <BFormInput v-model="searchQuery" class="me-2" placeholder="Search" />
+                <BButton type="submit" class="search-btn">Search</BButton>
+              </BNavForm>
+                <BNavItemDropdown text="Profile" right>
+                  <template #button-content>
+                      <BAvatar class="mb-1" />
+                  </template>
+                  <BDropdownItem @click="goAccount()">Account</BDropdownItem>
                   <BDropdownItem @click="goLogout()">Logout</BDropdownItem>
                 </BNavItemDropdown>
             
@@ -86,7 +164,9 @@ import logo from './assets/logo.png'; // Adjust the path if the image is in a di
 <style scoped src="./assets/main.css">
 </style>
 
+
 <script>
+
 export default {
   name: 'App',
   data() {
@@ -163,13 +243,12 @@ export default {
     goManageEmployees(){
       this.$router.push('/manage-employees');
     },
-    search(e){
-      if(this.searchQuery.length > 0){
-        console.log(e);
-        this.$router.push(`/games?search=${this.searchQuery}`);
-      }
-
-    }
+    // search(e){
+    //   if(this.searchQuery.length > 0){
+    //     console.log(e);
+    //     this.$router.push(`/games?search=${this.searchQuery}`);
+    //   }
+    // }
     
   },
   watch: {

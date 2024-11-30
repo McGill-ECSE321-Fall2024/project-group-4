@@ -117,6 +117,7 @@ export default{
                     this.setUsername(this.username);
                     this.setAccountId(response.data.id);
                     this.setEmail(response.data.email);
+                    localStorage.setItem('userRole', 'customer');
 
                     this.clearInputs();
                     this.$router.push('/');
@@ -137,6 +138,7 @@ export default{
                     this.setLoggedIn(true);
                     this.setUsername(response.data.username);
                     this.setAccountId(response.data.id);
+                    localStorage.setItem('userRole', 'employee');
 
                     this.clearInputs();
                     this.$router.push('/');
@@ -156,6 +158,7 @@ export default{
                   this.setLoggedIn(true);
                   this.setUsername(response.data.username);
                   this.setAccountId(response.data.id);
+                  localStorage.setItem('userRole', 'manager');
 
                     this.clearInputs();
                     this.$router.push('/');
