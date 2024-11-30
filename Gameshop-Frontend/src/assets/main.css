@@ -28,6 +28,18 @@
   color: white;
 }
 
+.save-info-btn{
+  background-color: #3c67bf;
+  border-color: #3c67bf;
+  color: white;
+}
+
+.save-info-btn:hover{
+  background-color: #cfbdff;
+  border-color: #cfbdff;
+  color: white;
+}
+
 .BNavItem:hover {
   color: #B6E7EC;
 }
