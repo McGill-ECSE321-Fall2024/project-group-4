@@ -76,7 +76,7 @@ import axios from 'axios';
 const frontendURL = 'http://localhost:8087';
 const backendURL = 'http://localhost:8080';
 
-const AXIOS = axios.create({
+const axiosClient = axios.create({
     baseURL: backendURL,
     headers: {
         'Access-Control-Allow-Origin': frontendURL,
@@ -111,7 +111,7 @@ export default{
                     // purchases : [],
                 };
                 console.log(credentials);
-                response = await axios.post('accounts/login/customers/' + this.email + credentials);
+                response = await axiosClient.post(`accounts/login/customers/${this.email}`, this.password);
                 console.log(response.data);
 
                 console.log(response.status);
@@ -120,7 +120,7 @@ export default{
                     this.setUsername(this.username);
 
                     let id='0';
-                    const responseId = await axios.get('accounts/customers/');
+                    const responseId = await axiosClient.get('accounts/customers/');
                     console.log(responseId.data);
 
                     for (const account of responseId.data){
@@ -145,7 +145,7 @@ export default{
 
         async loginEmployee() {
             try{
-                const response = await AXIOS.get('/login/employees' + this.username);
+                const response = await axiosClient.get(`/login/employees/${this.username}`, this.password);
                 console.log(response.data);
 
                 if (response.status == 200){
@@ -153,7 +153,7 @@ export default{
                     this.setUsername(this.username);
 
                     let id='0';
-                    const responseId = await AXIOS.get('/employees');
+                    const responseId = await axiosClient.get('/employees');
                     console.log(responseId.data);
 
                     for (const account of responseId.data){
@@ -177,7 +177,7 @@ export default{
         },
         async loginManager(){
             try{
-                const response = await AXIOS.get('/login/managers' + this.username);
+                const response = await axiosClient.get(`/login/managers/${this.username}`, this.password);
                 console.log(response.data);
 
                 if (response.status == 200){
@@ -185,7 +185,7 @@ export default{
                     this.setUsername(this.username);
 
                     let id='0';
-                    const responseId = await AXIOS.get('/managers');
+                    const responseId = await axiosClient.get('/managers');
                     console.log(responseId.data);
 
                     for (const account of responseId.data){
