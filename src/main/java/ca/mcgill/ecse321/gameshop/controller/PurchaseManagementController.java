@@ -132,7 +132,8 @@ public class PurchaseManagementController {
 
     @PostMapping("customers/{customerEmail}/credit-cards")
     @ResponseStatus(HttpStatus.CREATED)
-    public CreditCardResponseDTO addCreditCardToCustomerWallet(@RequestBody CreditCardRequestDTO creditCardRequestDTO, @PathVariable String customerEmail) {
+    public CreditCardResponseDTO addCreditCardToCustomerWallet(@PathVariable String customerEmail, @RequestBody int cardNumber, 
+    @RequestBody int cvv, ) {
 
         return new CreditCardResponseDTO(purchaseManagementService.addCreditCardToCustomerWallet(creditCardRequestDTO.cardNumber(),
                 creditCardRequestDTO.cvv(), String.valueOf(creditCardRequestDTO.expiryDate()),customerEmail, creditCardRequestDTO.billingAddress().id()));

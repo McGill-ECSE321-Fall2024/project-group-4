@@ -173,7 +173,7 @@ import axios from 'axios';
 
 const backendURL = 'http://localhost:8080';
 
-const AXIOS = axios.create({
+const axiosClient = axios.create({
   baseURL: backendURL,
 });
 
@@ -221,17 +221,11 @@ export default {
         try {
         let response;
         if (this.changedField === 'username') {
-          response = await AXIOS.put('/accounts/customers/' + this.email + '/username/' + username, {
-            username: this.username,
-            email: this.email,
-          });
+          response = await axiosClient.put(`/accounts/customers/${this.email}/username/${this.username}`);
         } else if (this.changedField === 'phoneNumber') {
-          response = await AXIOS.put('/accounts/customers/' + this.email + '/phoneNumber/' + phoneNumber, {
-            phoneNumber: this.phoneNumber,
-            email: this.email,
-          });
+          response = await axiosClient.put(`/accounts/customers/${this.email}/phoneNumber/${this.phoneNumber}`);
         } else if (this.changedField === 'password') {
-          response = await AXIOS.put('/accounts/customers/' + this.email + '/password', {
+          response = await axiosClient.put(`/accounts/customers/${this.email}/password`, {
             password: this.password,
           });
         }
@@ -243,10 +237,7 @@ export default {
     },
     async saveInfoEmployee(){
         try {
-            const response = await AXIOS.put('/accounts/employees/' + this.username + '/username/' + username, {
-                oldUsername: this.username,
-                newUsername: username,
-            });
+            const response = await axiosClient.put(`/accounts/employees/${this.username}/username/${username}`);
             console.log(response.data);
         } catch (error) {
             console.error('Error saving info:', error);
@@ -277,8 +268,12 @@ export default {
         this.addresses.push(address);
 
         try{
-            const response = await AXIOS.post('/accounts/customers' + this.email + '/addresses', {
-                address: address,
+            const response = await axiosClient.post(`/accounts/customers/${this.email}/addresses`, {
+                street : this.newAddress.street,
+                city : this.newAddress.city,
+                province : this.newAddress.province,
+                country : this.newAddress.country,
+                postalCode : this.newAddress.postalCode
             });
             console.log(response.data);
         } catch(error) {
@@ -330,7 +325,7 @@ export default {
         this.creditCards.push(creditCard);
 
         try{
-            const response = await AXIOS.post('/customers/' + this.email + 'credit-cards', {
+            const response = await axiosClient.post(`/customers/${this.email}credit-cards`, {
                 creditCard: creditCard,
                 email: this.email,
             });
