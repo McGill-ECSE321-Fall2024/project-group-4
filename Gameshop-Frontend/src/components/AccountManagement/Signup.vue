@@ -58,7 +58,7 @@ import axios from 'axios';
 const frontendURL = 'http://localhost:8087';
 const backendURL = 'http://localhost:8080';
 
-const AXIOS = axios.create({
+const axiosClient = axios.create({
 	// NOTE: it's baseURL, not baseUrl
 	baseURL: backendURL,
 //     headers: {
@@ -83,17 +83,12 @@ export default{
                     username: this.username,
                     email: this.email,
                     password: this.password,
-                    phoneNumber: this.phoneNumber,
-                    addresses : [],
-                    creditCards : [],
-                    likedReviews : [],
-                    purchases : [],
-                    
+                    phoneNumber: this.phoneNumber,                   
                 };
             
             try{
                 console.log(credentials)
-                response = await AXIOS.post("/accounts/customers", credentials);
+                response = await axiosClient.post("/accounts/customers", credentials);
                 console.log(response.data) ;
 
                 console.log(response.status);
