@@ -101,15 +101,7 @@ export default{
         },
         async loginCustomer(){
             try{
-                const response = await axiosClient.post(
-                    `accounts/login/customers/${this.email}`,
-                    this.password,
-                    {
-                      headers: {
-                        'Content-Type': 'text/plain',
-                      },
-                    }
-                );
+                const response = await axiosClient.post(`accounts/login/customers/${this.email}`, {password : this.password});
                 console.log(response.data)
 
                 if (response.status === 200){
@@ -132,7 +124,7 @@ export default{
 
         async loginEmployee() {
             try{
-                const response = await axiosClient.get(`/login/employees/${this.username}`, this.password);
+                const response = await axiosClient.post(`/login/employees/${this.username}`, {password : this.password});
 
                 if (response.status === 200){
                     this.setLoggedIn(true);
@@ -152,7 +144,7 @@ export default{
         },
         async loginManager(){
             try{
-                const response = await axiosClient.get(`/login/managers/${this.username}`, this.password);
+                const response = await axiosClient.post(`/login/managers/${this.username}`, {password : this.password});
 
                 if (response.status == 200){
                   this.setLoggedIn(true);
