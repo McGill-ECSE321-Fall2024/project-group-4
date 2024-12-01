@@ -78,6 +78,7 @@ export default{
     methods: {
         removeFromWishlist(index){
             this.wishlists.splice(index, 1);
+            //   /accounts/customers/{customerId}/wishlist/{gameId}
         },
         addToCart(game){
             this.cart.push(game);

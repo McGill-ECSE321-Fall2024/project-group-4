@@ -5,7 +5,7 @@ import logo from './assets/logo.png'; // Adjust the path if the image is in a di
 
 const userRole = ref('');
 userRole.value = localStorage.getItem('userRole');
-localStorage.setItem('userRole', 'employee');
+localStorage.setItem('userRole', 'manager');
 </script>
 
 <template>
@@ -76,10 +76,6 @@ localStorage.setItem('userRole', 'employee');
                   <BDropdownItem @click="goAccount()">Account</BDropdownItem>
                   <BDropdownItem @click="goLogout()">Logout</BDropdownItem>
                 </BNavItemDropdown>
-            
-              <BNavItemDropdown text="Cart" right>
-                <BDropdownItem @click="goCart()">Check-Out</BDropdownItem>
-              </BNavItemDropdown>
             </BNavbarNav>
             
           </BCollapse>
@@ -97,8 +93,9 @@ localStorage.setItem('userRole', 'employee');
           <BCollapse id="nav-collapse" is-nav >
             <BNavbarNav>
               <BNavItem @click="goCatalogue" class="BNavItem">Catalogue</BNavItem>
-              <BNavItem @click="goRefundRequests" class="BNavItem">Refund Requests</BNavItem>
-              <BNavItem @click="goReviews" class="BNavItem">Reviews</BNavItem>
+              <BNavItem @click="goManageCenter" class="BNavItem">Manage Center</BNavItem>
+              <!-- <BNavItem @click="goUpdates" class="BNavItem">Pending Updates</BNavItem>
+              <BNavItem @click="goReviewsManager" class="BNavItem">Reviews</BNavItem> -->
             </BNavbarNav>
             <!-- Right aligned nav items -->
             <BNavbarNav class="ms-auto mb-2 mb-lg-0">
@@ -113,10 +110,6 @@ localStorage.setItem('userRole', 'employee');
                   <BDropdownItem @click="goAccount()">Account</BDropdownItem>
                   <BDropdownItem @click="goLogout()">Logout</BDropdownItem>
                 </BNavItemDropdown>
-            
-              <BNavItemDropdown text="Cart" right>
-                <BDropdownItem @click="goCart()">Check-Out</BDropdownItem>
-              </BNavItemDropdown>
             </BNavbarNav>
             
           </BCollapse>
@@ -226,22 +219,23 @@ export default {
       this.$router.push('/cart');
     },
     goWishlist(){
+      //   /accounts/customers/{customerId}/wishlist
       this.$router.push('/wishlist');
     },
     goHistory(){
       this.$router.push('/history');
     },
-    goCheckOut(){
-      this.$router.push('/checkout');
-    },
     goCreateAccount(){
       this.$router.push('/sign-up');
     },
-    goViewEmployees(){
-      this.$router.push('/view-employees');
+    goManageCenter(){
+      this.$router.push('/manage-center');
     },
-    goManageEmployees(){
-      this.$router.push('/manage-employees');
+    goUpdates(){
+      this.$router.push('/pending-updates');
+    },
+    goReviewsManager(){
+      this.$router.push('/manager-reviews');
     },
     // search(e){
     //   if(this.searchQuery.length > 0){

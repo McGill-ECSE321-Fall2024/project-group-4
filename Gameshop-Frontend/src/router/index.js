@@ -6,6 +6,7 @@ import Signup from '../components/AccountManagement/Signup.vue'
 import Account from '../components/AccountManagement/Account.vue'
 import Wishlist from '../components/AccountManagement/Wishlist.vue'
 import Cart from '../components/GameManagement/Cart.vue'
+import ManageCenter from '@/components/AccountManagement/ManageCenter.vue'
  
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -43,6 +44,11 @@ const router = createRouter({
       path: '/cart',
       name: 'cart',
       component: Cart
+    },
+    {
+      path: '/manage-center',
+      name: 'manage-center',
+      component: ManageCenter
     }
     
   ],

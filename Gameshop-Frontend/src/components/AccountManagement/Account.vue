@@ -1,10 +1,11 @@
+
 <template>
     <div class="mainContainer">
         <div class="display-6 my-3" align="center">
             Account Settings
         </div>
 
-        <div class="shadow p-3 mb-5 bg-body rounded"> <!-- this is for customer -->
+        <div class="shadow p-3 mb-5 bg-body rounded" > <!-- this is for customer -->
             <BForm > 
                 <div class="mb-3">
                     <BFormGroup  id="email-label" label="Email:" label-for="input-0">
@@ -117,7 +118,7 @@
             </BForm>
         </div>
 
-        <div class="shadow p-3 mb-5 bg-body rounded"> <!-- this is for employee -->
+        <div class="shadow p-3 mb-5 bg-body rounded" > <!-- this is for employee -->
             <BForm > 
                 <div class="mb-3">
                     <BFormGroup  id="email-label" label="Email:" label-for="input-0">
