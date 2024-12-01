@@ -1,28 +1,17 @@
 package ca.mcgill.ecse321.gameshop.serviceClasses;
 
-import ca.mcgill.ecse321.gameshop.DAO.CustomerRepository;
-import ca.mcgill.ecse321.gameshop.DAO.GameRepository;
-import ca.mcgill.ecse321.gameshop.DAO.ManagerRepository;
-import ca.mcgill.ecse321.gameshop.DAO.EmployeeRepository;
-
-import ca.mcgill.ecse321.gameshop.model.Customer;
-import ca.mcgill.ecse321.gameshop.model.Manager;
-import ca.mcgill.ecse321.gameshop.model.Employee;
-import ca.mcgill.ecse321.gameshop.model.Game;
-
+import ca.mcgill.ecse321.gameshop.DAO.*;
+import ca.mcgill.ecse321.gameshop.model.*;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
-import ca.mcgill.ecse321.gameshop.DAO.*;
-import ca.mcgill.ecse321.gameshop.model.*;
-import jakarta.persistence.EntityExistsException;
-import java.util.Optional;
 
 
 /**
@@ -291,15 +280,15 @@ public class AccountManagementService {
     public Customer customerLogin(String email, String password) {
 
         if (!validateStringParameter(email)) {
-            throw new IllegalArgumentException("Email cannot be empty, null or contain spaces.");
+            throw new IllegalArgumentException("Email " + email + " cannot be empty, null or contain spaces.");
         }
         if (!validateStringParameter(password)) {
-            throw new IllegalArgumentException("Password cannot be empty, null or contain spaces.");
+            throw new IllegalArgumentException("Password " +password+ " cannot be empty, null or contain spaces.");
         }
 
         Customer customer = customerRepository.findByEmail(email).orElseThrow(()-> new EntityNotFoundException("Customer does not exist"));
         if (!customer.getPassword().equals(password)) {
-            throw new IllegalArgumentException("Wrong password!");
+            throw new IllegalArgumentException("Wrong password!" + password);
         }
 
         return customer;

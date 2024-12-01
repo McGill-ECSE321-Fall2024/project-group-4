@@ -69,8 +69,9 @@ public class AccountManagementController {
      * @author Tarek Namani
      */
     @PostMapping("/customers")
-    public CustomerResponseDTO createCustomer(@RequestBody String email, @RequestBody String password, @RequestBody String username, @RequestBody String phoneNumber) {
-        return new CustomerResponseDTO(accountManagementService.createCustomer(email, password, username, phoneNumber));
+    public CustomerResponseDTO createCustomer(@RequestBody CustomerRequestDTO customerDTO) {
+        return new CustomerResponseDTO(accountManagementService.createCustomer(customerDTO.email(), customerDTO.password(),
+                customerDTO.username(), customerDTO.phoneNumber()));
     }
 
     /**

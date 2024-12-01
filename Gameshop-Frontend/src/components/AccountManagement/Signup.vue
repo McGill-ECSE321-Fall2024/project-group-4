@@ -55,6 +55,7 @@
 
 <script>
 import axios from 'axios';
+
 const frontendURL = 'http://localhost:8087';
 const backendURL = 'http://localhost:8080';
 
@@ -83,13 +84,20 @@ export default{
                     username: this.username,
                     email: this.email,
                     password: this.password,
-                    phoneNumber: this.phoneNumber,                   
+                    phoneNumber: this.phoneNumber,   
+                    addresses : [],
+                    creditCards : [],
+                    likedReviews : [],
+                    purchases : [],
+                                    
                 };
             
             try{
                 console.log(credentials)
                 response = await axiosClient.post("/accounts/customers", credentials);
                 console.log(response.data) ;
+
+               
 
                 console.log(response.status);
                 if (response.status === 200){
@@ -99,6 +107,9 @@ export default{
                     this.clearInputs();
                     this.$router.push('/');
                 }
+
+                response = await axiosClient.get("/accounts/customers/");
+                console.log(response) ;
 
             } catch(error){
                 alert(error.message)

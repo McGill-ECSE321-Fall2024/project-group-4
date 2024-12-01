@@ -101,7 +101,13 @@ export default{
         },
         async loginCustomer(){
             try{
-                const response = await axiosClient.post(`accounts/login/customers/${this.email}`, {password : this.password});
+                const passwordEntered = this.password;
+                console.log("Password entered:", passwordEntered);
+                
+                const response = await axiosClient.post(`accounts/login/customers/${this.email}`,passwordEntered, {
+                headers: {
+                    'Content-Type': 'text/plain',  // Set Content-Type to text/plain
+                },});
                 console.log(response.data)
 
                 if (response.status === 200){
