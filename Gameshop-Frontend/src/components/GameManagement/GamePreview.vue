@@ -32,7 +32,40 @@ export default {
 
 <template>
   <div class="game-preview">
-    <img :src="game.coverPicture" :alt="`${game.name} cover`" class="game-cover" />
+    <BCard
+        title="${game.name}"
+        img-src="game.coverPicture"
+        img-alt="`${game.name} cover`"
+        img-top
+        tag="article"
+        style="max-width: 20rem" class="wish-game">
+        <BCardText>
+            Price: $ {{ game.price.toFixed(2) }}
+        </BCardText> 
+        <BCardText>
+          <p class="game-stock" :class="{ 'low-stock': game.stock <= 5 }">
+            {{ game.stock > 0
+              ? `${game.stock} copies remaining`
+              : 'Out of stock'
+            }}
+            <button v-if="enableAddToCart"
+                class="add-to-cart"
+                :disabled="game.stock <= 0"
+                @click="handleAddToCart"
+            >
+              Add to Cart
+            </button>
+          </p>
+        </BCardText><br>
+
+        <BButton size="sm" class="add-btn" @click="addToCart">Add to cart</BButton>
+        <BButton size="sm" class="delete-btn" @click="removeFromWishlist(id)">Delete</BButton>
+
+      </BCard>
+
+
+
+    <!-- <img :src="game.coverPicture" :alt="`${game.name} cover`" class="game-cover" />
     <div class="game-details">
       <h2 class="game-title">{{ game.name }}</h2>
       <p class="game-price">$ {{ game.price.toFixed(2) }}</p>
@@ -48,8 +81,8 @@ export default {
         >
           Add to Cart
         </button>
-      </p>
-    </div>
+      </p> -->
+    <!-- </div> -->
   </div>
 </template>
 

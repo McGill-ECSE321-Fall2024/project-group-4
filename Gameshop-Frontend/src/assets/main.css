@@ -28,6 +28,18 @@
   color: white;
 }
 
+.add {
+  background-color: #85abff;
+  border-color: #85abff;
+  color: white;
+}
+
+.add:hover {
+  background-color: #3428ba;
+  border-color: #3428ba;
+  color: white;
+}
+
 .save-info-btn{
   background-color: #3c67bf;
   border-color: #3c67bf;
@@ -44,7 +56,7 @@
   border-color: red;
 }
 
-.save-info-btn:hover{
+.save-info-btn:hover {
   background-color: #795ac6;
   border-color: #795ac6;
   color: white;

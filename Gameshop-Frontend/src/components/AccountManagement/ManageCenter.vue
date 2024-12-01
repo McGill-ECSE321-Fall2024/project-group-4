@@ -18,6 +18,17 @@
                         class="me-2"
                     />
                     <BButton type="submit" class="search-btn">Search</BButton>
+                    <BButton variant="success" class="ms-auto save-info-btn" @click="showAddEmployeeForm">+</BButton>
+                </div>
+                <div v-if="showAddForm" class="mb-3">
+                    <BFormInput v-model="newEmployee.username" placeholder="Username" class="mb-2" />
+                    <BFormInput v-model="newEmployee.email" placeholder="Email" class="mb-2" />
+                    <BFormSelect v-model="newEmployee.is_active" class="mb-2">
+                        <BFormSelectOption :value="true">Active</BFormSelectOption>
+                        <BFormSelectOption :value="false">Inactive</BFormSelectOption>
+                    </BFormSelect>
+                    <BButton variant="secondary" @click="cancelAdd" class="delete-btn">Cancel</BButton>
+                    <BButton variant="primary" @click="saveAdd" class="save-info-btn">Save</BButton>
                 </div>
                 <ViewEmployee :employee="employee" />
                 
@@ -53,8 +64,6 @@
     </div>
 </template>
 
-
-
 <style scoped src="../../assets/main.css">
 </style>
 
@@ -66,8 +75,13 @@ export default{
     data(){
         return{
             searchBy: 'username',
-            
-
+            showAddForm: false,
+            newEmployee: {
+                id: null,
+                username: '',
+                is_active: false,
+            },
+ 
         }
     },
     methods:{
@@ -83,6 +97,13 @@ export default{
                 this.employees.splice(index, 1, this.selectedEmployee);
             }
             this.$refs.editEmployeeModal.hide();
+        },
+        showAddEmployeeForm() {
+            this.showAddForm = !this.showAddForm;
+        },
+        cancelAdd() {
+            this.showAddForm = false;
+            this.newEmployee = { username: '', is_active: true };
         },
     }
 }
