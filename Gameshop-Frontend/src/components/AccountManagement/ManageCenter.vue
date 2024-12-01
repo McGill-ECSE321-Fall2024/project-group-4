@@ -38,8 +38,24 @@
             </BTab>
             <BTab title="Policies" >
                 <br>
+                <BButton variant="success" class="ms-auto save-info-btn" @click="showAddPolicyForm">Add Policy</BButton>
+                <div v-if="showAddPolicyForm" class="mb-3">
+                    <BFormInput v-model="newPolicy.title" placeholder="Title" class="mb-2" />
+                    <BFormTextarea v-model="newPolicy.description" placeholder="Description" class="mb-2" />
+                    <BButton variant="secondary" @click="cancelAddPolicy" class="delete-btn">Cancel</BButton>
+                    <BButton variant="primary" @click="saveAddPolicy" class="save-info-btn">Save</BButton>
+                </div>
+                <Policy :policy="policy" />
             </BTab>
             <BTab title="Promotions" >
+                <br>
+                <BButton variant="success" class="ms-auto save-info-btn" @click="showAddPromotionForm">Add Promotion</BButton>
+                <div v-if="showAddPromotionForm" class="mb-3">
+                    <BFormInput v-model="newPromotion.title" placeholder="Title" class="mb-2" />
+                    <BFormTextarea v-model="newPromotion.description" placeholder="Description" class="mb-2" />
+                    <BButton variant="secondary" @click="cancelAddPromotion" class="delete-btn">Cancel</BButton>
+                    <BButton variant="primary" @click="saveAddPromotion" class="save-info-btn">Save</BButton>
+                </div>
                 <Promotion :promotion="promotion" />
             </BTab>
             <BTab title="Reviews" >
@@ -70,6 +86,7 @@
 <script>
 import Promotion from './Promotion.vue';
 import ViewEmployee from './ViewEmployee.vue';
+import Policy from './Policy.vue';
 
 export default{
     data(){
@@ -80,6 +97,17 @@ export default{
                 id: null,
                 username: '',
                 is_active: false,
+            },
+            showAddForm: false,
+            showAddPolicyForm: false,
+            showAddPromotionForm: false,
+            newPolicy: {
+                title: '',
+                description: '',
+            },
+            newPromotion: {
+                title: '',
+                description: '',
             },
  
         }
@@ -104,6 +132,30 @@ export default{
         cancelAdd() {
             this.showAddForm = false;
             this.newEmployee = { username: '', is_active: true };
+        },
+        showAddPolicyForm() {
+            this.showAddPolicyForm = true;
+        },
+        cancelAddPolicy() {
+            this.showAddPolicyForm = false;
+            this.newPolicy = { title: '', description: '' };
+        },
+        saveAddPolicy() {
+            // Add logic to save the new policy
+            this.showAddPolicyForm = false;
+            this.newPolicy = { title: '', description: '' };
+        },
+        showAddPromotionForm() {
+            this.showAddPromotionForm = true;
+        },
+        cancelAddPromotion() {
+            this.showAddPromotionForm = false;
+            this.newPromotion = { title: '', description: '' };
+        },
+        saveAddPromotion() {
+            // Add logic to save the new promotion
+            this.showAddPromotionForm = false;
+            this.newPromotion = { title: '', description: '' };
         },
     }
 }
