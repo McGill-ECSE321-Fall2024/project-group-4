@@ -12,7 +12,7 @@
                         <p class="text-secondary fst-italic" style="font-size:80%">
                             * Note that you cannot change your email address after signing up.
                         </p>
-                        <BFormInput id="input-0" type="text" readonly>{{ this.email }} </BFormInput>
+                        <BFormInput id="input-0" type="text" v-model="email" readonly>{{ this.email }} </BFormInput>
                     </BFormGroup>  
                 </div>  
 
@@ -183,6 +183,7 @@ export default {
     // const accountData = axiosClient.get(`/accounts/customers/ids`, parseInt(localStorage.getItem('accountId')));
     return {
         id: '',
+        email: '',//accountData.email,
         username: '',//accountData.username,
         phoneNumber: '',//accountData.phoneNumber,
         password: '',//accountData.password,
@@ -222,6 +223,7 @@ export default {
                 const response = await axiosClient.get(`/accounts/customers/ids/${accountId}`);
                 const accountData = response.data;
                 this.username = accountData.username;
+                this.email = accountData.email;
                 this.phoneNumber = accountData.phoneNumber;
                 this.password = accountData.password;
                 this.addresses = accountData.addresses;
