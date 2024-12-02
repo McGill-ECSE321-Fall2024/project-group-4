@@ -38,13 +38,13 @@
       label="Username:"
       label-for="input-1"
     >
-      <BFormInput
+            <BFormInput
         id="input-1"
-        
         type="text"
+        v-model="username"
         placeholder="Enter username"
         required
-      />
+        />
     </BFormGroup>
     <br>
     <BFormGroup id="password-label" label="Password:" label-for="input-2">
@@ -113,8 +113,6 @@ export default{
         async loginCustomer(){
             try{
                 const passwordEntered = this.password;
-                console.log("Password entered:", passwordEntered);
-                
                 const response = await axiosClient.post(`accounts/login/customers/${this.email}`,passwordEntered, {
                 headers: {
                     'Content-Type': 'text/plain',  // Set Content-Type to text/plain
@@ -169,8 +167,12 @@ export default{
         },
         async loginManager(){
             try{
-                const response = await axiosClient.post(`/login/managers/${this.username}`, {password : this.password});
-
+                const passwordEntered = this.password;
+                console.log(this.user)
+                const response = await axiosClient.post(`accounts/login/manager/${this.username}`,passwordEntered, {
+                headers: {
+                    'Content-Type': 'text/plain',  // Set Content-Type to text/plain
+                },});
                 if (response.status == 200){
                   this.setLoggedIn(true);
                   this.setUsername(response.data.username);
