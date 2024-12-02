@@ -179,7 +179,7 @@ const axiosClient = axios.create({
 
 export default {
   data() {
-    const accountData = axiosClient.get(`accounts/customers/${localStorage.getItem('email')}`);
+    const accountData = axiosClient.get(`accounts/customers/ids`, localStorage.getItem('accountId'));
     return {
         username: accountData.username,
         phoneNumber: accountData.phoneNumber,

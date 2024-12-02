@@ -99,6 +99,11 @@ public class AccountManagementController {
         return new CustomerResponseDTO(accountManagementService.getCustomerByEmail(customerEmail));
     }
 
+    @GetMapping("/customers/ids")
+    public CustomerResponseDTO getCustomerById(@RequestBody int customerId) {
+        return new CustomerResponseDTO(accountManagementService.getCustomerById(customerId));
+    }
+
     /**
      *  Create an employee account
      *

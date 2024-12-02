@@ -232,6 +232,11 @@ public class AccountManagementService {
         return customerRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Customer with this email does not exist."));
     }
 
+    @Transactional
+    public Customer getCustomerById(int customerId) {
+        return customerRepository.findById(customerId).orElseThrow(() -> new EntityNotFoundException("Customer with this ID does not exist."));
+    }
+
 
     /**
      * Set the activity an employee account by username
