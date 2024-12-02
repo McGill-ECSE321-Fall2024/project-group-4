@@ -85,6 +85,14 @@ const axiosClient = axios.create({
     }
 });
 
+// console.log('Login page');
+//     if (localStorage.getItem('loggedIn')){
+    
+//     this.$router.push('/');
+//     console.log('Already logged in');
+
+//     }
+
 export default{
     name: 'Login',
     data() {
@@ -93,9 +101,12 @@ export default{
             password: null,
             customSelect: null,
             email: null,
+            userRole: localStorage.getItem('userRole'),
         }
     },
+   
     methods:{
+
         logCustomSelect(){
             console.log(this.customSelect);
         },
@@ -116,9 +127,14 @@ export default{
                     this.setAccountId(response.data.id);
                     this.setEmail(response.data.email);
                     localStorage.setItem('userRole', 'customer');
-
+                    this.userRole = 'customer';
                     this.clearInputs();
-                    this.$router.push('/');
+                    // window.dispatchEvent(new CustomEvent('login')); 
+                    // this.$router.push('/');
+                    window.location.reload(); // Reload the page
+
+
+
                 } else{
                     console.log('Login unsuccessful');
                 }
@@ -136,8 +152,11 @@ export default{
                     this.setLoggedIn(true);
                     this.setUsername(response.data.username);
                     this.setAccountId(response.data.id);
-                    localStorage.setItem('userRole', 'employee');
+                    this.$root.setEmail(response.data.email);
+                    this.$root.setUserRole('customer');
 
+                    localStorage.setItem('userRole', 'employee');
+                    this.userRole = 'employee';
                     this.clearInputs();
                     this.$router.push('/');
                 } else{
@@ -157,9 +176,9 @@ export default{
                   this.setUsername(response.data.username);
                   this.setAccountId(response.data.id);
                   localStorage.setItem('userRole', 'manager');
-
+                    this.userRole = 'manager';
                     this.clearInputs();
-                    this.$router.push('/');
+                    // this.$router.push('/');
                 } else{
                     console.log('Login unsuccessful');
                 }
@@ -183,8 +202,9 @@ export default{
         getLoggedIn(){
             return localStorage.getItem('loggedIn');
         },
-        setLoggedIn(loggedIn){
-            localStorage.setItem('loggedIn', loggedIn);
+        setLoggedIn(value){
+            this.loggedIn = value;
+            localStorage.setItem('loggedIn', value);
         },
         getUsername(){
             return localStorage.getItem('username');

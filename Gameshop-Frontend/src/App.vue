@@ -2,10 +2,10 @@
 import { ref } from 'vue';
 import { RouterView } from 'vue-router';
 import logo from './assets/logo.png'; // Adjust the path if the image is in a different directory
-
 const userRole = ref('');
 userRole.value = localStorage.getItem('userRole');
-localStorage.setItem('userRole', 'manager');
+console.log('HAPPENED');
+
 </script>
 
 <template>
@@ -160,20 +160,25 @@ localStorage.setItem('userRole', 'manager');
 
 <script>
 
+
 export default {
   name: 'App',
   data() {
     return {
       loggedIn: localStorage.getItem('loggedIn') === 'true',
-      searchQuery: ''
+      searchQuery: '',
+      username: localStorage.getItem('username') || '',
+      userRole: localStorage.getItem('userRole') || '',
     };
   },
+  
   methods: {
     //global variables
     getLoggedIn() {
       return localStorage.getItem('loggedIn');
     },
     setLoggedIn(loggedIn) {
+      this.loggedIn = loggedIn;
       localStorage.setItem('loggedIn', loggedIn);
     },
     getUsername(){
@@ -213,7 +218,10 @@ export default {
       this.setLoggedIn(false);
       this.setUsername('');
       this.setAccountId('');
-      this.$router.push('/');
+      localStorage.removeItem('loggedIn');
+      localStorage.removeItem('username');
+      localStorage.removeItem('userRole');
+      this.$router.go();
     },
     goCart(){
       this.$router.push('/cart');
@@ -247,18 +255,9 @@ export default {
   },
   watch: {
   //look for changes in global variables
-    loggedIn: {
-      handler() {
-        localStorage.setItem('loggedIn', this.loggedIn);
-      },
-      immediate: true
-    },
-    username: {
-      handler() {
-        localStorage.setItem('username', this.username);
-      },
-      immediate: true
-    }
-  }
+
+  
+  },
+ 
 }
 </script>

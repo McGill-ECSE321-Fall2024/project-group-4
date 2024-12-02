@@ -105,7 +105,9 @@ export default{
                     this.setUsername(this.username);
                     this.setAccountId(response.data.id);
                     this.clearInputs();
+                    localStorage.setItem('userRole', 'customer');
                     this.$router.push('/');
+                    this.$router.go();
                 }
 
                 response = await axiosClient.get("/accounts/customers/");
