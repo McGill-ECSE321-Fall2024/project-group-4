@@ -179,17 +179,19 @@ const axiosClient = axios.create({
 
 export default {
   data() {
-    const accountData = axiosClient.get(`accounts/customers/ids`, localStorage.getItem('accountId'));
+    // console.log(localStorage.getItem('accountId'));
+    // const accountData = axiosClient.get(`/accounts/customers/ids`, parseInt(localStorage.getItem('accountId')));
     return {
-        username: accountData.username,
-        phoneNumber: accountData.phoneNumber,
-        password: accountData.password,
-        addresses: accountData.addresses,
+        id: '',
+        username: '',//accountData.username,
+        phoneNumber: '',//accountData.phoneNumber,
+        password: '',//accountData.password,
+        addresses: [],//accountData.addresses,
         showAddressForm: false,
         showCreditForm: false,
         useExistingAddress: true,
         showSaveInfoButton: false,
-        creditCards: accountData.creditCards,
+        creditCards: [],//accountData.creditCards,
         newCreditCard: {
             cardNumber: '',
             expiryDate: '',
@@ -213,7 +215,27 @@ export default {
         changedField: '',
     };
   },
+  async created(){
+        try {
+            const accountId = parseInt(localStorage.getItem('accountId'));
+            if (!isNaN(accountId)) {
+                const response = await axiosClient.get(`/accounts/customers/ids/${accountId}`);
+                const accountData = response.data;
+                this.username = accountData.username;
+                this.phoneNumber = accountData.phoneNumber;
+                this.password = accountData.password;
+                this.addresses = accountData.addresses;
+                this.creditCards = accountData.creditCards;
+                console.log('HERE');
+            } else {
+                console.error('Invalid account ID');
+            }
+        } catch (error) {
+        console.error('Error fetching account data:', error);
+        }
+    },
   methods: {
+    
     handleInputChange(field) {
         this.changedField = field;
         this.showSaveInfoButton = true;

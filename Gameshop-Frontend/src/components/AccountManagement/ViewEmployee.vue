@@ -17,7 +17,7 @@
         <div v-if="showAddForm" class="mb-3">
             <BFormInput v-model="newEmployee.username" placeholder="Username" class="mb-2" />
             <BFormInput v-model="newEmployee.password" placeholder="Password" class="mb-2" />
-            <BFormSelect v-model="newEmployee.is_active" class="mb-2">
+            <BFormSelect v-model="newEmployee.isActive" class="mb-2">
                 <BFormSelectOption :value="true">Active</BFormSelectOption>
                 <BFormSelectOption :value="false">Inactive</BFormSelectOption>
             </BFormSelect>
@@ -55,53 +55,14 @@ export default {
       type: Object,
       required: true,
       validator: (value) =>
-          'id' in value &&
+        //   'id' in value &&
           'username' in value &&
           'password' in value &&
-          'refindRequests' in value &&
-          'is_active' in value
-
+          'refundRequests' in value &&
+          'isActive' in value
     },
   },
-  return: {
-    employees
-  },
-  setup(){
-    const employees = ref([]);
-    const loading = ref(true);
-    const error = ref(null)
-    const route = useRoute();
-
-    const fetchEmployees = async (searchQuery = "") => {
-        try {
-            loading.value = true;
-            error.value = null;
-
-            const url = searchQuery 
-                ? `http://localost:8080/accounts/employees/${searchQuery}` 
-                : 'http://localost:8080//accounts/employees/';
-
-            const response = await fetch(url)
-            const data = await response.json();
-
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to fetch employees');
-            }
-
-            employees.value = data;
-
-      } catch (error) {
-        console.error('Error fetching employees:', error);
-        error.value = error;
-      } finally {
-        loading.value = false;
-      }
-    };
-    const searchQuery = computed(() => route.query.searchQuery || '');
-    watch(searchQuery, (newSearchQuery) => {
-        fetchEmployees(newSearchQuery);});
-  },
+  
   data(){
     return{
         fields: [
@@ -124,7 +85,7 @@ export default {
         newEmployee: {
             username: '',
             password: '',
-            is_active: false,
+            isActive: false,
             refundRequests: [],
         },
         searchQuery: '',
@@ -236,7 +197,7 @@ export default {
             const credentials = {
                 username: this.newEmployee.username,
                 password: this.newEmployee.password,
-                isActive: this.newEmployee.is_active,
+                isActive: this.newEmployee.isActive,
                 refundRequests: []
             };
             try {
@@ -250,7 +211,7 @@ export default {
                     this.setAccountId(response.data.id);
                     this.clearInputs();
                     this.showAddForm = false;
-                    this.$router.go();
+                    this.$router.push('/manage-center');
                 }
             } catch (error) {
                 console.error('Error creating employee:', error);

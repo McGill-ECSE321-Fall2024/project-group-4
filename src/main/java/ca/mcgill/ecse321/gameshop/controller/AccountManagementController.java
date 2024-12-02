@@ -99,8 +99,9 @@ public class AccountManagementController {
         return new CustomerResponseDTO(accountManagementService.getCustomerByEmail(customerEmail));
     }
 
-    @GetMapping("/customers/ids")
-    public CustomerResponseDTO getCustomerById(@RequestBody int customerId) {
+    @GetMapping("/customers/ids/{customerId}")
+    public CustomerResponseDTO getCustomerById(@PathVariable int customerId) {
+        System.out.println("Customer ID: " + customerId);
         return new CustomerResponseDTO(accountManagementService.getCustomerById(customerId));
     }
 

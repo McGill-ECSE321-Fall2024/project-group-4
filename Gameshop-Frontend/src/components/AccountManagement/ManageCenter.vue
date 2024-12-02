@@ -97,6 +97,7 @@ const axiosClient = axios.create({
     //     'Access-Control-Allow-Origin': frontendURL,
     // }
 });
+
 export default{
     data(){
         return{
@@ -122,19 +123,7 @@ export default{
  
         }
     },
-    computed: {
-        filteredEmployees() {
-            return this.employees.filter(employee => {
-                const searchTerm = this.searchQuery.toLowerCase();
-                if (this.searchBy === 'username') {
-                return employee.username.toLowerCase().includes(searchTerm);
-                } else if (this.searchBy === 'id') {
-                return employee.id.toString().includes(searchTerm);
-                }
-                return false;
-            });        
-        },
-    },
+    
     methods:{
         editEmployee(employee){
             console.log('Edit employee:', employee);
