@@ -127,7 +127,7 @@ export default{
                     this.setAccountId(response.data.id);
                     this.setEmail(response.data.email);
                     localStorage.setItem('userRole', 'customer');
-                    localStorage.setItem('email', this.email);
+                    // localStorage.setItem('email', this.email);
                     this.userRole = 'customer';
                     this.clearInputs();
                     // window.dispatchEvent(new CustomEvent('login')); 

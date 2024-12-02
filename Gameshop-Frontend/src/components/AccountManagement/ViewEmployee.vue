@@ -1,11 +1,34 @@
 <template>
     <div class="viewEmployee">
         <br>
-        <BTable :items="employees" :fields="fields">
-            <template #cell(actions)="data">
-                <BButton size="sm" @click="editEmployee(data.item)" class="add-btn">Edit</BButton>
-            </template>
-        </BTable>
+        <div class="d-flex mb-3">
+            <BFormSelect v-model="searchBy" class="me-2 w-auto">
+                <BFormSelectOption value="username">Username</BFormSelectOption>
+                <BFormSelectOption value="id">ID</BFormSelectOption>
+            </BFormSelect>
+            <BFormInput
+                v-model="searchQuery"
+                placeholder="Search employees"
+                class="me-2"
+            />
+            <BButton type="submit" class="search-btn">Search</BButton>
+            <BButton variant="success" class="ms-auto save-info-btn" @click="showAddEmployeeForm">+</BButton>
+        </div>
+        <div v-if="showAddForm" class="mb-3">
+            <BFormInput v-model="newEmployee.username" placeholder="Username" class="mb-2" />
+            <BFormInput v-model="newEmployee.password" placeholder="Password" class="mb-2" />
+            <BFormSelect v-model="newEmployee.is_active" class="mb-2">
+                <BFormSelectOption :value="true">Active</BFormSelectOption>
+                <BFormSelectOption :value="false">Inactive</BFormSelectOption>
+            </BFormSelect>
+            <BButton variant="secondary" @click="cancelAdd" class="delete-btn">Cancel</BButton>
+            <BButton variant="primary" @click="saveAddEmployee" class="save-info-btn">Save</BButton>
+        </div>
+    <BTable :items="filteredEmployees" :fields="fields">
+        <template #cell(actions)="data">
+            <BButton size="sm" @click="editEmployee(data.item)" class="add-btn">Edit</BButton>
+        </template>
+    </BTable>
     </div>
 </template>
 
@@ -13,18 +36,71 @@
 </style>
 
 <script>
+import axios from 'axios';
+import { computed } from 'vue';
+
+const frontendURL = 'http://localhost:8087';
+const backendURL = 'http://localhost:8080';
+
+const axiosClient = axios.create({
+    baseURL: backendURL,
+    // headers: {
+    //     'Access-Control-Allow-Origin': frontendURL,
+    // }
+});
 export default {
   name: "ViewEmployee",
   props: {
-    promotion: {
+    employees: {
       type: Object,
       required: true,
       validator: (value) =>
           'id' in value &&
           'username' in value &&
+          'password' in value &&
+          'refindRequests' in value &&
           'is_active' in value
-          
+
     },
+  },
+  return: {
+    employees
+  },
+  setup(){
+    const employees = ref([]);
+    const loading = ref(true);
+    const error = ref(null)
+    const route = useRoute();
+
+    const fetchEmployees = async (searchQuery = "") => {
+        try {
+            loading.value = true;
+            error.value = null;
+
+            const url = searchQuery 
+                ? `http://localost:8080/accounts/employees/${searchQuery}` 
+                : 'http://localost:8080//accounts/employees/';
+
+            const response = await fetch(url)
+            const data = await response.json();
+
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to fetch employees');
+            }
+
+            employees.value = data;
+
+      } catch (error) {
+        console.error('Error fetching employees:', error);
+        error.value = error;
+      } finally {
+        loading.value = false;
+      }
+    };
+    const searchQuery = computed(() => route.query.searchQuery || '');
+    watch(searchQuery, (newSearchQuery) => {
+        fetchEmployees(newSearchQuery);});
   },
   data(){
     return{
@@ -37,16 +113,152 @@ export default {
         ],
         
         employees: [
-            { id: 1, username: 'John Doe', is_active: true },
-            { id: 2, username: 'Jane Smith', is_active: false },
+            // { id: 1, username: 'John Doe', is_active: true },
+            // { id: 2, username: 'Jane Smith', is_active: false },
         ],
         selectedEmployee: {
             id: null,
             username: '',
             is_active: false,
         },
+        newEmployee: {
+            username: '',
+            password: '',
+            is_active: false,
+            refundRequests: [],
+        },
+        searchQuery: '',
+        searchBy: 'username', //default for search
+        selectedEmployee: null,
+        showAddForm: false,
     }
-  }
+  },
+  computed: {
+        filteredEmployees() {
+            return this.employees.filter(employee => {
+                const searchTerm = this.searchQuery.toLowerCase();
+                if (this.searchBy === 'username') {
+                return employee.username.toLowerCase().includes(searchTerm);
+                } else if (this.searchBy === 'id') {
+                return employee.id.toString().includes(searchTerm);
+                }
+                return false;
+            });        
+        },
+    },
+    methods:{
+        async fetchEmployees(){
+            try {
+                const response = await axiosClient.get('/accounts/employees/');
+                this.employees = response.data;
+            } catch (error) {
+                console.error('Error fetching employees:', error);
+            }
+        },
+        async searchEmployees(){
+            if (this.searchBy === 'username' && this.searchQuery) {
+                try {
+                const response = await axiosClient.get(`/accounts/employees/username/${this.searchQuery}`);
+                this.employees = [response.data];
+                } catch (error) {
+                    console.error('Error fetching employee by username:', error);
+                }
+            } else if (this.searchBy === 'id' && this.searchQuery) {
+                try {
+                const response = await axiosClient.get(`/accounts/employees/id/${this.searchQuery}`);
+                this.employees = [response.data];
+                } catch (error) {
+                    console.error('Error fetching employee by ID:', error);
+                }
+            }
+            else {
+                // Handle search by ID or other criteria
+                this.filteredEmployees();
+            }
+        },
+        editEmployee(employee){
+            console.log('Edit employee:', employee);
+        },
+        cancelEdit() {
+            this.$refs.editEmployeeModal.hide();
+        },
+        // saveEdit() {
+        //     const index = this.employees.findIndex(emp => emp.id === this.selectedEmployee.id);
+        //     if (index !== -1) {
+        //         this.employees.splice(index, 1, this.selectedEmployee);
+        //     }
+        //     this.$refs.editEmployeeModal.hide();
+        // },
+        showAddEmployeeForm() {
+            this.showAddForm = !this.showAddForm;
+        },
+        cancelAdd() {
+            this.showAddForm = false;
+            this.newEmployee = { username: '', is_active: true };
+        },
+        showAddPolicyForm() {
+            this.showAddPolicyForm = true;
+        },
+        cancelAddPolicy() {
+            this.showAddPolicyForm = false;
+            this.newPolicy = { title: '', description: '' };
+        },
+        saveAddPolicy() {
+            // Add logic to save the new policy
+            this.showAddPolicyForm = false;
+            this.newPolicy = { title: '', description: '' };
+        },
+        showAddPromotionForm() {
+            this.showAddPromotionForm = true;
+        },
+        cancelAddPromotion() {
+            this.showAddPromotionForm = false;
+            this.newPromotion = { title: '', description: '' };
+        },
+        saveAddPromotion() {
+            // Add logic to save the new promotion
+            this.showAddPromotionForm = false;
+            this.newPromotion = { title: '', description: '' };
+        },
+        clearInputs(){
+            this.username = null;
+            this.password = null;
+            this.is_active = null;
+        },
+        setUsername(username){
+            localStorage.setItem('username', username);
+        },
+        setAccountId(accountId){
+            localStorage.setItem('accountId', accountId);
+        },
+        async saveAddEmployee(){
+            let response='';
+            const credentials = {
+                username: this.newEmployee.username,
+                password: this.newEmployee.password,
+                isActive: this.newEmployee.is_active,
+                refundRequests: []
+            };
+            try {
+                console.log(credentials)
+                response = await axiosClient.post('/accounts/employees', credentials);
+                console.log(response.data);
+
+                console.log(response.status)
+                if (response.status === 200) {
+                    this.setUsername(this.newEmployee.username);
+                    this.setAccountId(response.data.id);
+                    this.clearInputs();
+                    this.showAddForm = false;
+                    this.$router.go();
+                }
+            } catch (error) {
+                console.error('Error creating employee:', error);
+            }
+        }
+        
+    },
+   
 
 };
 </script>

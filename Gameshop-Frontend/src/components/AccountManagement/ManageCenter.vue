@@ -7,7 +7,7 @@
         <BTabs content-class="mt-3" fill>
             <BTab title="Employees">
                 <br>
-                <div class="d-flex mb-3">
+                <!-- <div class="d-flex mb-3">
                     <BFormSelect v-model="searchBy" class="me-2 w-auto">
                         <BFormSelectOption value="username">Username</BFormSelectOption>
                         <BFormSelectOption value="id">ID</BFormSelectOption>
@@ -29,8 +29,8 @@
                     </BFormSelect>
                     <BButton variant="secondary" @click="cancelAdd" class="delete-btn">Cancel</BButton>
                     <BButton variant="primary" @click="saveAdd" class="save-info-btn">Save</BButton>
-                </div>
-                <ViewEmployee :employee="employee" />
+                </div>-->
+                <ViewEmployee :employee="employee" /> 
                 
             </BTab>
             <BTab title="Game Requests" >
@@ -87,12 +87,20 @@
 import Promotion from './Promotion.vue';
 import ViewEmployee from './ViewEmployee.vue';
 import Policy from './Policy.vue';
+import axios from 'axios';
+const frontendURL = 'http://localhost:8087';
+const backendURL = 'http://localhost:8080';
 
+const axiosClient = axios.create({
+    baseURL: backendURL,
+    // headers: {
+    //     'Access-Control-Allow-Origin': frontendURL,
+    // }
+});
 export default{
     data(){
         return{
             searchBy: 'username',
-            showAddForm: false,
             newEmployee: {
                 id: null,
                 username: '',
@@ -109,8 +117,23 @@ export default{
                 title: '',
                 description: '',
             },
+            selectedEmployee: null,
+            searchQuery: '',
  
         }
+    },
+    computed: {
+        filteredEmployees() {
+            return this.employees.filter(employee => {
+                const searchTerm = this.searchQuery.toLowerCase();
+                if (this.searchBy === 'username') {
+                return employee.username.toLowerCase().includes(searchTerm);
+                } else if (this.searchBy === 'id') {
+                return employee.id.toString().includes(searchTerm);
+                }
+                return false;
+            });        
+        },
     },
     methods:{
         editEmployee(employee){
@@ -157,6 +180,7 @@ export default{
             this.showAddPromotionForm = false;
             this.newPromotion = { title: '', description: '' };
         },
+        
     }
 }
 

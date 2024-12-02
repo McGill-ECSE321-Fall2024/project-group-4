@@ -2,9 +2,10 @@
 import { ref } from 'vue';
 import { RouterView } from 'vue-router';
 import logo from './assets/logo.png'; // Adjust the path if the image is in a different directory
-const userRole = ref('');
-userRole.value = localStorage.getItem('userRole');
-console.log('HAPPENED');
+// const userRole = ref('');
+// userRole.value = localStorage.getItem('userRole');
+// userRole.value = localStorage.setItem('userRole','manager');
+// console.log('HAPPENED');
 
 </script>
 
@@ -167,8 +168,8 @@ export default {
     return {
       loggedIn: localStorage.getItem('loggedIn') === 'true',
       searchQuery: '',
-      username: localStorage.getItem('username') || '',
-      userRole: localStorage.getItem('userRole') || '',
+      username: localStorage.getItem('username'),
+      userRole: localStorage.getItem('userRole'),
     };
   },
   
