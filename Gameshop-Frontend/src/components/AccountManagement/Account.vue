@@ -179,16 +179,17 @@ const axiosClient = axios.create({
 
 export default {
   data() {
+    const accountData = axiosClient.get(`accounts/customers/${localStorage.getItem('email')}`);
     return {
-        username: '',
-        phoneNumber: '',
-        password: '',
-        addresses: [],
+        username: accountData.username,
+        phoneNumber: accountData.phoneNumber,
+        password: accountData.password,
+        addresses: accountData.addresses,
         showAddressForm: false,
         showCreditForm: false,
         useExistingAddress: true,
         showSaveInfoButton: false,
-        creditCards: [],
+        creditCards: accountData.creditCards,
         newCreditCard: {
             cardNumber: '',
             expiryDate: '',
@@ -221,13 +222,13 @@ export default {
         try {
         let response;
         if (this.changedField === 'username') {
-          response = await axiosClient.put(`/accounts/customers/${this.email}/username/${this.username}`);
+          response = await axiosClient.put(`/accounts/customers/${this.email}/username/${this.username}`).then(this.$route.go());
         } else if (this.changedField === 'phoneNumber') {
-          response = await axiosClient.put(`/accounts/customers/${this.email}/phoneNumber/${this.phoneNumber}`);
+          response = await axiosClient.put(`/accounts/customers/${this.email}/phoneNumber/${this.phoneNumber}`).then(this.$route.go());
         } else if (this.changedField === 'password') {
           response = await axiosClient.put(`/accounts/customers/${this.email}/password`, {
             password: this.password,
-          });
+          }).then(this.$route.go());
         }
         console.log(response.data);
         this.showSaveInfoButton = false;
@@ -237,7 +238,7 @@ export default {
     },
     async saveInfoEmployee(){
         try {
-            const response = await axiosClient.put(`/accounts/employees/${this.username}/username/${username}`);
+            const response = await axiosClient.put(`/accounts/employees/${this.username}/username/${username}`).then(this.$route.go());
             console.log(response.data);
         } catch (error) {
             console.error('Error saving info:', error);
@@ -274,8 +275,7 @@ export default {
                 province : this.newAddress.province,
                 country : this.newAddress.country,
                 postalCode : this.newAddress.postalCode
-            });
-            console.log(response.data);
+            }).then(this.$route.go());
         } catch(error) {
             console.error(error);
         }
@@ -325,10 +325,14 @@ export default {
         this.creditCards.push(creditCard);
 
         try{
-            const response = await axiosClient.post(`/customers/${this.email}credit-cards`, {
-                creditCard: creditCard,
-                email: this.email,
-            });
+            const response = await axiosClient.post(`/customers/${this.email}/credit-cards`, {
+                cardNumber : parseInt(this.newCreditCard.cardNumber),
+                cvv : parseInt(this.newCreditCard.cvv),
+                expiryDate : this.creditCard.expiryDate,
+                billingAddress : {
+                     // NOT FUNCTIONAL
+                }
+            }).then(this.$route.go());
             console.log(response.data);
         } catch(error) {
             console.error(error);
@@ -352,13 +356,13 @@ export default {
     async deleteCard(index, creditCard){
         //method not working yet!!!
         try {
-            await AXIOS.delete('/customers/' + this.email + '/credit-cards/' + creditCard.id, {
+            await axiosClient.delete(`/customers/${this.email}}/credit-cards/{this.creditCard}`, { // NOT WORKING
             data: {
                 email: this.email,
                 creditCard: creditCard,
             },
-            });
-            this.creditCards.splice(index, 1);
+            }).then(this.$route.go());
+            //this.creditCards.splice(index, 1);
         } catch (error) {
             console.error('Error deleting credit card:', error);
         }

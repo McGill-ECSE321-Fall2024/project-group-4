@@ -116,7 +116,7 @@ export default{
                     this.setAccountId(response.data.id);
                     this.setEmail(response.data.email);
                     localStorage.setItem('userRole', 'customer');
-
+                    localStorage.setItem('email', this.email);
                     this.clearInputs();
                     this.$router.push('/');
                 } else{
