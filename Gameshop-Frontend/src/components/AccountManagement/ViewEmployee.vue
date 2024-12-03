@@ -25,10 +25,41 @@
             <BButton variant="primary" @click="saveAddEmployee" class="save-info-btn">Save</BButton>
         </div>
     <BTable :items="filteredEmployees" :fields="fields">
-        <template #cell(actions)="data">
+        <!-- <template #cell(actions)="data">
             <BButton size="sm" @click="editEmployee(data.item)" class="add-btn">Edit</BButton>
-        </template>
+        </template> -->
+        <template #cell(username)="data">
+        <div v-if="selectedEmployee && selectedEmployee.id === data.item.id">
+          <BFormInput v-model="selectedEmployee.username" class="mb-2" />
+        </div>
+        <div v-else>
+          {{ data.item.username }}
+        </div>
+      </template>
+      <template #cell(is_active)="data">
+        <div v-if="selectedEmployee && selectedEmployee.id === data.item.id">
+          <BFormSelect v-model="selectedEmployee.is_active" class="mb-2">
+            <BFormSelectOption :value="true">Active</BFormSelectOption>
+            <BFormSelectOption :value="false">Inactive</BFormSelectOption>
+          </BFormSelect>
+        </div>
+        <div v-else>
+          {{ data.item.is_active ? 'Active' : 'Inactive' }}
+        </div>
+      </template>
+
+        <template #cell(actions)="data">
+            <div v-if="selectedEmployee && selectedEmployee.id === data.item.id" class="mt-3">
+                <BButton variant="secondary" size="sm" @click="cancelEditEmployee" class="delete-btn">Cancel</BButton>
+                <BButton variant="primary" size="sm" @click="saveEditEmployee" class="save-info-btn">Save</BButton>                  
+            </div>
+            <div v-else  class="mt-3">
+                <BButton size="sm" variant="primary" @click="editPolicy(data.item)" class="save-info-btn">Edit</BButton>
+            </div>
+      </template>
     </BTable>
+
+    
     </div>
 </template>
 
@@ -68,13 +99,13 @@ export default {
         ],
         
         employees: [
-            // { id: 1, username: 'John Doe', is_active: true },
-            // { id: 2, username: 'Jane Smith', is_active: false },
+            { id: 1, username: 'John Doe', is_active: true },
+            { id: 2, username: 'Jane Smith', is_active: false },
         ],
         selectedEmployee: {
             id: null,
             username: '',
-            is_active: false,
+            is_active: null,
         },
         newEmployee: {
             username: '',
@@ -103,6 +134,23 @@ export default {
     },
    
     methods:{
+        cancelEditEmployee() {
+            this.selectedEmployee = null;
+        },
+        async saveEditEmployee() {
+        try {
+            const response = await axios.put(`/accounts/employees/${this.selectedEmployee.id}`, this.selectedEmployee);
+            if (response.status === 200) {
+            const index = this.employees.findIndex(emp => emp.id === this.selectedEmployee.id);
+            if (index !== -1) {
+                this.employees.splice(index, 1, response.data);
+            }
+            this.selectedEmployee = null;
+            }
+        } catch (error) {
+            console.error('Error updating employee:', error);
+        }
+        },
         async fetchEmployees(){
             try {
                 const response = await axiosClient.get('/accounts/employees/');
@@ -134,10 +182,10 @@ export default {
             }
         },
         editEmployee(employee){
-            console.log('Edit employee:', employee);
+            this.selectedEmployee = { ...employee };
         },
-        cancelEdit() {
-            this.$refs.editEmployeeModal.hide();
+        cancelEditEmployee() {
+            this.selectedEmployee = null;
         },
         // saveEdit() {
         //     const index = this.employees.findIndex(emp => emp.id === this.selectedEmployee.id);
@@ -153,30 +201,7 @@ export default {
             this.showAddForm = false;
             this.newEmployee = { username: '', is_active: true };
         },
-        showAddPolicyForm() {
-            this.showAddPolicyForm = true;
-        },
-        cancelAddPolicy() {
-            this.showAddPolicyForm = false;
-            this.newPolicy = { title: '', description: '' };
-        },
-        saveAddPolicy() {
-            // Add logic to save the new policy
-            this.showAddPolicyForm = false;
-            this.newPolicy = { title: '', description: '' };
-        },
-        showAddPromotionForm() {
-            this.showAddPromotionForm = true;
-        },
-        cancelAddPromotion() {
-            this.showAddPromotionForm = false;
-            this.newPromotion = { title: '', description: '' };
-        },
-        saveAddPromotion() {
-            // Add logic to save the new promotion
-            this.showAddPromotionForm = false;
-            this.newPromotion = { title: '', description: '' };
-        },
+        
         clearInputs(){
             this.username = null;
             this.password = null;

@@ -14,8 +14,8 @@
     <div v-if="showAddForm" class="d-flex mb-3">
       <br>
       <BFormTextarea v-model="newPolicy.description" placeholder="Description" class="mb-2" />
-      <BButton variant="secondary" @click="cancelAddPolicy" class="delete-btn">Cancel</BButton>
-      <BButton variant="primary" @click="saveAddPolicy" class="save-info-btn">Save</BButton>
+      <BButton variant="secondary" @click="cancelAddPolicy" size="sm" class="delete-btn">Cancel</BButton>
+      <BButton variant="primary" @click="saveAddPolicy" size="sm" class="save-info-btn">Save</BButton>
     </div>
     <BTable :items="policies" :fields="fields">
       <template #cell(description)="data">
@@ -43,6 +43,17 @@
 
 <script>
 import axios from 'axios';
+
+const frontendURL = 'http://localhost:8087';
+const backendURL = 'http://localhost:8080';
+
+const axiosClient = axios.create({
+    baseURL: backendURL,
+    // headers: {
+    //     'Access-Control-Allow-Origin': frontendURL,
+    // }
+});
+  
 
 export default {
   name: "Policy",
@@ -74,18 +85,22 @@ export default {
   methods: {
     async fetchPolicies() {
       try {
-        const response = await axios.get('/policies');
+        const response = await axiosClient.get('/policies');
         this.policies = response.data;
       } catch (error) {
         console.error('Error fetching policies:', error);
       }
     },
     async searchPolicy() {
-      try {
-        const response = await axios.get(`/policies/${this.searchQuery}`);
-        this.policies = [response.data];
-      } catch (error) {
-        console.error('Error fetching policy by ID:', error);
+      if (this.searchQuery) {
+        try {
+          const response = await axiosClient.get(`/accounts/policies/${this.searchQuery}`);
+          this.policies = [response.data];
+        } catch (error) {
+          console.error('Error fetching employee by username:', error);
+        }
+      } else {
+        this.fetchPolicies();
       }
     },
     showAddPolicyForm() {
@@ -97,7 +112,7 @@ export default {
     },
     async saveAddPolicy() {
       try {
-        const response = await axios.post('/accounts/policies', this.newPolicy.description);
+        const response = await axiosClient.post('/accounts/policies', this.newPolicy.description);
         if (response.status === 200) {
           this.policies.push(response.data);
           this.showAddForm = false;
@@ -110,7 +125,7 @@ export default {
     
     async updatePolicy() {
       try {
-        const response = await axios.put(`/accounts/policies/${this.selectedPolicy.id}`, this.newPolicy.description);
+        const response = await axiosClient.put(`/accounts/policies/${this.selectedPolicy.id}`, this.newPolicy.description);
         if (response.status === 200) {
           const index = this.policies.findIndex(policy => policy.id === this.selectedPolicy.id);
           if (index !== -1) {

@@ -41,23 +41,10 @@
             </BTab>
             <BTab title="Reviews" >
                 <br>
+                <ReviewsManager :reviews="reviews" />
             </BTab>
         </BTabs>
 
-        <!-- Edit Employee Modal
-    <BModal id="edit-employee-modal" ref="editEmployeeModal" title="Edit Employee">
-      <div>
-        <label for="employee-status">Status:</label>
-        <BFormSelect id="employee-status" v-model="selectedEmployee.is_active">
-          <BFormSelectOption :value="true">Active</BFormSelectOption>
-          <BFormSelectOption :value="false">Inactive</BFormSelectOption>
-        </BFormSelect>
-      </div>
-      <template #modal-footer="{ ok, cancel }">
-        <BButton variant="secondary" @click="cancelEdit">Cancel</BButton>
-        <BButton variant="primary" @click="saveEdit">Save</BButton>
-      </template>
-    </BModal> -->
     </div>
 </template>
 
@@ -67,6 +54,7 @@ import Promotion from './Promotion.vue';
 import ViewEmployee from './ViewEmployee.vue';
 import Policy from './Policy.vue';
 import GameRequest from './GameRequest.vue';
+import ReviewsManager from './ReviewsManager.vue';
 import axios from 'axios';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
@@ -216,3 +204,6 @@ export default{
 }
 
 </script>
+
+<style scoped src="../../assets/main.css">
+  </style>
