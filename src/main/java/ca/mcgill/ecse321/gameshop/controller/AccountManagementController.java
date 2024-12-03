@@ -177,7 +177,7 @@ public class AccountManagementController {
      *
      * @author Tarek Namani
      */
-    @PutMapping("/employees/{id}/is_active/{status}")
+    @PutMapping("/employees/{id}/active/{status}")
     public void setEmployeeActivityById(@PathVariable int id, @PathVariable boolean status) {
         accountManagementService.setEmployeeStatus(id, status);
     }

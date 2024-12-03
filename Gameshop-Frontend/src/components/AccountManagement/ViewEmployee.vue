@@ -75,6 +75,7 @@ const backendURL = 'http://localhost:8080';
 const axiosClient = axios.create({
     baseURL: backendURL,
 });
+let oldUsername = '';
 export default {
   name: "ViewEmployee",
   props: {
@@ -139,14 +140,16 @@ export default {
         },
         async saveEditEmployee() {
         try {
-            //let response = await axiosClient.put(`/accounts/employees/${}/username/${this.selectedEmployee.}`);
-            const response = await axiosClient.put(`/accounts/employees/${this.selectedEmployee.id}`, this.selectedEmployee);
-            if (response.status === 200) {
-            const index = this.employees.findIndex(emp => emp.id === this.selectedEmployee.id);
-            if (index !== -1) {
-                this.employees.splice(index, 1, response.data);
+            let response = await axiosClient.put(`/accounts/employees/${this.selectedEmployee.id}/active/${this.selectedEmployee.isActive}`);
+            if (response.status === 200 && !(this.oldUsername === this.selectedEmployee.username)) {
+                response = await axiosClient.put(`/accounts/employees/${this.oldUsername}/username/${this.selectedEmployee.username}`);
             }
-            this.selectedEmployee = null;
+            if (response.status === 200) {
+                const index = this.employees.findIndex(emp => emp.id === this.selectedEmployee.id);
+                if (index !== -1) {
+                    this.employees.splice(index, 1, response.data);
+                }
+                this.selectedEmployee = null;
             }
         } catch (error) {
             console.error('Error updating employee:', error);
@@ -175,6 +178,7 @@ export default {
         },
         editEmployee(employee){
             this.selectedEmployee = { ...employee };
+            this.oldUsername = this.selectedEmployee.username;
         },
         cancelEditEmployee() {
             this.selectedEmployee = null;
