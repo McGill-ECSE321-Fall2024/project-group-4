@@ -154,9 +154,9 @@ public class AccountManagementService {
     @Transactional
     public Set<Employee> getSetOfEmployees() {
         Iterable<Employee> employees = employeeRepository.findAll();
-        if (!employees.iterator().hasNext()) {
-            throw new EntityNotFoundException("There are no employees in the system");
-        }
+        /*if (!employees.iterator().hasNext()) {
+            return Collections.emptySet();
+        }*/
 
         return StreamSupport.stream(employees.spliterator(), false).collect(Collectors.toSet()); //get a set of all employees
     }

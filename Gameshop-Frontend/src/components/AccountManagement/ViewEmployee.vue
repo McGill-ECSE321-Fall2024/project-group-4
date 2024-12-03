@@ -36,15 +36,15 @@
           {{ data.item.username }}
         </div>
       </template>
-      <template #cell(is_active)="data">
+      <template #cell(isActive)="data">
         <div v-if="selectedEmployee && selectedEmployee.id === data.item.id">
-          <BFormSelect v-model="selectedEmployee.is_active" class="mb-2">
+          <BFormSelect v-model="selectedEmployee.isActive" class="mb-2">
             <BFormSelectOption :value="true">Active</BFormSelectOption>
             <BFormSelectOption :value="false">Inactive</BFormSelectOption>
           </BFormSelect>
         </div>
         <div v-else>
-          {{ data.item.is_active ? 'Active' : 'Inactive' }}
+          {{ data.item.isActive ? 'Active' : 'Inactive' }}
         </div>
       </template>
 
@@ -54,7 +54,7 @@
                 <BButton variant="primary" size="sm" @click="saveEditEmployee" class="save-info-btn">Save</BButton>                  
             </div>
             <div v-else  class="mt-3">
-                <BButton size="sm" variant="primary" @click="editPolicy(data.item)" class="save-info-btn">Edit</BButton>
+                <BButton size="sm" variant="primary" @click="editEmployee(data.item)" class="save-info-btn">Edit</BButton>
             </div>
       </template>
     </BTable>
@@ -70,14 +70,10 @@
 import axios from 'axios';
 import { computed } from 'vue';
 
-const frontendURL = 'http://localhost:8087';
 const backendURL = 'http://localhost:8080';
 
 const axiosClient = axios.create({
     baseURL: backendURL,
-    // headers: {
-    //     'Access-Control-Allow-Origin': frontendURL,
-    // }
 });
 export default {
   name: "ViewEmployee",
@@ -93,19 +89,16 @@ export default {
         fields: [
             {key: 'id', label: 'ID', sortable: true},
             { key: 'username', label: 'Username', sortable: true },
-            { key: 'is_active', label: 'Active Status', sortable: true },
+            { key: 'isActive', label: 'Active Status', sortable: true },
             { key: 'actions', label: '' },
 
         ],
         
-        employees: [
-            { id: 1, username: 'John Doe', is_active: true },
-            { id: 2, username: 'Jane Smith', is_active: false },
-        ],
+        employees: [],
         selectedEmployee: {
             id: null,
             username: '',
-            is_active: null,
+            isActive: null,
         },
         newEmployee: {
             username: '',
@@ -132,14 +125,22 @@ export default {
             });        
         },
     },
-   
+    async created() {
+        try {
+            const response = await axiosClient.get(`/accounts/employees`);
+            this.employees = response.data;
+        } catch (error) {
+            alert(`Error fetching data: ${error}`);
+        }
+    },
     methods:{
         cancelEditEmployee() {
             this.selectedEmployee = null;
         },
         async saveEditEmployee() {
         try {
-            const response = await axios.put(`/accounts/employees/${this.selectedEmployee.id}`, this.selectedEmployee);
+            //let response = await axiosClient.put(`/accounts/employees/${}/username/${this.selectedEmployee.}`);
+            const response = await axiosClient.put(`/accounts/employees/${this.selectedEmployee.id}`, this.selectedEmployee);
             if (response.status === 200) {
             const index = this.employees.findIndex(emp => emp.id === this.selectedEmployee.id);
             if (index !== -1) {
@@ -150,15 +151,6 @@ export default {
         } catch (error) {
             console.error('Error updating employee:', error);
         }
-        },
-        async fetchEmployees(){
-            try {
-                const response = await axiosClient.get('/accounts/employees/');
-                this.employees = response.data;
-                console.log("hereee")
-            } catch (error) {
-                console.error('Error fetching employees:', error);
-            }
         },
         async searchEmployees(){
             if (this.searchBy === 'username' && this.searchQuery) {
@@ -187,25 +179,18 @@ export default {
         cancelEditEmployee() {
             this.selectedEmployee = null;
         },
-        // saveEdit() {
-        //     const index = this.employees.findIndex(emp => emp.id === this.selectedEmployee.id);
-        //     if (index !== -1) {
-        //         this.employees.splice(index, 1, this.selectedEmployee);
-        //     }
-        //     this.$refs.editEmployeeModal.hide();
-        // },
         showAddEmployeeForm() {
             this.showAddForm = !this.showAddForm;
         },
         cancelAdd() {
             this.showAddForm = false;
-            this.newEmployee = { username: '', is_active: true };
+            this.newEmployee = { username: '', isActive: true };
         },
         
         clearInputs(){
             this.username = null;
             this.password = null;
-            this.is_active = null;
+            this.isActive = null;
         },
         setUsername(username){
             localStorage.setItem('username', username);
@@ -222,7 +207,6 @@ export default {
                 refundRequests: []
             };
             try {
-                console.log(credentials)
                 response = await axiosClient.post('/accounts/employees', credentials);
                 console.log(response.data);
 
@@ -231,7 +215,7 @@ export default {
                     this.newEmployee = response.data;
                     this.clearInputs();
                     this.showAddForm = false;
-                    this.$router.push('/');
+                    this.$router.go();
                 }
             } catch (error) {
                 console.error('Error creating employee:', error);
