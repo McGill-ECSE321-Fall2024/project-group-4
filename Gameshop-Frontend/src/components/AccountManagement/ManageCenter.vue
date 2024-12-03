@@ -12,7 +12,7 @@
             </BTab>
             <BTab title="Game Requests" >
                 <br>
-                <GameRequest :gameRequests="gameRequests"/>
+                <GameRequestNew :gameRequests="gameRequests"/>
 
             </BTab>
             <BTab title="Policies" >
@@ -69,7 +69,7 @@
 import Promotion from './Promotion.vue';
 import ViewEmployee from './ViewEmployee.vue';
 import Policy from './Policy.vue';
-import GameRequest from './GameRequest.vue';
+import GameRequestNew from './GameRequestNew.vue';
 import axios from 'axios';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
@@ -100,7 +100,7 @@ export default{
         Promotion,
         ViewEmployee,
         Policy,
-        GameRequest,
+        GameRequestNew,
     },
     data(){
         return{

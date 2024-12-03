@@ -5,8 +5,7 @@
       <BFormInput
                 v-model="searchQuery"
                 placeholder="Search Game Requests by ID"
-                class="me-2"
-            />
+                class="me-2"/>
         <BButton type="submit" class="search-btn" @click="searchRequests">Search</BButton>
       <!-- <BButton variant="success" class="ms-auto save-info-btn" @click="showAddGameRequestForm">+</BButton><br> -->
       </div>
@@ -40,10 +39,11 @@
         </template>
       </BTable>
     </div>
-  </template>
+</template>
 
 <style scoped src="../../assets/main.css">
 </style>
+
 
 <script>
 import axios from 'axios';
@@ -167,7 +167,6 @@ export default {
     },
     
   }
-
 
 
 };
