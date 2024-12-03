@@ -317,13 +317,14 @@ export default {
             alert('Please fill in all credit card fields.');
             return;
         }
-
+        const addressJson = JSON.parse(this.newCreditCard.billingAddress);
+        console.log(addressJson);
         try{
             const response = await axiosClient.post(`/customers/${this.email}/credit-cards`, {
                 cardNumber : parseInt(this.newCreditCard.cardNumber),
                 cvv : parseInt(this.newCreditCard.cvv),
-                expiryDate : this.newCreditCard.expiryDate,
-                billingAddress : this.newCreditCard.billingAddress
+                expiryDate : new Date(this.newCreditCard.expiryDate),
+                billingAddress : JSON.parse(this.newCreditCard.billingAddress)
             });//.then(this.$router.go());
             console.log(response.data);
         } catch(error) {
