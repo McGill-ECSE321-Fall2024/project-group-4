@@ -10,6 +10,6 @@ public record RefundRequestDTO(
 ) implements Serializable {
 
     public RefundRequestDTO(RefundRequest refundRequest) {
-        this(refundRequest.getId() ,refundRequest.getStatus(), refundRequest.getReason(), new EmployeeResponseDTO(refundRequest.getReviewer()));
+        this(refundRequest.getId() ,refundRequest.getStatus(), refundRequest.getReason(), refundRequest.getReviewer() != null ? new EmployeeResponseDTO(refundRequest.getReviewer()): null);
     }
 }
