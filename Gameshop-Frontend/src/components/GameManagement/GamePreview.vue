@@ -90,7 +90,7 @@ export default {
   </div>
 </template>
 
-<style scoped>
+<style scoped src="../../assets/main.css">
 .game-preview {
   display: flex;
   align-items: center;

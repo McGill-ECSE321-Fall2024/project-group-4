@@ -52,15 +52,65 @@ export default {
       games,
       loading,
       error,
+      searchBy: ref("all"),
+      searchQuery: '',
+      userRole: ref(localStorage.getItem('userRole')),
+      showAddForm: ref(false),
+      newGame: {
+        name: '',
+        description: '',
+        coverPicture: '',
+        price: null,
+        stock: null,
+        isActive: null,
+        categories: [],
+        promotions: [],
+      },
     };
+    
   },
+  methods:{
+    showRequestGameForm(){
+      this.showAddForm = !this.showAddForm;
+    },
+    cancelAdd() {
+            this.showAddForm = false;
+        },
+  }
 };
 </script>
-
 
 <template>
   <div class="game-catalogue">
     <div class="display-6 my-3" align="center">Game Catalogue</div>
+    <div class="d-flex mb-3">
+      <BFormSelect v-model="searchBy" class="me-2 w-auto">
+          <BFormSelectOption value="all">All</BFormSelectOption>
+          <BFormSelectOption value="name">Name</BFormSelectOption>
+          <BFormSelectOption value="genre">Genre</BFormSelectOption>
+          <BFormSelectOption value="id">ID</BFormSelectOption>
+      </BFormSelect>
+      <BFormInput
+          v-model="searchQuery"
+          placeholder="Search games"
+          class="me-2"
+      />
+      <BButton type="submit" class="search-btn">Search</BButton>
+      <BButton variant="success" class="ms-auto save-info-btn" @click="showRequestGameForm" v-if="userRole==='employee'">+</BButton>
+    </div>
+    <div v-if="showAddForm" class="mb-3">
+       <!-- create game here-->
+      <BFormInput v-model="newGame.name" placeholder="Name" class="mb-2" />
+      <BFormInput v-model="newGame.description" placeholder="Description" class="mb-2" />
+      <BFormInput v-model="newGame.coverPicture" placeholder="Cover Picture" class="mb-2" />
+      <BFormInput v-model="newGame.price" placeholder="Price" class="mb-2" />
+      <BFormInput v-model="newGame.stock" placeholder="stock" class="mb-2" />
+      <BFormInput v-model="newGame.isActive" placeholder="Is Active" class="mb-2" />
+      <BFormInput v-model="newGame.categories" placeholder="Genre" class="mb-2" />
+      <BFormInput v-model="newGame.promotions" placeholder="Promotions" class="mb-2" />
+      <BButton variant="secondary" @click="cancelAdd" class="delete-btn">Cancel</BButton>
+      <BButton variant="primary" @click="saveAddEmployee" class="save-info-btn">Save</BButton>
+    </div>
     <div v-if="loading" class="loading">Loading games...</div>
     <div v-else-if="error" class="error">{{ error }}</div>
     <GameBrowser
@@ -70,7 +120,7 @@ export default {
 </template>
 
 
-<style scoped>
+<style scoped src="../../assets/main.css">
 .game-catalogue {
   padding: 20px;
 }

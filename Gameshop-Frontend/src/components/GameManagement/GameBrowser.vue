@@ -14,7 +14,6 @@ export default {
 };
 </script>
 
-
 <template>
   <div class="game-catalogue">
     <div class="game-grid">
