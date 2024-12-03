@@ -206,4 +206,16 @@ public class PurchaseManagementController {
             throw new IllegalArgumentException("Status must be either 'approve' or 'deny'");
         }
     }
+
+    @GetMapping("employees/{employeeId}/refunds")
+    public List<RefundRequestResponseDto> getAssignedRefundRequests(@PathVariable int employeeId){
+        return purchaseManagementService.getAssignedRefunds(employeeId).stream().map(RefundRequestResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    @PostMapping("employees/{employeeUsername}/refunds/{refundId}")
+    public void assignRefundRequest(@PathVariable String employeeUsername, @PathVariable int refundId){
+        purchaseManagementService.addReviewerToRefundRequest(refundId, employeeUsername);
+    }
+
 }

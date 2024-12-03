@@ -14,7 +14,7 @@ import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';
 if (!localStorage.getItem('username')){
     localStorage.setItem('username', '')
     localStorage.setItem('loggedIn', 'false')
-    localStorage.setItem('id', '0')
+    localStorage.setItem('accountId', '0')
 }
 
 const app = createApp(App)

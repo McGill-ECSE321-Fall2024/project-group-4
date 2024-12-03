@@ -553,6 +553,14 @@ public class PurchaseManagementService {
         refundRepository.save(refund);
     }
 
+    public Set<RefundRequest> getAssignedRefunds(int employeeId){
+        if(!employeeRepository.existsById(employeeId)){
+            throw new EntityNotFoundException("Employee not found");
+        }
+
+        return refundRepository.findByReviewer_Id(employeeId);
+    }
+
     /**
      * Assign an employee to review a refund request
      *
