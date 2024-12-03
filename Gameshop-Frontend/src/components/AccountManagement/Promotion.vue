@@ -1,13 +1,80 @@
 <template>
-    <div class="promotion">
-        <br>
-        <BTable :items="promotions" :fields="fields2">
-        </BTable>
-    </div>
-</template>
+  <div class="promotion">
+    <br />
+    <BTable :items="promotions" :fields="fields2">
+      <!-- Scoped slot for the actions column -->
+      <template #cell(actions)="row">
+        <div class="d-flex align-items-center justify-content-between">
+          <BButton variant="danger" @click="deletePromotion(row.item.promotionId)">
+            Delete Promotion
+          </BButton>
+          <b-Dropdown text="Actions" variant="primary" class="ml-2">
+            <b-dropdown-item @click="editPromotion(row.item)">
+              Edit
+            </b-dropdown-item>
+          </b-Dropdown>
+   
+          <b-Dropdown text="Add games to promotions" variant="primary" class="ml-2">
+  <b-dropdown-item 
+    v-for="game in games" 
+    :key="game.id" 
+    @click="addGameToPromotion(row.item.promotionId, game.id)"
+    :class="{'added': isGameInPromotion(game, row.item.promotionId)}">
+    {{ game.name }}
+  </b-dropdown-item>
+</b-Dropdown>
 
-<style scoped src="../../assets/main.css">
-</style>
+<b-Dropdown text="Remove games from promotions" variant="danger" class="ml-2">
+  <b-dropdown-item 
+    v-for="game in games" 
+    :key="game.id" 
+    @click="removeGameFromPromotion(row.item.promotionId, game.id)"
+    :class="{'added': isGameInPromotion(game, row.item.promotionId)}">
+    {{ game.name }}
+  </b-dropdown-item>
+</b-Dropdown>
+
+        </div>
+      </template>
+    </BTable>
+
+    <!-- Modal for editing promotion -->
+    <b-modal
+      id="editPromotionModal"
+      v-model="showEditModal"
+      title="Edit Promotion"
+      hide-footer
+    >
+      <form @submit.prevent="updatePromotion">
+        <b-form-group label="Discount" label-for="discount">
+          <b-form-input
+            id="discount"
+            type="number"
+            v-model="promotionToEdit.discount"
+            required
+          ></b-form-input>
+        </b-form-group>
+        <b-form-group label="Start Date" label-for="startDate">
+          <b-form-input
+            id="startDate"
+            type="date"
+            v-model="promotionToEdit.start_date"
+            required
+          ></b-form-input>
+        </b-form-group>
+        <b-form-group label="End Date" label-for="endDate">
+          <b-form-input
+            id="endDate"
+            type="date"
+            v-model="promotionToEdit.end_date"
+            required
+          ></b-form-input>
+        </b-form-group>
+        <b-button variant="primary" type="submit">Save Changes</b-button>
+      </form>
+    </b-modal>
+  </div>
+</template>
 
 <script>
 import axios from 'axios';
@@ -17,46 +84,34 @@ const frontendURL = 'http://localhost:8087';
 const backendURL = 'http://localhost:8080';
 
 const axiosClient = axios.create({
-    baseURL: backendURL,
-    // headers: {
-    //     'Access-Control-Allow-Origin': frontendURL,
-    // }
+  baseURL: backendURL,
 });
-
-
-const loadPromotions = () => {
-  console.log('Page has been refreshed!');
-  // Your logic here
-};
-
 
 export default {
   name: "Promotion",
-  props: {
-    promotion: {
-      type: Object,
-      required: true,
-      validator: (value) =>
-          'discount' in value &&
-          'startDate' in Date &&
-          'endDate' in Date &&
-          'promotionId' in value
-    },
+  data() {
+    return {
+      games: [],
+      gamesMatrix: {},
+      promotions: [],
+      fields2: [
+        { key: 'promotionId', label: 'ID', sortable: true },
+        { key: 'discount', label: 'Discount', sortable: true },
+        { key: 'start_date', label: 'Start Date', sortable: true },
+        { key: 'end_date', label: 'End Date', sortable: true },
+        { key: 'actions', label: '' },
+      ],
+      showEditModal: false, // Controls the modal visibility
+      promotionToEdit: {
+        promotionId: null,
+        discount: null,
+        start_date: '',
+        end_date: '',
+      },
+    };
   },
-  data(){
-    return{
-        promotions: [
-            // { promotionId: 1, game: 'Game1', discount: 10, start_date: '2021-10-01', end_date: '2021-10-31' },
-            // { promotionId: 2, game: 'Game2', discount: 20, start_date: '2021-10-01', end_date: '2021-10-31' },
-        ],
-        fields2: [
-            {key: 'promotionId', label: 'ID', sortable: true},
-            { key: 'discount', label: 'Discount', sortable: true },
-            { key: 'start_date', label: 'Start Date', sortable: true },
-            { key: 'end_date', label: 'End Date', sortable: true },
-            { key: 'actions', label: '' },
-        ],
-    }
+  async mounted() {
+    this.games = await this.fetchGames();
   },
   methods:{
     async fetchPromotions() {
@@ -64,7 +119,6 @@ export default {
     try {
         response = await axiosClient.get("/promotions");
         if (response.status === 200) {
-            console.log(response.data); 
             
           
             this.promotions = response.data.map(promotion => {
@@ -76,14 +130,74 @@ export default {
                     discount: `${promotion.discount}%`,
                     key: 'actions', label: '' 
                 };
-            });
-
-            console.log(this.promotions); // Check the transformed promotions array
+            });// Check the transformed promotions array
         }
     } catch (error) {
         alert(error.message); // Show error if any
     }
-}
+
+    
+},editPromotion(promotion) {
+      // Set promotion data to edit
+      this.promotionToEdit = { ...promotion };
+      // Show the modal
+      this.showEditModal = true;
+    },
+  
+    async deletePromotion(promotionId) {
+
+  const id = promotionId;
+  try {
+    const response = await axiosClient.delete(`/promotions/${id}`);
+    if (response.status === 200) {
+      await this.fetchPromotions();
+    }
+  } catch (error) {
+    alert(error.message);
+  }
+       
+    },async fetchGames() {
+      let games = [];
+      let response = "";
+
+      try {
+    const response = await axiosClient.get(`/games`);
+    if (response.status === 200) {
+      games = response.data
+    }
+  } catch (error) {
+    alert(error.message);
+  }   
+      return games.filter((game) => game.isActive);
+
+    },async addGameToPromotion(promotionId, gameId) {
+      const uri = `/games/${gameId}/promotions/${promotionId}`
+      let response = "";
+      try {
+      const response = await axiosClient.put(uri);
+      if (response.status === 200) {
+      }
+      } catch (error) {
+      alert(error.message);
+      }   
+    },async removeGameFromPromotion(promotionId, gameId) {
+      const uri = `/games/${gameId}/promotions/${promotionId}`
+      let response = "";
+      try {
+      const response = await axiosClient.delete(uri);
+      if (response.status === 200) {
+      }
+      } catch (error) {
+      alert(error.message);
+      }   
+    },
+    isGameInPromotion(game, promotionId) {
+      const promotionsOnGame = game.promotions || [];
+      const promotionIds = promotionsOnGame.map(promotion => promotion.id);
+      this.$forceUpdate();
+      return promotionIds.includes(parseInt(promotionId));
+    }
+
   }
 
 };
@@ -91,3 +205,12 @@ export default {
 
 
 </script>
+
+<style>
+.added {
+  font-size: 1.2em;
+  color: #ffffffd8;
+  background-color: rgb(136, 136, 255);
+}
+
+</style>

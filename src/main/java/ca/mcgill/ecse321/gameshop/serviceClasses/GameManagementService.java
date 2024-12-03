@@ -623,6 +623,18 @@ public class GameManagementService {
         return promotionSet;
     }
 
+    @Transactional
+    public Set<Game> getGamesForPromotion(int promotionId) {
+        Set<Game> gamesInCategory = new HashSet<>();
+        Promotion promotion = findPromotionById(promotionId);
+
+        Set<Game> games = viewInventory();
+        if (games.isEmpty()) return gamesInCategory;
+
+        return games.stream().filter(game->game.containsPromotion(promotion)).collect(Collectors.toSet());
+
+    }
+
     
 
 

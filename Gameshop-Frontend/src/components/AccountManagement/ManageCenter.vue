@@ -24,16 +24,32 @@
                
                 <BButton variant="success" class="ms-auto save-info-btn" @click="showPromotionForm">Add Promotion</BButton>
                 <div v-if="showAddPromotionForm" class="mb-4">
-                    <BFormInput v-model="discount" placeholder="Discount" class="mb-2" />
-                    <div>
-                        <label>Start Date : </label>
-                        <vue-date-picker v-model="startDate" id="startDate" :preview-format='format'></vue-date-picker>
-                    </div>
-
-                    <div>
-                        <label>End Date : </label>
-                        <vue-date-picker v-model="endDate" id="endDate" :preview-format='format'></vue-date-picker>
-                    </div>
+                    <form @submit.prevent="updatePromotion">
+                    <b-form-group label="Discount" label-for="discount">
+          <b-form-input
+            id="discount"
+            type="number"
+            v-model="discount"
+            required
+          ></b-form-input>
+        </b-form-group>
+        <b-form-group label="Start Date" label-for="startDate">
+          <b-form-input
+            id="startDate"
+            type="date"
+            v-model="startDate"
+            required
+          ></b-form-input>
+        </b-form-group>
+        <b-form-group label="End Date" label-for="endDate">
+          <b-form-input
+            id="endDate"
+            type="date"
+            v-model="endDate"
+            required
+          ></b-form-input>
+        </b-form-group>
+    </form>
                     <BButton variant="secondary" @click="cancelAddPromotion" class="delete-btn">Cancel</BButton>
                     <BButton variant="primary" @click="addPromotion" class="save-info-btn">Save</BButton>
                 </div>
@@ -54,7 +70,6 @@ import Promotion from './Promotion.vue';
 import ViewEmployee from './ViewEmployee.vue';
 import Policy from './Policy.vue';
 import GameRequest from './GameRequest.vue';
-import ReviewsManager from './ReviewsManager.vue';
 import axios from 'axios';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';

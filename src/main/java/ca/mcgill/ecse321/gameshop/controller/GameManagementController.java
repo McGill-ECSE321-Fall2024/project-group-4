@@ -348,4 +348,11 @@ public class GameManagementController {
         gameManagementService.getAllPromotions().forEach(promotion -> promotions.add(new PromotionResponseDTO(promotion)));
         return promotions;
     }
+
+    @GetMapping("/promotions/{promotionId}/games")
+    public Set<GameResponseDTO> getAllGamesInCategory(@PathVariable int promotionId) {
+        Set<GameResponseDTO> games = new HashSet<>();
+        gameManagementService.getGamesForPromotion(promotionId).forEach(gameResponse -> games.add(new GameResponseDTO(gameResponse)));
+        return games;
+    }
 }
