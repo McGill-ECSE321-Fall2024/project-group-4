@@ -232,6 +232,11 @@ public class GameManagementController {
         return new GameRequestDTO(createdGameRequest);
     }
 
+    @GetMapping("/gameRequests")
+    public Set<GameRequestDTO> getEmployees() {
+        return gameManagementService.getAllGameRequests().stream().map(GameRequestDTO::new).collect(Collectors.toSet());
+    }
+
     /**
      * Set the status of a pending game request
      *
