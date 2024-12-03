@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -102,6 +103,12 @@ public class PurchaseManagementController {
     @GetMapping("purchases/{purchaseId}")
     public PurchaseDTO getPurchaseById(@PathVariable int purchaseId) {
         return new PurchaseDTO(purchaseManagementService.findPurchaseById(purchaseId));
+    }
+
+    @GetMapping("/customers/{customerEmail}/purchases")
+    public List<PurchaseDTO> getPurchaseHistory(@PathVariable String customerEmail) {
+        return purchaseManagementService.viewCustomerPurchaseHistory(customerEmail).stream().map(PurchaseDTO::new)
+                .collect(Collectors.toList());
     }
 
     /**

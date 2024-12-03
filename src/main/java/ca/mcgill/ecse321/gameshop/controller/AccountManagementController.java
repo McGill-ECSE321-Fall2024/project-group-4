@@ -310,10 +310,9 @@ public class AccountManagementController {
      */
     @PostMapping("/customers/{customerEmail}/addresses")
     @ResponseStatus(HttpStatus.CREATED)
-    public AddressResponseDTO createAddress(@PathVariable String customerEmail, @RequestBody String street, @RequestBody String city, @RequestBody String province,
-    @RequestBody String postalCode, @RequestBody String country) {
-        return new AddressResponseDTO(accountManagementService.createAddress(street, city, province,
-                postalCode, country, customerEmail));
+    public AddressResponseDTO createAddress(@PathVariable String customerEmail, @RequestBody AddressRequestDTO requestDTO) {
+        return new AddressResponseDTO(accountManagementService.createAddress(requestDTO.street(), requestDTO.city(), requestDTO.province(),
+                requestDTO.postalCode(), requestDTO.country(), customerEmail));
     }
 
 
