@@ -141,7 +141,7 @@ export default {
     },
     async deletePolicy(policyId) {
       try {
-        await axios.delete(`/policies/${policyId}`);
+        await axiosClient.delete(`/policies/${policyId}`);
         this.policies = this.policies.filter(policy => policy.id !== policyId);
       } catch (error) {
         console.error('Error deleting policy:', error);

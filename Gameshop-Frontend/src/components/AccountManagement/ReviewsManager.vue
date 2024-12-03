@@ -10,7 +10,7 @@
         <BButton type="submit" class="search-btn" @click="searchReview">Search</BButton>
         <br>
       </div>
-      <BTable :items="reviews" :fields="fields">
+      <BTable :items="filteredReviews" :fields="fields">
         <template #cell(reply)="data">
           <div v-if="selectedReview && selectedReview.id === data.item.id">
             <BFormInput v-model="selectedReview.reply" class="mb-2" />
@@ -89,6 +89,16 @@
         selectedReview: null,
       };
     },
+    computed: {
+        filteredReviews() {
+            return this.reviews.filter(review1 => {
+                const searchTerm = this.searchQuery.toLowerCase();
+            
+                return review1.id.toString().includes(searchTerm);
+               
+            });        
+        },
+    },
     methods: {
       async fetchReviews() {
         try {
@@ -99,11 +109,17 @@
         }
       },
       async searchReview() {
-        try {
-          const response = await axiosClient.get(`/reviews/${this.searchQuery}`);
-          this.reviews = [response.data];
-        } catch (error) {
-          console.error('Error fetching review by ID:', error);
+        if (this.searchQuery) {
+            try {
+                const response = await axiosClient.get(`/reviews/${this.searchQuery}`);
+                this.reviews = [response.data];
+            } catch (error) {
+                console.error('Error fetching reviews by ID:', error);
+            }
+        }
+        else {
+            // Handle search by ID or other criteria
+            this.filteredReviews();
         }
       },
       editReview(review) {
@@ -129,7 +145,7 @@
       },
       async deleteReview(reviewId) {
         try {
-          await axios.delete(`/reviews/${reviewId}`);
+          await axiosClient.delete(`/reviews/${reviewId}`);
           this.reviews = this.reviews.filter(review => review.id !== reviewId);
         } catch (error) {
           console.error('Error deleting review:', error);
