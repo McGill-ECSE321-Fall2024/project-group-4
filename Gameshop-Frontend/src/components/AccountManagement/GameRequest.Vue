@@ -7,7 +7,7 @@
                 placeholder="Search Game Requests by ID"
                 class="me-2"
             />
-        <BButton type="submit" class="search-btn">Search</BButton>
+        <BButton type="submit" class="search-btn" @click="searchRequests">Search</BButton>
       <BButton variant="success" class="ms-auto save-info-btn" @click="showAddGameRequestForm">+</BButton><br>
       </div>
       <div v-if="showAddForm" class="mb-3">
@@ -31,7 +31,7 @@
         <BButton variant="primary" @click="saveAddGameRequest" class="save-info-btn">Save</BButton>
       </div>
       <br>
-      <BTable :items="gameRequests" :fields="fields">
+      <BTable :items="filteredRequests" :fields="fields">
         <template #cell(actions)="data">
             <div v-if="data.item.requestStatus === 'PENDING'">
                 <BButton size="sm" variant="danger" @click="rejectGameRequest(data.item.id)" class="delete-btn" style="margin-left: -10px;margin-right: 10px;">Reject</BButton>
@@ -46,6 +46,17 @@
 </style>
 
 <script>
+import axios from 'axios';
+const frontendURL = 'http://localhost:8087';
+    const backendURL = 'http://localhost:8080';
+
+    const axiosClient = axios.create({
+        baseURL: backendURL,
+        // headers: {
+        //     'Access-Control-Allow-Origin': frontendURL,
+        // }
+    });
+    
 export default {
   name: "GameRequest",
     // props: {
@@ -86,9 +97,42 @@ export default {
       },
       games: [],
       employees: [],
+      searchQuery: '',
     }
   },
+  computed: {
+        filteredRequests() {
+            return this.gameRequests.filter(gameRequest => {
+                const searchTerm = this.searchQuery.toLowerCase();
+            
+                return gameRequest.id.toString().includes(searchTerm);
+               
+            });        
+        },
+    },
   methods: {
+    async fetchRequests() {
+        try {
+          const response = await axiosClient.get('/requests');
+          this.gameRequests = response.data;
+        } catch (error) {
+          console.error('Error fetching reviews:', error);
+        }
+      },
+      async searchRequests() {
+        if (this.searchQuery) {
+            try {
+                const response = await axiosClient.get(`/gameRequests/${this.searchQuery}`);
+                this.gameRequests = [response.data];
+            } catch (error) {
+                console.error('Error fetching reviews by ID:', error);
+            }
+        }
+        else {
+            // Handle search by ID or other criteria
+            this.filteredRequests();
+        }
+      },
     showAddGameRequestForm() {
       this.showAddForm = !this.showAddForm;
     },
@@ -100,54 +144,60 @@ export default {
         requestorId: '',
       };
     },
-    async saveAddGameRequest() {
-      const gameRequestDTO = {
-        externalReview: this.newGameRequest.externalReview,
-        game: { id: this.newGameRequest.gameId },
-        requestor: { id: this.newGameRequest.requestorId },
-      };
-      try {
-        const response = await axios.post('/gameRequests', gameRequestDTO);
-        if (response.status === 200) {
-          this.$emit('update:gameRequests', [...this.gameRequests, response.data]);
-          this.showAddForm = false;
-          this.newGameRequest = {
-            externalReview: '',
-            gameId: '',
-            requestorId: '',
-          };
-        }
-      } catch (error) {
-        console.error('Error creating game request:', error);
-      }
-    },
-    async approveGameRequest(gameRequestId) {
-      try {
-        const response = await axios.put(`/gameRequests/${gameRequestId}/requestStatus`, null, {
-          params: { status: 'approve' },
-        });
-        if (response.status === 200) {
-          console.log('Game request approved');
-          // Update the gameRequests list or notify the user
-        }
-      } catch (error) {
-        console.error('Error approving game request:', error);
-      }
-    },
-    async rejectGameRequest(gameRequestId) {
-      try {
-        const response = await axios.put(`/gameRequests/${gameRequestId}/requestStatus`, null, {
-          params: { status: 'reject' },
-        });
-        if (response.status === 200) {
-          console.log('Game request rejected');
-          // Update the gameRequests list or notify the user
-        }
-      } catch (error) {
-        console.error('Error rejecting game request:', error);
-      }
-    },
-  }
+    // async saveAddGameRequest() {
+    //   const gameRequestDTO = {
+    //     externalReview: this.newGameRequest.externalReview,
+    //     game: { id: this.newGameRequest.gameId },
+    //     requestor: { id: this.newGameRequest.requestorId },
+    //   };
+    //   try {
+    //     const response = await axiosClient.post('/gameRequests', gameRequestDTO);
+    //     if (response.status === 200) {
+    //       this.$emit('update:gameRequests', [...this.gameRequests, response.data]);
+    //       this.showAddForm = false;
+    //       this.newGameRequest = {
+    //         externalReview: '',
+    //         gameId: '',
+    //         requestorId: '',
+    //       };
+    //     }
+    //   } catch (error) {
+    //     console.error('Error creating game request:', error);
+    //   }
+    // },
+    // async approveGameRequest(gameRequestId) {
+    //   try {
+    //     const response = await axiosClient.put(`/gameRequests/${gameRequestId}/requestStatus`, null, {
+    //       params: { status: 'approve' },
+    //     });
+    //     if (response.status === 200) {
+    //       console.log('Game request approved');
+    //       // Update the gameRequests list or notify the user
+    //     }
+    //   } catch (error) {
+    //     console.error('Error approving game request:', error);
+    //   }
+    // },
+    // async rejectGameRequest(gameRequestId) {
+    //   try {
+    //     const response = await axiosClient.put(`/gameRequests/${gameRequestId}/requestStatus`, null, {
+    //       params: { status: 'reject' },
+    //     });
+    //     if (response.status === 200) {
+    //       console.log('Game request rejected');
+    //       // Update the gameRequests list or notify the user
+    //     }
+    //   } catch (error) {
+    //     console.error('Error rejecting game request:', error);
+    //   }
+    // },
+    
+  },
+  mounted() {
+    this.fetchRequests();
+  },
+
+
 
 };
 </script>
