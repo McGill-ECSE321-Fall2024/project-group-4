@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Methods for GameManagementService
@@ -607,6 +606,12 @@ public class GameManagementService {
         gameRepository.save(game);
     }
 
+    @Transactional
+    public Set<Promotion> getAllPromotions() {
+        Set<Promotion> promotionSet = new HashSet<>();
+        promotionRepository.findAll().forEach(promotionSet::add);
+        return promotionSet;
+    }
 
     
 

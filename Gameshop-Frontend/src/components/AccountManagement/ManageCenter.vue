@@ -7,7 +7,7 @@
         <BTabs content-class="mt-3" fill>
             <BTab title="Employees">
                 <br>
-                <ViewEmployee :employees="employees" @update:employees="updateEmployees" /> 
+                <ViewEmployee :employees="employees" @update:employees="updateEmployees" />
                 
             </BTab>
             <BTab title="Game Requests" >
@@ -19,16 +19,25 @@
                 <br>
                 <Policy :policy="policy" />
             </BTab>
-            <BTab title="Promotions" >
+            <BTab title="Promotions" @click="fetchPromotions">
                 <br>
-                <BButton variant="success" class="ms-auto save-info-btn" @click="showAddPromotionForm">Add Promotion</BButton>
-                <div v-if="showAddPromotionForm" class="mb-3">
-                    <BFormInput v-model="newPromotion.title" placeholder="Title" class="mb-2" />
-                    <BFormTextarea v-model="newPromotion.description" placeholder="Description" class="mb-2" />
+               
+                <BButton variant="success" class="ms-auto save-info-btn" @click="showPromotionForm">Add Promotion</BButton>
+                <div v-if="showAddPromotionForm" class="mb-4">
+                    <BFormInput v-model="discount" placeholder="Discount" class="mb-2" />
+                    <div>
+                        <label>Start Date : </label>
+                        <vue-date-picker v-model="startDate" id="startDate" :preview-format='format'></vue-date-picker>
+                    </div>
+
+                    <div>
+                        <label>End Date : </label>
+                        <vue-date-picker v-model="endDate" id="endDate" :preview-format='format'></vue-date-picker>
+                    </div>
                     <BButton variant="secondary" @click="cancelAddPromotion" class="delete-btn">Cancel</BButton>
-                    <BButton variant="primary" @click="saveAddPromotion" class="save-info-btn">Save</BButton>
+                    <BButton variant="primary" @click="addPromotion" class="save-info-btn">Save</BButton>
                 </div>
-                <Promotion :promotion="promotion" />
+                <Promotion ref="Promotion" :promotion="promotion" />
             </BTab>
             <BTab title="Reviews" >
                 <br>
@@ -52,8 +61,6 @@
     </div>
 </template>
 
-<style scoped src="../../assets/main.css">
-</style>
 
 <script>
 import Promotion from './Promotion.vue';
@@ -61,6 +68,11 @@ import ViewEmployee from './ViewEmployee.vue';
 import Policy from './Policy.vue';
 import GameRequest from './GameRequest.vue';
 import axios from 'axios';
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
+import dayjs from 'dayjs';
+
+
 const frontendURL = 'http://localhost:8087';
 const backendURL = 'http://localhost:8080';
 
@@ -71,8 +83,17 @@ const axiosClient = axios.create({
     // }
 });
 
+
+const format = (date) => {
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+
+  return `Selected date is ${day}/${month}/${year}`;
+}
 export default{
     components: {
+      VueDatePicker,
         Promotion,
         ViewEmployee,
         Policy,
@@ -96,8 +117,10 @@ export default{
                 description: '',
             },
             newPromotion: {
-                title: '',
+                discount: '',
                 description: '',
+                startDate: '',
+                endDate: '',
             },
             selectedEmployee: null,
             searchQuery: '',
@@ -141,18 +164,53 @@ export default{
             this.showAddPolicyForm = false;
             this.newPolicy = { title: '', description: '' };
         },
-        showAddPromotionForm() {
+        showPromotionForm() {
+            console.log('showAddPromotionForm called');
             this.showAddPromotionForm = true;
         },
         cancelAddPromotion() {
             this.showAddPromotionForm = false;
-            this.newPromotion = { title: '', description: '' };
+            this.newPromotion = { discount: '', description: '' };
         },
         saveAddPromotion() {
             // Add logic to save the new promotion
             this.showAddPromotionForm = false;
-            this.newPromotion = { title: '', description: '' };
+            console.log(this.endDate)
+            const date = new Date(this.endDate);
+            const formattedDate1 = dayjs(date).format('YYYY-MM-DD');
+            console.log(formattedDate1)
+            this.newPromotion = { discount: 'A', description: 'A' };
+            addPromotion();
         },
+
+
+        async addPromotion() {
+            let response = '';
+            const formattedStartDate = dayjs(new Date(this.startDate)).format('YYYY-MM-DD');
+            const formattedEndDate = dayjs(new Date(this.endDate)).format('YYYY-MM-DD');
+            const proomtion = {
+                    discount: this.discount,
+                    startDate: formattedStartDate,
+                    endDate:formattedEndDate,
+                };
+            try {
+                response = await axiosClient.post("/promotions", proomtion);
+                if (response.status === 200){
+                    console.log(response)
+                }
+
+            }catch (error){
+                alert(error.message);
+            }
+            await this.$refs.Promotion.fetchPromotions();
+            console.log(this.$refs.Promotion); // This should give you the component instance
+        },
+
+        async fetchPromotions() {
+            await this.$refs.Promotion.fetchPromotions();
+        }
+
+        
         
     }
 }

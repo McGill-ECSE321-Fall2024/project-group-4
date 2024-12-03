@@ -9,6 +9,7 @@ import ca.mcgill.ecse321.gameshop.serviceClasses.GameManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -334,5 +335,12 @@ public class GameManagementController {
     @PutMapping("/games/{gameId}/is_active")
     public void setGameActivity(@RequestParam boolean is_active, @PathVariable int gameId) {
         gameManagementService.updateActivity(gameId, is_active);
+    }
+
+    @GetMapping("/promotions")
+    public Set<PromotionResponseDTO> getAllPromotions() {
+        Set<PromotionResponseDTO> promotions = new HashSet<>();
+        gameManagementService.getAllPromotions().forEach(promotion -> promotions.add(new PromotionResponseDTO(promotion)));
+        return promotions;
     }
 }
