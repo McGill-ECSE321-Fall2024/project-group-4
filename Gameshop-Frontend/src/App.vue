@@ -195,7 +195,7 @@ function goLogout() {
   loggedIn.value = false;
   username.value = '';
   userRole.value = '';
-  router.push('/login');
+  router.push('/'); // Redirect to home
 }
 function goCart() {
   router.push('/cart');

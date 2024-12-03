@@ -5,7 +5,7 @@
             Account Settings
         </div>
 
-        <div class="shadow p-3 mb-5 bg-body rounded" > <!-- this is for customer -->
+        <div class="shadow p-3 mb-5 bg-body rounded" v-if="userRole=='customer'"> <!-- this is for customer -->
             <BForm > 
                 <div class="mb-3">
                     <BFormGroup  id="email-label" label="Email:" label-for="input-0">
@@ -110,16 +110,8 @@
             </BForm>
         </div>
 
-        <div class="shadow p-3 mb-5 bg-body rounded" > <!-- this is for employee -->
+        <div class="shadow p-3 mb-5 bg-body rounded" v-if="userRole=='employee'"> <!-- this is for employee -->
             <BForm > 
-                <div class="mb-3">
-                    <BFormGroup  id="email-label" label="Email:" label-for="input-0">
-                        <p class="text-secondary fst-italic" style="font-size:80%">
-                            * Note that you cannot change your email address after signing up.
-                        </p>
-                        <BFormInput id="input-0" type="text" readonly>{{ this.email }} </BFormInput>
-                    </BFormGroup>  
-                </div>  
 
                 <div class="mb-3">
                     <BFormGroup  id="username-label" label="Username:" label-for="input-1">
@@ -128,26 +120,30 @@
                 </div>  
 
                 <div class="mb-3">
-                    <BFormGroup  id="password-label" label="Password:" label-for="input-3">
-                        <BFormInput id="input-3" type="text" readonly>{{ this.password }} </BFormInput>
+                    <BFormGroup  id="old-password-label" label="Password:" label-for="input-3">
+                        <p class="text-secondary fst-italic" style="font-size:80%">
+                            * Note that you cannot change your password as an employee.
+                        </p>
+                        <BFormInput id="input-3" type="text" v-model="password" readonly >{{ this.password }} </BFormInput>
                     </BFormGroup>  
-                </div> 
+                </div>  
+
 
                 <BButton v-if="showSaveInfoButton" class="save-info-btn" @click="saveInfoEmployee">Save Info</BButton>
             </BForm>
         </div>
 
-        <div class="shadow p-3 mb-5 bg-body rounded"> <!-- this is for manager -->
+        <div class="shadow p-3 mb-5 bg-body rounded" v-if="userRole=='manager'"> <!-- this is for manager -->
             <BForm > 
                 <div class="mb-3">
                     <BFormGroup  id="username-label" label="Username:" label-for="input-1">
-                        <BFormInput id="input-1" type="text" readonly>{{ this.username }} </BFormInput>
+                        <BFormInput id="input-1" type="text" v-model="username" readonly>{{ this.username }} </BFormInput>
                     </BFormGroup>  
                 </div>  
 
                 <div class="mb-3">
                     <BFormGroup  id="password-label" label="Password:" label-for="input-3">
-                        <BFormInput id="input-3" type="text" readonly>{{ this.password }} </BFormInput>
+                        <BFormInput id="input-3" type="text" v-model="password" readonly>{{ this.password }} </BFormInput>
                     </BFormGroup>  
                 </div> 
 
@@ -180,6 +176,7 @@ export default {
         phoneNumber: '',
         oldPassword: '',
         newPassword: '',
+        password: '',
         addresses: [],
         showAddressForm: false,
         showCreditForm: false,
@@ -199,6 +196,11 @@ export default {
             country: '',
             postalCode: '',
         },
+        selectedEmployee: {
+            id: '',
+            username: '',
+            isActive: false,
+        },
         billingAddress: {
             street: '',
             city: '',
@@ -207,19 +209,41 @@ export default {
             postalCode: '',
         },
         changedField: '',
+        userRole: localStorage.getItem('userRole'),
     };
   },
   async created(){
         try {
             const accountId = parseInt(localStorage.getItem('accountId'));
             if (!isNaN(accountId)) {
-                const response = await axiosClient.get(`/accounts/customers/ids/${accountId}`);
-                const accountData = response.data;
-                this.username = accountData.username;
-                this.email = accountData.email;
-                this.phoneNumber = accountData.phoneNumber;
-                this.addresses = accountData.addresses;
-                this.creditCards = accountData.creditCards;
+                if (this.userRole == 'customer'){
+                    const response = await axiosClient.get(`/accounts/customers/ids/${accountId}`);
+                    const accountData = response.data;
+                    this.username = accountData.username;
+                    this.email = accountData.email;
+                    this.phoneNumber = accountData.phoneNumber;
+                    this.addresses = accountData.addresses;
+                    this.creditCards = accountData.creditCards;
+                } else if (this.userRole == 'employee'){
+                    const response = await axiosClient.get(`/accounts/employees/id/${accountId}`);
+                    const accountData = response.data;
+                    this.username = accountData.username;
+                    this.oldUsername = accountData.username;
+                    this.password = accountData.password;
+                    this.oldPassword = accountData.password;
+                } else if (this.userRole == 'manager'){
+                    const response = await axiosClient.get(`/accounts/managers/ids/${accountId}`);
+                    const accountData = response.data;
+                    this.username = accountData.username;
+                    this.password = accountData.password;
+                }
+                // const response = await axiosClient.get(`/accounts/customers/ids/${accountId}`);
+                // const accountData = response.data;
+                // this.username = accountData.username;
+                // this.email = accountData.email;
+                // this.phoneNumber = accountData.phoneNumber;
+                // this.addresses = accountData.addresses;
+                // this.creditCards = accountData.creditCards;
                 //console.log('HERE');
             } else {
                 console.error('Invalid account ID');
@@ -257,8 +281,14 @@ export default {
     },
     async saveInfoEmployee(){
         try {
-            const response = await axiosClient.put(`/accounts/employees/${this.username}/username/${username}`).then(this.$route.go());
-            console.log(response.data);
+            // const response = await axiosClient.put(`/accounts/employees/${this.username}/username/${username}`).then(this.$route.go());
+            // console.log(response.data);
+            let response;
+
+            if (this.changedField === 'username') {
+                response = await axiosClient.put(`/accounts/employees/${this.oldUsername}/username/${this.username}`).then(this.$router.go());
+            } 
+            this.showSaveInfoButton = false;
         } catch (error) {
             console.error('Error saving info:', error);
         }
