@@ -8,6 +8,7 @@ import Wishlist from '../components/AccountManagement/Wishlist.vue'
 import Cart from '../components/GameManagement/Cart.vue'
 import ManageCenter from '@/components/AccountManagement/ManageCenter.vue'
 import PurchaseHistory from "@/components/GameManagement/PurchaseHistory.vue";
+import RefundRequest from "@/components/GameManagement/RefundRequest.vue";
  
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -55,6 +56,11 @@ const router = createRouter({
       path: '/history',
       name: 'purchase-history',
       component: PurchaseHistory,
+    },
+    {
+      path: '/refund-requests',
+      name: 'refund-requests',
+      component: RefundRequest,
     }
     
   ],

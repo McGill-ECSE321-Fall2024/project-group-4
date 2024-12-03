@@ -101,7 +101,6 @@ public class AccountManagementController {
 
     @GetMapping("/customers/ids/{customerId}")
     public CustomerResponseDTO getCustomerById(@PathVariable int customerId) {
-        System.out.println("Customer ID: " + customerId);
         return new CustomerResponseDTO(accountManagementService.getCustomerById(customerId));
     }
 
@@ -314,19 +313,5 @@ public class AccountManagementController {
         return new AddressResponseDTO(accountManagementService.createAddress(address.street(), address.city(), address.province(),
                 address.postalCode(), address.country(), customerEmail));
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 

@@ -112,8 +112,7 @@ export default{
         },
         async loginCustomer(){
             try{
-                const passwordEntered = this.password;
-                const response = await axiosClient.post(`accounts/login/customers/${this.email}`,passwordEntered, {
+                const response = await axiosClient.post(`accounts/login/customers/${this.email}`,this.password, {
                 headers: {
                     'Content-Type': 'text/plain',  // Set Content-Type to text/plain
                 },});
@@ -139,14 +138,17 @@ export default{
 
         async loginEmployee() {
             try{
-                const response = await axiosClient.post(`/login/employees/${this.username}`, {password : this.password});
+                const response = await axiosClient.post(`accounts/login/employees/${this.username}`,this.password, {
+                  headers: {
+                    'Content-Type': 'text/plain',  // Set Content-Type to text/plain
+                  },});
+                console.log(response.data)
 
                 if (response.status === 200){
                     this.setLoggedIn(true);
                     this.setUsername(response.data.username);
                     this.setAccountId(response.data.id);
-                    this.$root.setEmail(response.data.email);
-                    this.$root.setUserRole('customer');
+                    this.setEmail(response.data.email);
 
                     localStorage.setItem('userRole', 'employee');
                     this.userRole = 'employee';
@@ -162,9 +164,7 @@ export default{
         },
         async loginManager(){
             try{
-                const passwordEntered = this.password;
-                console.log(this.user)
-                const response = await axiosClient.post(`accounts/login/manager/${this.username}`,passwordEntered, {
+                const response = await axiosClient.post(`accounts/login/manager/${this.username}`,this.password, {
                 headers: {
                     'Content-Type': 'text/plain',  // Set Content-Type to text/plain
                 },});
