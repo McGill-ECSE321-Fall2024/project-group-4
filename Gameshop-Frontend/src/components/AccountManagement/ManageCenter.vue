@@ -12,6 +12,8 @@
             </BTab>
             <BTab title="Game Requests" >
                 <br>
+                <GameRequest :gameRequests="gameRequests"/>
+
             </BTab>
             <BTab title="Policies" >
                 <br>
@@ -64,6 +66,7 @@
 import Promotion from './Promotion.vue';
 import ViewEmployee from './ViewEmployee.vue';
 import Policy from './Policy.vue';
+import GameRequest from './GameRequest.vue';
 import axios from 'axios';
 const frontendURL = 'http://localhost:8087';
 const backendURL = 'http://localhost:8080';
@@ -80,6 +83,7 @@ export default{
         Promotion,
         ViewEmployee,
         Policy,
+        GameRequest,
     },
     data(){
         return{
@@ -89,6 +93,7 @@ export default{
                 username: '',
                 is_active: false,
             },
+            gameRequests: [],
             employees: [],
             showAddForm: false,
             showAddPolicyForm: false,

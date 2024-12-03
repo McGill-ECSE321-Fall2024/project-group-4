@@ -356,7 +356,7 @@ public class PurchaseManagementService {
 
         });
         gameRepository.saveAll(gamesInCart);
-        itemsInCart.stream().forEach(item -> {
+        itemsInCart.forEach(item -> {
             while (item.getQuantity()>0) {
                 Purchase purchase = new Purchase(dateOfPurchase,getPromotionalPrice(item.getGame().getId()),item.getGame(),customer,address,creditCard);
                 purchaseRepository.save(purchase);
