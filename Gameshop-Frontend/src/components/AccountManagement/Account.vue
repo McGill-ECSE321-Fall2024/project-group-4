@@ -270,8 +270,7 @@ export default {
       this.showCreditForm = !this.showCreditForm;
     },
     deleteAddress(index) {
-      this.addresses.splice(index, 1);
-      // Optionally, you can also send a request to the backend to delete the address from the database
+      const toDelete = this.addresses.splice(index, 1);
     },
     async saveAddress(){
         if (
@@ -284,19 +283,19 @@ export default {
             alert('Please fill in all address fields.');
             return;
         }
-        const address = this.newAddress.street + ', ' + this.newAddress.city + ', ' + this.newAddress.province + ', ' + this.newAddress.country + ', ' + this.newAddress.postalCode;
-        this.addresses.push(address);
 
         try{
             const response = await axiosClient.post(`/accounts/customers/${this.email}/addresses`, {
+                id : null,
                 street : this.newAddress.street,
                 city : this.newAddress.city,
                 province : this.newAddress.province,
                 country : this.newAddress.country,
                 postalCode : this.newAddress.postalCode
-            }).then(this.$route.go());
+            }).then(this.$router.go());
         } catch(error) {
             console.error(error);
+            alert(error);
         }
 
         this.showAddressForm = false;
@@ -309,9 +308,6 @@ export default {
         };
     },
     async saveCredit(){
-        this.saveCreditCard();
-    },
-    async saveCreditCard(){
         if (
             !this.newCreditCard.cardNumber ||
             !this.newCreditCard.expiryDate ||
@@ -321,20 +317,17 @@ export default {
             alert('Please fill in all credit card fields.');
             return;
         }
-        cardAddress = this.newCreditCard.billingAddress;
-        const creditCard = this.newCreditCard.cardNumber + ', ' + this.newCreditCard.expiryDate + ', ' + this.newCreditCard.cvv + ', ' + this.newCreditCard.billingAddress;
-        this.creditCards.push(creditCard);
 
         try{
             const response = await axiosClient.post(`/customers/${this.email}/credit-cards`, {
                 cardNumber : parseInt(this.newCreditCard.cardNumber),
                 cvv : parseInt(this.newCreditCard.cvv),
-                expiryDate : this.creditCard.expiryDate,
-                billingAddress : cardAddress
-            }).then(this.$route.go());
+                expiryDate : this.newCreditCard.expiryDate,
+                billingAddress : this.newCreditCard.billingAddress
+            });//.then(this.$router.go());
             console.log(response.data);
         } catch(error) {
-            console.error(error);
+            alert(error);
         }
 
         this.showCreditForm = false;
@@ -347,7 +340,7 @@ export default {
     },
     async deleteCard(index, creditCard){
         try {
-            await axiosClient.delete(`/customers/${this.email}}/credit-cards/${this.creditCard.id}`).then(this.$route.go());
+            await axiosClient.delete(`/customers/${this.email}}/credit-cards/${this.creditCard.id}`).then(this.$router.go());
         } catch (error) {
             console.error('Error deleting credit card:', error);
         }
