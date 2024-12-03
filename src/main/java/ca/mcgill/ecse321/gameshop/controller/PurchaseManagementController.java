@@ -191,4 +191,19 @@ public class PurchaseManagementController {
         return purchaseManagementService.getCartPrice(customerEmail);
     }
 
+    @PostMapping("purchases/{purchaseId}/refund")
+    public void createRefundRequest(@PathVariable int purchaseId, @RequestBody String reason){
+        purchaseManagementService.requestRefund(purchaseId, reason);
+    }
+
+    @PostMapping("purchases/refunds/{refundId}/status/{approveDeny}")
+    public void approveDenyRefundRequest(@PathVariable int refundId, @PathVariable String approveDeny){
+        if(approveDeny.equals("approve")){
+            purchaseManagementService.approveRefund(refundId);
+        } else if(approveDeny.equals("deny")){
+            purchaseManagementService.denyRefund(refundId);
+        } else{
+            throw new IllegalArgumentException("Status must be either 'approve' or 'deny'");
+        }
+    }
 }
