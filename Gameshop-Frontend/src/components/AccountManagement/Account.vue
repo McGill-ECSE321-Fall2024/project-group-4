@@ -87,26 +87,12 @@
                         <BFormInput id="expiryDate" type="date" v-model="newCreditCard.expiryDate" placeholder="Expiry Date" /><br />
                         <BFormInput id="cvv" type="text" v-model="newCreditCard.cvv" placeholder="CVV" /><br />
                         <BFormGroup id="billingAddress-label" label="Billing Address:">
-                            <BFormSelect v-model="useExistingAddress">
-                                <BFormSelectOption :value="true">Use Existing Address</BFormSelectOption>
-                                <BFormSelectOption :value="false">Enter New Address</BFormSelectOption>
+                        <BFormSelect v-model="newCreditCard.billingAddress">
+                            <BFormSelectOption value="" disabled>Select an address</BFormSelectOption>
+                            <BFormSelectOption v-for="(address, index) in addresses" :key="index" :value="address">
+                            {{ address }}
+                            </BFormSelectOption>
                             </BFormSelect>
-                            <br>
-                            <div v-if="useExistingAddress">
-                                <BFormSelect v-model="newCreditCard.billingAddress">
-                                    <BFormSelectOption value="" disabled>Select an address</BFormSelectOption>
-                                    <BFormSelectOption v-for="(address, index) in addresses" :key="index" :value="address">
-                                    {{ address }}
-                                    </BFormSelectOption>
-                                </BFormSelect>
-                            </div>
-                            <div v-else>
-                                <BFormInput id="street" type="text" v-model="billingAddress.street" placeholder="Street" /><br />
-                                <BFormInput id="city" type="text" v-model="billingAddress.city" placeholder="City" /><br />
-                                <BFormInput id="province" type="text" v-model="billingAddress.province" placeholder="Province" /><br />
-                                <BFormInput id="country" type="text" v-model="billingAddress.country" placeholder="Country" /><br />
-                                <BFormInput id="postalCode" type="text" v-model="billingAddress.postalCode" placeholder="Postal Code" />
-                            </div>
                         </BFormGroup>
                     </BFormGroup>
                     <br>
@@ -183,16 +169,16 @@ export default {
     // const accountData = axiosClient.get(`/accounts/customers/ids`, parseInt(localStorage.getItem('accountId')));
     return {
         id: '',
-        email: '',//accountData.email,
-        username: '',//accountData.username,
-        phoneNumber: '',//accountData.phoneNumber,
-        password: '',//accountData.password,
-        addresses: [],//accountData.addresses,
+        email: '',
+        username: '',
+        phoneNumber: '',
+        password: '',
+        addresses: [],
         showAddressForm: false,
         showCreditForm: false,
         useExistingAddress: true,
         showSaveInfoButton: false,
-        creditCards: [],//accountData.creditCards,
+        creditCards: [],
         newCreditCard: {
             cardNumber: '',
             expiryDate: '',
@@ -228,7 +214,7 @@ export default {
                 this.password = accountData.password;
                 this.addresses = accountData.addresses;
                 this.creditCards = accountData.creditCards;
-                console.log('HERE');
+                //console.log('HERE');
             } else {
                 console.error('Invalid account ID');
             }
@@ -314,24 +300,6 @@ export default {
         };
     },
     async saveCredit(){
-        if (this.useExistingAddress){
-            if (!this.newCreditCard.cardNumber || !this.newCreditCard.expiryDate || !this.newCreditCard.cvv || !this.newCreditCard.billingAddress){
-                alert('Please fill in all credit card fields.');
-                return;
-            }
-        } else{
-            if (
-                !this.billingAddress.street ||
-                !this.billingAddress.city ||
-                !this.billingAddress.province ||
-                !this.billingAddress.country ||
-                !this.billingAddress.postalCode
-            ) {
-                alert('Please fill in all address fields.');
-                return;
-            }
-            this.newCreditCard.billingAddress = this.billingAddress.street + ', ' + this.billingAddress.city + ', ' + this.billingAddress.province + ', ' + this.billingAddress.country + ', ' + this.billingAddress.postalCode;
-        }
         this.saveCreditCard();
     },
     async saveCreditCard(){
@@ -344,7 +312,7 @@ export default {
             alert('Please fill in all credit card fields.');
             return;
         }
-
+        cardAddress = this.newCreditCard.billingAddress;
         const creditCard = this.newCreditCard.cardNumber + ', ' + this.newCreditCard.expiryDate + ', ' + this.newCreditCard.cvv + ', ' + this.newCreditCard.billingAddress;
         this.creditCards.push(creditCard);
 
@@ -353,9 +321,7 @@ export default {
                 cardNumber : parseInt(this.newCreditCard.cardNumber),
                 cvv : parseInt(this.newCreditCard.cvv),
                 expiryDate : this.creditCard.expiryDate,
-                billingAddress : {
-                     // NOT FUNCTIONAL
-                }
+                billingAddress : cardAddress
             }).then(this.$route.go());
             console.log(response.data);
         } catch(error) {
@@ -369,24 +335,10 @@ export default {
             cvv: '',
             billingAddress: '',
         };
-        this.billingAddress = {
-            street: '',
-            city: '',
-            province: '',
-            country: '',
-            postalCode: '',
-        };
     },
     async deleteCard(index, creditCard){
-        //method not working yet!!!
         try {
-            await axiosClient.delete(`/customers/${this.email}}/credit-cards/{this.creditCard}`, { // NOT WORKING
-            data: {
-                email: this.email,
-                creditCard: creditCard,
-            },
-            }).then(this.$route.go());
-            //this.creditCards.splice(index, 1);
+            await axiosClient.delete(`/customers/${this.email}}/credit-cards/${this.creditCard.id}`).then(this.$route.go());
         } catch (error) {
             console.error('Error deleting credit card:', error);
         }
