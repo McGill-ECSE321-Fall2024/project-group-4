@@ -106,6 +106,21 @@ export default{
     },
    
     methods:{
+        async createManager(){
+            try {
+                const response = await axiosClient.post('/accounts/manager', {
+                headers: {
+                    'Content-Type': 'application/json',  // Set Content-Type to application/json
+                },
+                });
+                if (response.status === 200) {
+                console.log('Manager account created successfully');
+                }
+            } catch (error) {
+                console.error('Error creating manager account:', error);
+            }
+        },
+        
 
         logCustomSelect(){
             console.log(this.customSelect);
@@ -163,6 +178,7 @@ export default{
             }
         },
         async loginManager(){
+
             try{
                 const response = await axiosClient.post(`accounts/login/manager/${this.username}`,this.password, {
                 headers: {
@@ -175,7 +191,7 @@ export default{
                   localStorage.setItem('userRole', 'manager');
                     this.userRole = 'manager';
                     this.clearInputs();
-                    // this.$router.push('/');
+                    this.$router.push('/');
                 } else{
                     console.log('Login unsuccessful');
                 }
@@ -222,6 +238,9 @@ export default{
           return localStorage.getItem('email');
         },
 
+    },
+    mounted(){
+        this.createManager();
     }
 }
 
