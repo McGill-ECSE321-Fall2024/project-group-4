@@ -198,8 +198,6 @@ export default{
             await this.$refs.Promotion.fetchPromotions();
         }
 
-        
-        
     }
 }
 
