@@ -17,7 +17,7 @@
       <BButton variant="secondary" @click="cancelAddPolicy" size="sm" class="delete-btn">Cancel</BButton>
       <BButton variant="primary" @click="saveAddPolicy" size="sm" class="save-info-btn">Save</BButton>
     </div>
-    <BTable :items="policies" :fields="fields">
+    <BTable :items="filteredPolicies" :fields="fields">
       <template #cell(description)="data">
         <div v-if="selectedPolicy && selectedPolicy.id === data.item.id">
           <BFormInput v-model="selectedPolicy.description" class="mb-2" />
@@ -82,6 +82,16 @@ export default {
       selectedPolicy: null,
     };
   },
+  computed: {
+        filteredPolicies() {
+            return this.policies.filter(policy => {
+                const searchTerm = this.searchQuery.toLowerCase();
+          
+                return policy.id.toString().includes(searchTerm);
+               
+            });        
+        },
+    },
   methods: {
     async fetchPolicies() {
       try {
