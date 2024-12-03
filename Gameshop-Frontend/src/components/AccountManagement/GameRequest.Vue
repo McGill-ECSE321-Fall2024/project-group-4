@@ -8,7 +8,7 @@
                 class="me-2"
             />
         <BButton type="submit" class="search-btn" @click="searchRequests">Search</BButton>
-      <BButton variant="success" class="ms-auto save-info-btn" @click="showAddGameRequestForm">+</BButton><br>
+      <!-- <BButton variant="success" class="ms-auto save-info-btn" @click="showAddGameRequestForm">+</BButton><br> -->
       </div>
       <div v-if="showAddForm" class="mb-3">
         <br>
@@ -122,53 +122,49 @@ export default {
         requestorId: '',
       };
     },
-    async saveAddGameRequest() {
-      const gameRequestDTO = {
-        externalReview: this.newGameRequest.externalReview,
-        game: { id: this.newGameRequest.gameId },
-        requestor: { id: this.newGameRequest.requestorId },
-      };
+    // async saveAddGameRequest() {
+    //   const gameRequestDTO = {
+    //     externalReview: this.newGameRequest.externalReview,
+    //     game: { id: this.newGameRequest.gameId },
+    //     requestor: { id: this.newGameRequest.requestorId },
+    //   };
+    //   try {
+    //     const response = await axiosClient.post('/gameRequests', gameRequestDTO);
+    //     if (response.status === 200) {
+    //       this.$emit('update:gameRequests', [...this.gameRequests, response.data]);
+    //       this.showAddForm = false;
+    //       this.newGameRequest = {
+    //         externalReview: '',
+    //         gameId: '',
+    //         requestorId: '',
+    //       };
+    //     }
+    //   } catch (error) {
+    //     console.error('Error creating game request:', error);
+    //   }
+    // },
+    async approveGameRequest(gameRequestId) {
       try {
-        const response = await axiosClient.post('/gameRequests', gameRequestDTO);
+        const response = await axiosClient.put(`/gameRequests/${gameRequestId}/requestStatus`, {status: 'approve' });
         if (response.status === 200) {
-          this.$emit('update:gameRequests', [...this.gameRequests, response.data]);
-          this.showAddForm = false;
-          this.newGameRequest = {
-            externalReview: '',
-            gameId: '',
-            requestorId: '',
-          };
+          console.log('Game request approved');
+          this.$router.go();
         }
       } catch (error) {
-        console.error('Error creating game request:', error);
+        console.error('Error approving game request:', error);
       }
     },
-    // async approveGameRequest(gameRequestId) {
-    //   try {
-    //     const response = await axiosClient.put(`/gameRequests/${gameRequestId}/requestStatus`, null, {
-    //       params: { status: 'approve' },
-    //     });
-    //     if (response.status === 200) {
-    //       console.log('Game request approved');
-    //       // Update the gameRequests list or notify the user
-    //     }
-    //   } catch (error) {
-    //     console.error('Error approving game request:', error);
-    //   }
-    // },
-    // async rejectGameRequest(gameRequestId) {
-    //   try {
-    //     const response = await axiosClient.put(`/gameRequests/${gameRequestId}/requestStatus`, null, {
-    //       params: { status: 'reject' },
-    //     });
-    //     if (response.status === 200) {
-    //       console.log('Game request rejected');
-    //       // Update the gameRequests list or notify the user
-    //     }
-    //   } catch (error) {
-    //     console.error('Error rejecting game request:', error);
-    //   }
-    // },
+    async rejectGameRequest(gameRequestId) {
+      try {
+        const response = await axiosClient.put(`/gameRequests/${gameRequestId}/requestStatus`, { status: 'reject' });
+        if (response.status === 200) {
+          console.log('Game request rejected');
+          this.$router.go();
+        }
+      } catch (error) {
+        console.error('Error rejecting game request:', error);
+      }
+    },
     
   }
 
