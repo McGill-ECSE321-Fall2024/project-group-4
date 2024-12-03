@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -108,6 +109,13 @@ public class PurchaseManagementService {
         }
         throw new EntityNotFoundException("No Review found with id " + reviewId);
     }
+
+    public Set<Review> getAllReviews(){
+        Set<Review> set = new HashSet<>();
+        reviewRepository.findAll().forEach(set::add);
+        return set;
+    }
+
     /**
      * @param email of the customer to find
      * @return The customer with the associated email

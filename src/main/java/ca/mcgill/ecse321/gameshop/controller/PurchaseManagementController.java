@@ -34,6 +34,12 @@ public class PurchaseManagementController {
         return new ReviewDTO(purchaseManagementService.findReviewById(reviewId));
     }
 
+    @GetMapping("/reviews")
+    public List<ReviewDTO> getAllReviews() {
+        return purchaseManagementService.getAllReviews().stream().map(ReviewDTO::new)
+                .collect(Collectors.toList());
+    }
+
     /**
      * Like a review
      *
