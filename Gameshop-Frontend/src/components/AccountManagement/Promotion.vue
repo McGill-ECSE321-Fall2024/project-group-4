@@ -30,9 +30,6 @@ const loadPromotions = () => {
 };
 
 
-
-
-
 export default {
   name: "Promotion",
   props: {
@@ -49,8 +46,8 @@ export default {
   data(){
     return{
         promotions: [
-            { promotionId: 1, game: 'Game1', discount: 10, start_date: '2021-10-01', end_date: '2021-10-31' },
-            { promotionId: 2, game: 'Game2', discount: 20, start_date: '2021-10-01', end_date: '2021-10-31' },
+            // { promotionId: 1, game: 'Game1', discount: 10, start_date: '2021-10-01', end_date: '2021-10-31' },
+            // { promotionId: 2, game: 'Game2', discount: 20, start_date: '2021-10-01', end_date: '2021-10-31' },
         ],
         fields2: [
             {key: 'promotionId', label: 'ID', sortable: true},
