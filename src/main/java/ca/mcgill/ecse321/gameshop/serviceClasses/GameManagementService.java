@@ -61,6 +61,9 @@ public class GameManagementService {
 
         if(existingCartItemOpt.isPresent()){
             CartItem existingCartItem = existingCartItemOpt.get();
+            if(existingCartItem.getQuantity() >= gameToAdd.getStock()){
+                throw new IllegalArgumentException("Quantity in cart exceeds available inventory");
+            }
             existingCartItem.setQuantity(existingCartItem.getQuantity()+1);
             cartItemRepository.save(existingCartItem);
         } else {

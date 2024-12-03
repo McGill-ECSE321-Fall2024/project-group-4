@@ -17,12 +17,16 @@ public record GameResponseDTO(
         float price,
         boolean isActive,
         int stock,
-        Set<CategoryResponseDTO> categories) implements Serializable {
+        Set<CategoryResponseDTO> categories,
+        Set<PromotionResponseDTO> promotions
+
+) implements Serializable {
 
     public GameResponseDTO(Game game) {
         this(game.getId(), game.getName(), game.getDescription(), game.getCoverPicture(), game.getPrice(),
                 game.isActive(), game.getStock(),
-                game.getCopyCategories().stream().map(CategoryResponseDTO::new).collect(Collectors.toSet())
+                game.getCopyCategories().stream().map(CategoryResponseDTO::new).collect(Collectors.toSet()),
+                game.getCopyPromotions().stream().map(PromotionResponseDTO::new).collect(Collectors.toSet())
         );
     }
 }

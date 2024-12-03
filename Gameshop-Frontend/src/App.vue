@@ -11,7 +11,6 @@
           <BCollapse id="nav-collapse" is-nav >
             <BNavbarNav>
               <BNavItem @click="goCatalogue" class="BNavItem">Catalogue</BNavItem>
-              <BNavItem @click="goRefundRequests" class="BNavItem">Refund Requests</BNavItem>
               <BNavItem @click="goReviews" class="BNavItem">Reviews</BNavItem>
             </BNavbarNav>
             <!-- Right aligned nav items -->

@@ -16,7 +16,8 @@ public record PurchaseDTO (int id, LocalDate purchaseDate, float purchasePrice, 
                 new CustomerResponseDTO(purchase.getCustomer()),
                 new AddressResponseDTO(purchase.getDeliveryAddress()),
                 new CreditCardResponseDTO(purchase.getPaymentMethod()),
-                new ReviewDTO(purchase.getReview()),
-                new RefundRequestDTO(purchase.getRefundRequest()));
+                purchase.getReview() != null ? new ReviewDTO(purchase.getReview()) : null,
+                purchase.getRefundRequest() != null ? new RefundRequestDTO(purchase.getRefundRequest()) : null
+                );
     }
 }

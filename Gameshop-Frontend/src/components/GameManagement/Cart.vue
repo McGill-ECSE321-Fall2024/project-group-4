@@ -97,9 +97,11 @@ const getTotalPrice = async () => {
       }
     };
 
-const checkout = () => {
-  alert(`Checkout successful! Total: $${totalPrice.value.toFixed(2)}`);
-  // Replace alert with actual checkout logic, such as an API POST request
+const checkout = async () => {
+  const response = await fetch(`http://localhost:8080/customers/${localStorage.getItem('email')}/cart?billingAddressId=1&creditCardId=1`, {
+    method: "POST",
+  })
+  console.log(response)
 };
 
 onMounted(fetchCart);
