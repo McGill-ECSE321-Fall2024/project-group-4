@@ -81,7 +81,7 @@ public class AccountManagementController {
      *
      * @author Tarek Namani
      */
-    @GetMapping("/customers/")
+    @GetMapping("/customers")
     public Set<CustomerResponseDTO> getCustomers() {
         return accountManagementService.getSetOfCustomers().stream().map(CustomerResponseDTO::new).collect(Collectors.toSet());
     }
@@ -125,7 +125,7 @@ public class AccountManagementController {
      *
      * @author Tarek Namani
      */
-    @PostMapping("/manager/")
+    @PostMapping("/manager")
     public ManagerDTO createManager() {
         return new ManagerDTO(accountManagementService.createManager());
     }
@@ -137,7 +137,7 @@ public class AccountManagementController {
      *
      * @author Tarek Namani
      */
-    @GetMapping("/employees/")
+    @GetMapping("/employees")
     public Set<EmployeeResponseDTO> getEmployees() {
         return accountManagementService.getSetOfEmployees().stream().map(EmployeeResponseDTO::new).collect(Collectors.toSet());
     }
