@@ -609,7 +609,9 @@ public class GameManagementService {
     @Transactional
     public Set<Promotion> getAllPromotions() {
         Set<Promotion> promotionSet = new HashSet<>();
-        promotionRepository.findAll().forEach(promotionSet::add);
+        if (promotionRepository.findAll().iterator().hasNext()) {
+            promotionRepository.findAll().forEach(promotionSet::add);
+        }
         return promotionSet;
     }
 
