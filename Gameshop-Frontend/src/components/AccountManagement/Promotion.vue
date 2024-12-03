@@ -2,7 +2,6 @@
   <div class="promotion">
     <br />
     <BTable :items="promotions" :fields="fields2">
-      <!-- Scoped slot for the actions column -->
       <template #cell(actions)="row">
         <div class="d-flex align-items-center justify-content-between">
           <BButton variant="danger" @click="deletePromotion(row.item.promotionId)">
