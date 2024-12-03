@@ -12,7 +12,7 @@
                         <p class="text-secondary fst-italic" style="font-size:80%">
                             * Note that you cannot change your email address after signing up.
                         </p>
-                        <BFormInput id="input-0" type="text" v-model="email" readonly>{{ this.email }} </BFormInput>
+                        <BFormInput id="input-0" type="text" v-del="email" readonly>{{ this.email }} </BFormInput>
                     </BFormGroup>  
                 </div>  
 
@@ -75,7 +75,7 @@
                     <BListGroup v-if="creditCards.length">
                         <BListGroupItem v-for="(creditCard, index) in creditCards" :key="index">
                         {{ creditCard }}
-                        <BButton class="delete-btn" @click="deleteCard(index, creditCard)" variant="danger" size="sm">Delete</BButton>
+                        <BButton class="delete-btn" @click="deleteCard(creditCard.id)" variant="danger" size="sm">Delete</BButton>
                         </BListGroupItem>
                     </BListGroup>
                     <p v-else class="text-secondary fst-italic" style="font-size:80%">
@@ -336,6 +336,18 @@ export default {
             country: '',
             postalCode: '',
         };
+    },async fetchCreditCards() { 
+        let response ="";
+        try {
+            response = axiosClient.get(`/customers/${this.email}/credit-cards`);
+            if (response.status === 200) {
+                log(response.data);
+                this.creditCards = response.data;
+                return response.data;
+            }
+        } catch (error) {
+            alert(error.response?.data?.errorMessages || error.message || "Something went wrong"); 
+        }
     },
     async saveCredit(){
         if (
@@ -347,18 +359,18 @@ export default {
             alert('Please fill in all credit card fields.');
             return;
         }
-        const addressJson = JSON.parse(this.newCreditCard.billingAddress);
-        console.log(addressJson);
+        console.log(this.newCreditCard.billingAddress);
         try{
             const response = await axiosClient.post(`/customers/${this.email}/credit-cards`, {
                 cardNumber : parseInt(this.newCreditCard.cardNumber),
                 cvv : parseInt(this.newCreditCard.cvv),
                 expiryDate : new Date(this.newCreditCard.expiryDate),
-                billingAddress : JSON.parse(this.newCreditCard.billingAddress)
+                billingAddress :(this.newCreditCard.billingAddress)
             });//.then(this.$router.go());
             console.log(response.data);
+            await this.fetchCreditCards();
         } catch(error) {
-            alert(error);
+            alert(error.response?.data?.errorMessages || error.message || "Something went wrong"); 
         }
 
         this.showCreditForm = false;
@@ -369,14 +381,17 @@ export default {
             billingAddress: '',
         };
     },
-    async deleteCard(index, creditCard){
+    async deleteCard(cardId){
         try {
-            await axiosClient.delete(`/customers/${this.email}}/credit-cards/${this.creditCard.id}`).then(this.$router.go());
+            await axiosClient.delete(`/customers/${this.customerEmail}}/credit-cards/${cardId}`).then(this.$router.go());
+            await fetchCreditCards();
         } catch (error) {
-            console.error('Error deleting credit card:', error);
+            alert(error.response?.data?.errorMessages || error.message || "Something went wrong"); 
         }
     },
 
-},
+},async mounted() {
+    await this.fetchCreditCards();
+}
 };
 </script>
