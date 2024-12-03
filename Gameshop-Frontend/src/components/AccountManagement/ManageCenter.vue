@@ -201,7 +201,7 @@ export default{
                 }
 
             }catch (error){
-                alert(error.message);
+                alert(error.response?.data?.errorMessages || error.message || "Something went wrong");
             }
             await this.$refs.Promotion.fetchPromotions();
         },

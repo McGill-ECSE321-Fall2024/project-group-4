@@ -12,25 +12,31 @@
               Edit
             </b-dropdown-item>
           </b-Dropdown>
-   
-          <b-Dropdown text="Add games to promotions" variant="primary" class="ml-2">
-  <b-dropdown-item 
-    v-for="game in games" 
-    :key="game.id" 
-    @click="addGameToPromotion(row.item.promotionId, game.id)"
-    :class="{'added': isGameInPromotion(game, row.item.promotionId)}">
-    {{ game.name }}
-  </b-dropdown-item>
-</b-Dropdown>
+          <b-Dropdown text="Add/Remove games from promotion" variant="primary" class="ml-2">
+            <template v-for="(game) in this.games">
+                        <b-dropdown-item>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>{{ game.name }}</span>
+                            <b-button
+                            size="sm"
+                            @click="addGameToPromotion(row.item.id, game.id)"
+                            variant="primary"
+                            class="ml-2"
+                            >
+                            +
+                            </b-button>
 
-<b-Dropdown text="Remove games from promotions" variant="danger" class="ml-2">
-  <b-dropdown-item 
-    v-for="game in games" 
-    :key="game.id" 
-    @click="removeGameFromPromotion(row.item.promotionId, game.id)"
-    :class="{'added': isGameInPromotion(game, row.item.promotionId)}">
-    {{ game.name }}
-  </b-dropdown-item>
+                            <b-button
+                            size="sm"
+                            @click="removeGameFromPromotion(row.item.id, game.id)"
+                            variant="danger"
+                            class="ml-2"
+                            >
+                            -
+                            </b-button>
+                        </div>
+                        </b-dropdown-item>
+          </template>
 </b-Dropdown>
 
         </div>
@@ -132,7 +138,7 @@ export default {
             });// Check the transformed promotions array
         }
     } catch (error) {
-        alert(error.message); // Show error if any
+         alert(error.response?.data?.errorMessages || error.message || "Something went wrong"); // Show error if any
     }
 
     
@@ -152,7 +158,7 @@ export default {
       await this.fetchPromotions();
     }
   } catch (error) {
-    alert(error.message);
+     alert(error.response?.data?.errorMessages || error.message || "Something went wrong");
   }
        
     },async fetchGames() {
@@ -165,7 +171,7 @@ export default {
       games = response.data
     }
   } catch (error) {
-    alert(error.message);
+     alert(error.response?.data?.errorMessages || error.message || "Something went wrong");
   }   
       return games.filter((game) => game.isActive);
 
@@ -177,7 +183,7 @@ export default {
       if (response.status === 200) {
       }
       } catch (error) {
-      alert(error.message);
+       alert(error.response?.data?.errorMessages || error.message || "Something went wrong");
       }   
     },async removeGameFromPromotion(promotionId, gameId) {
       const uri = `/games/${gameId}/promotions/${promotionId}`
@@ -187,7 +193,7 @@ export default {
       if (response.status === 200) {
       }
       } catch (error) {
-      alert(error.message);
+       alert(error.response?.data?.errorMessages || error.message || "Something went wrong");
       }   
     },
     isGameInPromotion(game, promotionId) {

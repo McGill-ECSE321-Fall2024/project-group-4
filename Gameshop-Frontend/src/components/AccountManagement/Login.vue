@@ -147,7 +147,7 @@ export default{
                 }
 
             } catch (error){
-                alert(error.message);
+                alert(error.response?.data?.errorMessages || error.message || "Something went wrong");
             }
         },
 
@@ -174,7 +174,7 @@ export default{
                 }
 
             } catch (error){
-                alert(error.message);
+                alert(error.response?.data?.errorMessages || error.message || "Something went wrong");
             }
         },
         async loginManager(){
@@ -197,7 +197,7 @@ export default{
                 }
 
             } catch (error){
-                alert(error.message);
+                alert(error.response?.data?.errorMessages || error.message || "Something went wrong");
             }
         },
 

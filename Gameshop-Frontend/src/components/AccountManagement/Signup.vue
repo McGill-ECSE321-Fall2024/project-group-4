@@ -114,7 +114,7 @@ export default{
                 console.log(response) ;
 
             } catch(error){
-                alert(error.message)
+                alert(error.response?.data?.errorMessages || error.message || "Something went wrong");
             }
        },
 
