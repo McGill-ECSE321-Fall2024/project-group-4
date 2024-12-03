@@ -17,13 +17,6 @@
             </BTab>
             <BTab title="Policies" >
                 <br>
-                <BButton variant="success" class="ms-auto save-info-btn" @click="showAddPolicyForm">Add Policy</BButton>
-                <div v-if="showAddPolicyForm" class="mb-3">
-                    <BFormInput v-model="newPolicy.title" placeholder="Title" class="mb-2" />
-                    <BFormTextarea v-model="newPolicy.description" placeholder="Description" class="mb-2" />
-                    <BButton variant="secondary" @click="cancelAddPolicy" class="delete-btn">Cancel</BButton>
-                    <BButton variant="primary" @click="saveAddPolicy" class="save-info-btn">Save</BButton>
-                </div>
                 <Policy :policy="policy" />
             </BTab>
             <BTab title="Promotions" >
