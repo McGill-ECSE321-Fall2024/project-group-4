@@ -49,8 +49,8 @@ const router = createRouter({
       path: '/manage-center',
       name: 'manage-center',
       component: ManageCenter
-    }
-    
+    },
+
   ],
 })
 
