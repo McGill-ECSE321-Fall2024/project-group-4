@@ -47,24 +47,14 @@
 
 <script>
 import axios from 'axios';
-const frontendURL = 'http://localhost:8087';
-    const backendURL = 'http://localhost:8080';
+const backendURL = 'http://localhost:8080';
 
-    const axiosClient = axios.create({
+const axiosClient = axios.create({
         baseURL: backendURL,
-        // headers: {
-        //     'Access-Control-Allow-Origin': frontendURL,
-        // }
     });
     
 export default {
   name: "GameRequest",
-    // props: {
-    //     gameRequests: {
-    //         type: Array,
-    //         required: true
-    //     }
-    // },
   data(){
     return{
         fields: [
@@ -75,19 +65,7 @@ export default {
         { key: 'game', label: 'Game', sortable: true },
         { key: 'actions', label: 'Actions' },
       ],
-      gameRequests: [{
-        id: 1,
-        externalReview: 'Great game',
-        requestStatus: 'PENDING',
-        requestor: 'John Doe',
-        game: 'Game 1',
-      }, {
-        id: 2,
-        externalReview: 'Good game',
-        requestStatus: 'APPROVED',
-        requestor: 'Jane Smith',
-        game: 'Game 2',
-      }],
+      gameRequests: [],
       showAddForm: false,
       newGameRequest: {
         externalReview: '',
@@ -110,15 +88,15 @@ export default {
             });        
         },
     },
-  methods: {
-    async fetchRequests() {
-        try {
-          const response = await axiosClient.get('/requests');
+  async created() {
+    try {
+          const response = await axiosClient.get('/gameRequests');
           this.gameRequests = response.data;
         } catch (error) {
           console.error('Error fetching reviews:', error);
         }
-      },
+  },
+  methods: {
       async searchRequests() {
         if (this.searchQuery) {
             try {
@@ -144,27 +122,27 @@ export default {
         requestorId: '',
       };
     },
-    // async saveAddGameRequest() {
-    //   const gameRequestDTO = {
-    //     externalReview: this.newGameRequest.externalReview,
-    //     game: { id: this.newGameRequest.gameId },
-    //     requestor: { id: this.newGameRequest.requestorId },
-    //   };
-    //   try {
-    //     const response = await axiosClient.post('/gameRequests', gameRequestDTO);
-    //     if (response.status === 200) {
-    //       this.$emit('update:gameRequests', [...this.gameRequests, response.data]);
-    //       this.showAddForm = false;
-    //       this.newGameRequest = {
-    //         externalReview: '',
-    //         gameId: '',
-    //         requestorId: '',
-    //       };
-    //     }
-    //   } catch (error) {
-    //     console.error('Error creating game request:', error);
-    //   }
-    // },
+    async saveAddGameRequest() {
+      const gameRequestDTO = {
+        externalReview: this.newGameRequest.externalReview,
+        game: { id: this.newGameRequest.gameId },
+        requestor: { id: this.newGameRequest.requestorId },
+      };
+      try {
+        const response = await axiosClient.post('/gameRequests', gameRequestDTO);
+        if (response.status === 200) {
+          this.$emit('update:gameRequests', [...this.gameRequests, response.data]);
+          this.showAddForm = false;
+          this.newGameRequest = {
+            externalReview: '',
+            gameId: '',
+            requestorId: '',
+          };
+        }
+      } catch (error) {
+        console.error('Error creating game request:', error);
+      }
+    },
     // async approveGameRequest(gameRequestId) {
     //   try {
     //     const response = await axiosClient.put(`/gameRequests/${gameRequestId}/requestStatus`, null, {
@@ -192,10 +170,7 @@ export default {
     //   }
     // },
     
-  },
-  mounted() {
-    this.fetchRequests();
-  },
+  }
 
 
 

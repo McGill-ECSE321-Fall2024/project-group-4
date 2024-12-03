@@ -14,6 +14,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Methods for GameManagementService
@@ -312,6 +314,12 @@ public class GameManagementService {
             return gameRequest.get();
         }
         throw new IllegalArgumentException("No Game Request found");
+    }
+
+    @Transactional
+    public Set<GameRequest> getAllGameRequests() {
+        Iterable<GameRequest> reqs = gameRequestRepository.findAll();
+        return StreamSupport.stream(reqs.spliterator(), false).collect(Collectors.toSet());
     }
 
     /**
