@@ -1,5 +1,4 @@
 <script>
-import { ref, onMounted } from "vue";
 import GamePreview from "./GamePreview.vue";
 
 export default {

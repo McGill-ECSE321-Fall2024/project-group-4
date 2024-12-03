@@ -304,7 +304,6 @@ public class AccountManagementController {
      * Create an address into a customer account
      *
      * @param customerEmail of customer
-     * @param address address to add
      * @return AddressDTO
      *
      * @author Tarek Namani

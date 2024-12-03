@@ -1,16 +1,5 @@
-<script setup>
-import { ref } from 'vue';
-import { RouterView } from 'vue-router';
-import logo from './assets/logo.png'; // Adjust the path if the image is in a different directory
-// const userRole = ref('');
-// userRole.value = localStorage.getItem('userRole');
-// userRole.value = localStorage.setItem('userRole','manager');
-// console.log('HAPPENED');
-
-</script>
-
 <template>
-  <div id="app">
+  <div id="app" :key="$route.fullPath">
     <div v-if="userRole === 'customer'"> <!-- if customer logged in-->
         <BNavbar toggleable="lg" class="fixed-top custom-navbar">
           <BNavbarBrand @click="goToHome()" class="navbar-brand">
@@ -41,9 +30,7 @@ import logo from './assets/logo.png'; // Adjust the path if the image is in a di
                   <BDropdownItem @click="goLogout()">Logout</BDropdownItem>
                 </BNavItemDropdown>
             
-              <BNavItemDropdown text="Cart" right>
-                <BDropdownItem @click="goCart()">Check-Out</BDropdownItem>
-              </BNavItemDropdown>
+              <BNavItem @click="goCart()" text="Cart" right>View Cart</BNavItem>
             </BNavbarNav>
             
           </BCollapse>
@@ -158,107 +145,84 @@ import logo from './assets/logo.png'; // Adjust the path if the image is in a di
 <style scoped src="./assets/main.css">
 </style>
 
+<script setup>
+import { RouterView, useRouter, useRoute } from 'vue-router';
+import logo from './assets/logo.png';
+import { ref, watch } from 'vue';
 
-<script>
+// Reactive state
+const loggedIn = ref(localStorage.getItem('loggedIn') === 'true');
+const searchQuery = ref('');
+const username = ref(localStorage.getItem('username'));
+const userRole = ref(localStorage.getItem('userRole'));
 
+const router = useRouter();
+const route = useRoute();
 
-export default {
-  name: 'App',
-  data() {
-    return {
-      loggedIn: localStorage.getItem('loggedIn') === 'true',
-      searchQuery: '',
-      username: localStorage.getItem('username'),
-      userRole: localStorage.getItem('userRole'),
-    };
-  },
-  
-  methods: {
-    //global variables
-    getLoggedIn() {
-      return localStorage.getItem('loggedIn');
-    },
-    setLoggedIn(loggedIn) {
-      this.loggedIn = loggedIn;
-      localStorage.setItem('loggedIn', loggedIn);
-    },
-    getUsername(){
-      return localStorage.getItem('username');
-    },
-    setUsername(username){
-      localStorage.setItem('username', username);
-    },
-    setAccountId(accountId){
-      localStorage.setItem('accountId', accountId);
-    },
-    getAccountId(){
-      return localStorage.getItem('accountId');
-    },
+// Watch for route changes
+watch(
+    () => route.path,
+    () => {
+      // Trigger updates or reinitialize state
+      loggedIn.value = localStorage.getItem('loggedIn') === 'true';
+      username.value = localStorage.getItem('username');
+      userRole.value = localStorage.getItem('userRole');
+    }
+);
 
-    //navigation
-    goToHome() {
-      this.$router.push('/');
-    },
-    goAccount(){
-      this.$router.push('/account');
-    },
-    goCatalogue(){
-      this.$router.push('/games');
-    },
-    goRefundRequests(){
-      this.$router.push('/refund-requests');
-    },
-    goReviews(){
-      this.$router.push('/reviews');
-    },
-    goLogin()
-    {
-      this.$router.push('/login');
-    },
-    goLogout(){
-      this.setLoggedIn(false);
-      this.setUsername('');
-      this.setAccountId('');
-      localStorage.removeItem('loggedIn');
-      localStorage.removeItem('username');
-      localStorage.removeItem('userRole');
-      this.$router.go();
-    },
-    goCart(){
-      this.$router.push('/cart');
-    },
-    goWishlist(){
-      //   /accounts/customers/{customerId}/wishlist
-      this.$router.push('/wishlist');
-    },
-    goHistory(){
-      this.$router.push('/history');
-    },
-    goCreateAccount(){
-      this.$router.push('/sign-up');
-    },
-    goManageCenter(){
-      this.$router.push('/manage-center');
-    },
-    goUpdates(){
-      this.$router.push('/pending-updates');
-    },
-    goReviewsManager(){
-      this.$router.push('/manager-reviews');
-    },
-    // search(e){
-    //   if(this.searchQuery.length > 0){
-    //     console.log(e);
-    //     this.$router.push(`/games?search=${this.searchQuery}`);
-    //   }
-    // }
-    
-  },
-  watch: {
-  //look for changes in global variables
-
-  
-  },
- 
+// Navigation functions
+function goToHome() {
+  router.push('/');
+}
+function goAccount() {
+  router.push('/account');
+}
+function goCatalogue() {
+  router.push('/games');
+}
+function goRefundRequests() {
+  router.push('/refund-requests');
+}
+function goReviews() {
+  router.push('/reviews');
+}
+function goLogin() {
+  router.push('/login');
+}
+function goLogout() {
+  localStorage.removeItem('loggedIn');
+  localStorage.removeItem('username');
+  localStorage.removeItem('userRole');
+  loggedIn.value = false;
+  username.value = '';
+  userRole.value = '';
+  router.push('/login');
+}
+function goCart() {
+  router.push('/cart');
+}
+function goWishlist() {
+  router.push('/wishlist');
+}
+function goHistory() {
+  router.push('/history');
+}
+function goCreateAccount() {
+  router.push('/sign-up');
+}
+function goManageCenter() {
+  router.push('/manage-center');
+}
+function goUpdates() {
+  router.push('/pending-updates');
+}
+function goReviewsManager() {
+  router.push('/manager-reviews');
+}
+function search(e) {
+  if (searchQuery.value.trim().length > 0) {
+    console.log(e);
+    router.push(`/games?search=${searchQuery.value}`);
+  }
 }
 </script>
