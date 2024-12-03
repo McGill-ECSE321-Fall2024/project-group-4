@@ -26,11 +26,17 @@
                     <BFormGroup  id="phoneNumber-label" label="Phone Number:" label-for="input-2">
                         <BFormInput id="input-2" type="text" v-model="phoneNumber" @input="handleInputChange('phoneNumber')" >{{ this.phoneNumber }} </BFormInput>
                     </BFormGroup>  
+                </div> 
+                
+                <div class="mb-3">
+                    <BFormGroup  id="old-password-label" label="Old Password:" label-for="input-3">
+                        <BFormInput id="input-3" type="text" v-model="oldPassword" @input="handleInputChange('oldPassword')" >{{ this.oldPassword }} </BFormInput>
+                    </BFormGroup>  
                 </div>  
 
                 <div class="mb-3">
-                    <BFormGroup  id="password-label" label="Password:" label-for="input-3">
-                        <BFormInput id="input-3" type="text" v-model="password" @input="handleInputChange('password')" >{{ this.password }} </BFormInput>
+                    <BFormGroup  id="new-password-label" label="New Password:" label-for="input-3">
+                        <BFormInput id="input-3" type="text" v-model="newPassword" @input="handleInputChange('newPassword')" >{{ this.newPassword }} </BFormInput>
                     </BFormGroup>  
                 </div>  
 
@@ -172,7 +178,8 @@ export default {
         email: '',
         username: '',
         phoneNumber: '',
-        password: '',
+        oldPassword: '',
+        newPassword: '',
         addresses: [],
         showAddressForm: false,
         showCreditForm: false,
@@ -211,7 +218,6 @@ export default {
                 this.username = accountData.username;
                 this.email = accountData.email;
                 this.phoneNumber = accountData.phoneNumber;
-                this.password = accountData.password;
                 this.addresses = accountData.addresses;
                 this.creditCards = accountData.creditCards;
                 //console.log('HERE');
@@ -232,15 +238,18 @@ export default {
         try {
         let response;
         if (this.changedField === 'username') {
-          response = await axiosClient.put(`/accounts/customers/${this.email}/username/${this.username}`).then(this.$route.go());
+          response = await axiosClient.put(`/accounts/customers/${this.email}/username/${this.username}`).then(this.$router.go());
         } else if (this.changedField === 'phoneNumber') {
-          response = await axiosClient.put(`/accounts/customers/${this.email}/phoneNumber/${this.phoneNumber}`).then(this.$route.go());
-        } else if (this.changedField === 'password') {
+          response = await axiosClient.put(`/accounts/customers/${this.email}/phoneNumber/${this.phoneNumber}`).then(this.$router.go());
+        } else if (this.changedField === 'newPassword') {
+            console.log(this.oldPassword);
+            console.log(this.newPassword);
           response = await axiosClient.put(`/accounts/customers/${this.email}/password`, {
-            password: this.password,
-          }).then(this.$route.go());
+            oldPassword : this.oldPassword,
+            newPassword: this.newPassword
+          }).then(this.$router.go());
         }
-        console.log(response.data);
+        //console.log(response);
         this.showSaveInfoButton = false;
       } catch (error) {
         console.error('Error saving info:', error);
