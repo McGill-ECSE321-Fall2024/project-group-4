@@ -151,6 +151,7 @@ export default {
                 }
                 this.selectedEmployee = null;
             }
+            this.$router.go();
         } catch (error) {
             console.error('Error updating employee:', error);
         }
