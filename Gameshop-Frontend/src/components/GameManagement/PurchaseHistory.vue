@@ -3,10 +3,15 @@ import { ref, onMounted } from "vue";
 
 export default {
   name: "PurchaseHistory",
-  setup(props) {
+  setup() {
     const purchases = ref([]);
     const isLoading = ref(false);
     const error = ref(null);
+
+    // Dialog State
+    const isDialogOpen = ref(false);
+    const selectedPurchase = ref(null);
+    const refundReason = ref("");
 
     // Fetch purchase history
     const fetchPurchaseHistory = async () => {
@@ -27,22 +32,40 @@ export default {
       }
     };
 
+    // Open refund dialog
+    const openRefundDialog = (purchase) => {
+      selectedPurchase.value = purchase;
+      refundReason.value = "";
+      isDialogOpen.value = true;
+    };
+
     // Submit refund request
-    const requestRefund = async (purchaseId) => {
+    const submitRefundRequest = async () => {
+      if (!refundReason.value.trim()) {
+        alert("Please provide a reason for the refund.");
+        return;
+      }
+
       try {
         const response = await fetch(
-            `http://localhost:8080/customers/${localStorage.getItem('email')}/purchases/${purchaseId}/refund`,
+            `http://localhost:8080/purchases/${selectedPurchase.value.id}/refund`,
             {
-              method: "POST"
+              method: "POST",
+              headers: {
+                "Content-Type": "text/plain"
+              },
+              body: refundReason.value
             }
         );
         if (!response.ok) {
           throw new Error(`Refund request failed. Status: ${response.status}`);
         }
         alert("Refund request submitted successfully.");
-        fetchPurchaseHistory(); // Refresh the purchase history to reflect the new refund status
+        fetchPurchaseHistory(); // Refresh purchase history
       } catch (err) {
         alert(`Error: ${err.message}`);
+      } finally {
+        isDialogOpen.value = false;
       }
     };
 
@@ -61,7 +84,7 @@ export default {
     // Fetch data on mount
     onMounted(fetchPurchaseHistory);
 
-    return { purchases, isLoading, error, canRequestRefund, requestRefund };
+    return { purchases, isLoading, error, canRequestRefund, submitRefundRequest, isDialogOpen, refundReason, selectedPurchase, openRefundDialog };
   }
 };
 </script>
@@ -89,7 +112,7 @@ export default {
           <!-- Refund Button -->
           <button
               v-if="canRequestRefund(purchase)"
-              @click="requestRefund(purchase.id)"
+              @click="openRefundDialog(purchase)"
               class="refund-button"
           >
             Request Refund
@@ -107,6 +130,23 @@ export default {
       </tbody>
     </table>
     <p v-else>No purchases found.</p>
+
+    <!-- Refund Dialog -->
+    <div v-if="isDialogOpen" class="dialog-overlay">
+      <div class="dialog-box">
+        <h3>Request Refund</h3>
+        <p>Game: {{ selectedPurchase?.game.name }}</p>
+        <textarea
+            v-model="refundReason"
+            placeholder="Enter your reason for requesting a refund"
+            rows="4"
+        ></textarea>
+        <div class="dialog-actions">
+          <button @click="submitRefundRequest" class="dialog-button">Submit</button>
+          <button @click="isDialogOpen = false" class="dialog-button cancel">Cancel</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -145,8 +185,55 @@ export default {
   background-color: #0056b3;
 }
 
-.error {
-  color: red;
-  margin-top: 10px;
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dialog-box {
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+  width: 400px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.dialog-box h3 {
+  margin-top: 0;
+}
+
+.dialog-box textarea {
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.dialog-button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.dialog-button.cancel {
+  background-color: #ccc;
+}
+
+.dialog-button:hover {
+  opacity: 0.9;
 }
 </style>
