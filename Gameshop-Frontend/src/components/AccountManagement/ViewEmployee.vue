@@ -52,14 +52,8 @@ export default {
   name: "ViewEmployee",
   props: {
     employees: {
-      type: Object,
+      type: Array,
       required: true,
-      validator: (value) =>
-        //   'id' in value &&
-          'username' in value &&
-          'password' in value &&
-          'refundRequests' in value &&
-          'isActive' in value
     },
   },
   
@@ -107,11 +101,13 @@ export default {
             });        
         },
     },
+   
     methods:{
         async fetchEmployees(){
             try {
                 const response = await axiosClient.get('/accounts/employees/');
                 this.employees = response.data;
+                console.log("hereee")
             } catch (error) {
                 console.error('Error fetching employees:', error);
             }
@@ -207,11 +203,10 @@ export default {
 
                 console.log(response.status)
                 if (response.status === 200) {
-                    this.setUsername(this.newEmployee.username);
-                    this.setAccountId(response.data.id);
+                    this.newEmployee = response.data;
                     this.clearInputs();
                     this.showAddForm = false;
-                    this.$router.push('/manage-center');
+                    this.$router.push('/');
                 }
             } catch (error) {
                 console.error('Error creating employee:', error);
@@ -219,7 +214,6 @@ export default {
         }
         
     },
-   
 
 };
 </script>
