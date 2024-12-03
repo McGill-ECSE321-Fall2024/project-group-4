@@ -40,7 +40,6 @@
           </div>
           <div v-else class="mt-3">
             <BButton size="sm" variant="primary" @click="editReview(data.item)" class="save-info-btn">Edit</BButton>
-            <BButton size="sm" variant="danger" @click="deleteReview(data.item.id)" class="delete-btn">Delete</BButton>
           </div>
         </template>
       </BTable>
@@ -67,7 +66,7 @@
         searchQuery: '',
         fields: [
           { key: 'id', label: 'ID' },
-          { key: 'review', label: 'Review' },
+          { key: 'review', label: 'Game' },
           { key: 'reply', label: 'Reply' },
           { key: 'rating', label: 'Rating' },
           { key: 'actions', label: 'Actions' },
@@ -91,11 +90,9 @@
     },
     computed: {
         filteredReviews() {
-            return this.reviews.filter(review1 => {
+            return this.reviews.filter(review => {
                 const searchTerm = this.searchQuery.toLowerCase();
-            
-                return review1.id.toString().includes(searchTerm);
-               
+                return review.id.toString() === searchTerm;
             });        
         },
     },
@@ -141,14 +138,6 @@
           }
         } catch (error) {
           console.error('Error updating review:', error);
-        }
-      },
-      async deleteReview(reviewId) {
-        try {
-          await axiosClient.delete(`/reviews/${reviewId}`);
-          this.reviews = this.reviews.filter(review => review.id !== reviewId);
-        } catch (error) {
-          console.error('Error deleting review:', error);
         }
       },
     },

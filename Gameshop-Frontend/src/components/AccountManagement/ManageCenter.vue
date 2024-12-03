@@ -74,6 +74,7 @@ import axios from 'axios';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 import dayjs from 'dayjs';
+import ReviewsManager from "@/components/AccountManagement/ReviewsManager.vue";
 
 
 const frontendURL = 'http://localhost:8087';
@@ -96,6 +97,7 @@ const format = (date) => {
 }
 export default{
     components: {
+      ReviewsManager,
       VueDatePicker,
         Promotion,
         ViewEmployee,
