@@ -7,30 +7,7 @@
         <BTabs content-class="mt-3" fill>
             <BTab title="Employees">
                 <br>
-                <!-- <div class="d-flex mb-3">
-                    <BFormSelect v-model="searchBy" class="me-2 w-auto">
-                        <BFormSelectOption value="username">Username</BFormSelectOption>
-                        <BFormSelectOption value="id">ID</BFormSelectOption>
-                    </BFormSelect>
-                    <BFormInput
-                        v-model="searchQuery"
-                        placeholder="Search employees"
-                        class="me-2"
-                    />
-                    <BButton type="submit" class="search-btn">Search</BButton>
-                    <BButton variant="success" class="ms-auto save-info-btn" @click="showAddEmployeeForm">+</BButton>
-                </div>
-                <div v-if="showAddForm" class="mb-3">
-                    <BFormInput v-model="newEmployee.username" placeholder="Username" class="mb-2" />
-                    <BFormInput v-model="newEmployee.email" placeholder="Email" class="mb-2" />
-                    <BFormSelect v-model="newEmployee.is_active" class="mb-2">
-                        <BFormSelectOption :value="true">Active</BFormSelectOption>
-                        <BFormSelectOption :value="false">Inactive</BFormSelectOption>
-                    </BFormSelect>
-                    <BButton variant="secondary" @click="cancelAdd" class="delete-btn">Cancel</BButton>
-                    <BButton variant="primary" @click="saveAdd" class="save-info-btn">Save</BButton>
-                </div>-->
-                <ViewEmployee :employee="employee" /> 
+                <ViewEmployee :employees="employees" @update:employees="updateEmployees" /> 
                 
             </BTab>
             <BTab title="Game Requests" >
@@ -99,6 +76,11 @@ const axiosClient = axios.create({
 });
 
 export default{
+    components: {
+        Promotion,
+        ViewEmployee,
+        Policy,
+    },
     data(){
         return{
             searchBy: 'username',
@@ -107,6 +89,7 @@ export default{
                 username: '',
                 is_active: false,
             },
+            employees: [],
             showAddForm: false,
             showAddPolicyForm: false,
             showAddPromotionForm: false,
@@ -125,6 +108,9 @@ export default{
     },
     
     methods:{
+        updateEmployees(newemployees){
+            this.employees = newemployees;
+        },
         editEmployee(employee){
             console.log('Edit employee:', employee);
         },
