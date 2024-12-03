@@ -349,6 +349,13 @@ public class GameManagementController {
         return promotions;
     }
 
+    @GetMapping("/categories")
+    public Set<CategoryResponseDTO> getAllCategories() {
+        Set<CategoryResponseDTO> categories = new HashSet<>();
+        gameManagementService.getAllCategories().forEach(category -> categories.add(new CategoryResponseDTO(category)));
+        return categories;
+    }
+
     @GetMapping("/promotions/{promotionId}/games")
     public Set<GameResponseDTO> getAllGamesInCategory(@PathVariable int promotionId) {
         Set<GameResponseDTO> games = new HashSet<>();

@@ -5,8 +5,8 @@
     </div>
     <br>
     <BTabs content-class="mt-3" fill>
-      <BTab title="Game Categories">
-        <GameCategories />
+      <BTab title="Game Categories" @click="fetchCategories">
+        <GameCategories ref="GameCategories" />
       </BTab>
 
       <BTab title="Game Requests" >
@@ -32,6 +32,16 @@ import GameCategories from "./GameCategories.vue";
 
 export default {
   name: "GameZone",
+  components: {
+    GameCategories
+    },
+  methods : {
+    async fetchCategories() {
+      console.log("A");
+      await this.$refs.GameCategories.fetchCategories();
+    }
+}
+
 }
 </script>
 

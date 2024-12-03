@@ -624,6 +624,15 @@ public class GameManagementService {
     }
 
     @Transactional
+    public Set<Category> getAllCategories() {
+        Set<Category> categorySet = new HashSet<>();
+        if (categoryRepo.findAll().iterator().hasNext()) {
+            categoryRepo.findAll().forEach(categorySet::add);
+        }
+        return categorySet;
+    }
+
+    @Transactional
     public Set<Game> getGamesForPromotion(int promotionId) {
         Set<Game> gamesInCategory = new HashSet<>();
         Promotion promotion = findPromotionById(promotionId);

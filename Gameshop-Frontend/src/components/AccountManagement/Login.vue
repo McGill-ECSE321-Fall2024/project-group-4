@@ -108,7 +108,7 @@ export default{
     methods:{
         async createManager(){
             try {
-                const response = await axiosClient.post('/accounts/manager', {
+                const response = await axiosClient.post('/accounts/manager/', {
                 headers: {
                     'Content-Type': 'application/json',  // Set Content-Type to application/json
                 },
@@ -117,7 +117,7 @@ export default{
                 console.log('Manager account created successfully');
                 }
             } catch (error) {
-                console.error('Error creating manager account:', error);
+                alert('Error creating manager account:', error);
             }
         },
         
@@ -240,7 +240,7 @@ export default{
 
     },
     mounted(){
-        this.createManager();
+        //this.createManager();
     }
 }
 

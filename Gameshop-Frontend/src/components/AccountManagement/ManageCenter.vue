@@ -176,9 +176,7 @@ export default{
             this.newPromotion = { discount: '', description: '' };
         },
         saveAddPromotion() {
-            // Add logic to save the new promotion
             this.showAddPromotionForm = false;
-            console.log(this.endDate)
             const date = new Date(this.endDate);
             const formattedDate1 = dayjs(date).format('YYYY-MM-DD');
             console.log(formattedDate1)
@@ -206,7 +204,6 @@ export default{
                 alert(error.message);
             }
             await this.$refs.Promotion.fetchPromotions();
-            console.log(this.$refs.Promotion); // This should give you the component instance
         },
 
         async fetchPromotions() {
