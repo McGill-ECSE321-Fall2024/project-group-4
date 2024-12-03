@@ -62,10 +62,12 @@ export default {
         coverPicture: '',
         price: null,
         stock: null,
-        isActive: null,
+        isActive: true,
         categories: [],
-        promotions: [],
+        promotionId: null,
       },
+      promotions: [],
+
     };
     
   },
@@ -73,9 +75,19 @@ export default {
     showRequestGameForm(){
       this.showAddForm = !this.showAddForm;
     },
-    cancelAdd() {
-            this.showAddForm = false;
-        },
+    cancelAddGame() {
+      this.showAddForm = false;
+    },
+    clearInputs(){
+      this.newGame.name = '';
+      this.newGame.description = '';
+      this.newGame.coverPicture = '';
+      this.newGame.price = null;
+      this.newGame.stock = null;
+      this.newGame.isActive = null;
+      this.newGame.categories = [];
+      this.newGame.promotionId = [];
+    }
   }
 };
 </script>
@@ -96,7 +108,7 @@ export default {
           class="me-2"
       />
       <BButton type="submit" class="search-btn">Search</BButton>
-      <BButton variant="success" class="ms-auto save-info-btn" @click="showRequestGameForm" v-if="userRole==='employee'">+</BButton>
+      
     </div>
     <div v-if="showAddForm" class="mb-3">
        <!-- create game here-->
@@ -105,11 +117,17 @@ export default {
       <BFormInput v-model="newGame.coverPicture" placeholder="Cover Picture" class="mb-2" />
       <BFormInput v-model="newGame.price" placeholder="Price" class="mb-2" />
       <BFormInput v-model="newGame.stock" placeholder="stock" class="mb-2" />
-      <BFormInput v-model="newGame.isActive" placeholder="Is Active" class="mb-2" />
+      <BFormSelect v-model="newGame.isActive" class="mb-2">
+        <BFormSelectOption :value="true">Active</BFormSelectOption>
+        <BFormSelectOption :value="false">Inactive</BFormSelectOption>
+      </BFormSelect>
       <BFormInput v-model="newGame.categories" placeholder="Genre" class="mb-2" />
-      <BFormInput v-model="newGame.promotions" placeholder="Promotions" class="mb-2" />
-      <BButton variant="secondary" @click="cancelAdd" class="delete-btn">Cancel</BButton>
-      <BButton variant="primary" @click="saveAddEmployee" class="save-info-btn">Save</BButton>
+      <BFormSelect v-model="newGame.promotionId" class="mb-2">
+        <BFormSelectOption :value="null" disabled>Select Promotion</BFormSelectOption>
+        <BFormSelectOption v-for="promotion in promotions" :key="promotion.id" :value="promotion.id">{{ promotion.description }}</BFormSelectOption>
+      </BFormSelect>      
+      <BButton variant="secondary" @click="cancelAddGame" class="delete-btn" style="margin-left:-2px;margin-right:10px;">Cancel</BButton>
+      <BButton variant="primary" @click="sendRequestGame" class="save-info-btn">Send Game Request</BButton> <!--when game is requested, send to GameRequestsEmployee page-->
     </div>
     <div v-if="loading" class="loading">Loading games...</div>
     <div v-else-if="error" class="error">{{ error }}</div>

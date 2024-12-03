@@ -73,7 +73,9 @@ export default {
 
 <template>
   <div class="refund-review">
-    <h2>Refund Requests</h2>
+    <div class="display-6 my-3" align="center">
+      Refund Requests
+    </div>
     <div v-if="isLoading">Loading...</div>
     <div v-if="error" class="error">{{ error }}</div>
     <table v-if="refundRequests.length > 0" class="refund-table">
