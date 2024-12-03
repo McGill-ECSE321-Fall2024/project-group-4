@@ -33,9 +33,8 @@ export default {
 <template>
   <div class="game-preview">
     <BCard
-        title="${game.name}"
-        img-src="game.coverPicture"
-        img-alt="`${game.name} cover`"
+        :title="game.name"
+        :img-src="game.coverPicture"
         img-top
         tag="article"
         style="max-width: 20rem" class="wish-game">
@@ -48,19 +47,16 @@ export default {
               ? `${game.stock} copies remaining`
               : 'Out of stock'
             }}
-            <button v-if="enableAddToCart"
+            <BButton v-if="enableAddToCart"
                 class="add-to-cart"
                 :disabled="game.stock <= 0"
                 @click="handleAddToCart"
             >
               Add to Cart
-            </button>
+            </BButton>
           </p>
-        </BCardText><br>
-
-        <BButton size="sm" class="add-btn" @click="addToCart">Add to cart</BButton>
-        <BButton size="sm" class="delete-btn" @click="removeFromWishlist(id)">Delete</BButton>
-
+        </BCardText>
+<!--        <BButton size="sm" class="delete-btn" @click="removeFromWishlist(id)">Delete</BButton>-->
       </BCard>
 
 

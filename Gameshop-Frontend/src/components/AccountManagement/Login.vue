@@ -127,12 +127,7 @@ export default{
                     localStorage.setItem('userRole', 'customer');
                     this.userRole = 'customer';
                     this.clearInputs();
-                    // window.dispatchEvent(new CustomEvent('login')); 
-                    // this.$router.push('/');
-                    window.location.reload(); // Reload the page
-
-
-
+                    this.$router.push('/');
                 } else{
                     console.log('Login unsuccessful');
                 }
