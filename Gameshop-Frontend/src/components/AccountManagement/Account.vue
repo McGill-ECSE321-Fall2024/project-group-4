@@ -137,13 +137,13 @@
             <BForm > 
                 <div class="mb-3">
                     <BFormGroup  id="username-label" label="Username:" label-for="input-1">
-                        <BFormInput id="input-1" type="text" v-model="username" readonly>{{ this.username }} </BFormInput>
+                        <BFormInput id="input-1" type="text" v-model="username" readonly>manager </BFormInput>
                     </BFormGroup>  
                 </div>  
 
                 <div class="mb-3">
                     <BFormGroup  id="password-label" label="Password:" label-for="input-3">
-                        <BFormInput id="input-3" type="text" v-model="password" readonly>{{ this.password }} </BFormInput>
+                        <BFormInput id="input-3" type="text" v-model="password" readonly>manager </BFormInput>
                     </BFormGroup>  
                 </div> 
 
@@ -254,7 +254,13 @@ export default {
     },
   methods: {
     formatCreditCard(creditCard) {
-      return `Card Number: ${creditCard.cardNumber}, Expiry Date: ${creditCard.expiryDate}, CVV: ${creditCard.cvv}, Billing Address: ${this.formatAddress(creditCard.billingAddress)}`;
+        const cardNumberStr = creditCard.cardNumber.toString();
+
+        const maskedCardNumber = '*'.repeat(cardNumberStr.length - 4) + cardNumberStr.slice(-4);
+        return `Card Number: ${maskedCardNumber}, Expiry Date: ${creditCard.expiryDate}, CVV: ***, Billing Address: ${this.formatAddress(creditCard.billingAddress)}`;
+    },
+    formCreditCard(creditCard){
+        return `Card Number: ${creditCard.cardNumber}, Expiry Date: ${creditCard.expiryDate}, CVV: ${creditCard.cvv}, Billing Address: ${this.formatAddress(creditCard.billingAddress)}`;
     },
     formatAddress(address) {
       return `${address.street}, ${address.city}, ${address.province}, ${address.country}, ${address.postalCode}`;
