@@ -10,15 +10,15 @@ public record ReviewDTO(int id,
                         int rating,
                         String text,
                         ReplyDTO reply,
-                        PurchaseDTO purchase,
+                        String username,
                         Set<CustomerResponseDTO> likedBy) implements Serializable {
 
     public ReviewDTO(Review review) {
         this(review.getId(),
                 review.getRating(),
                 review.getText(),
-                new ReplyDTO(review.getReply()),
-                new PurchaseDTO(review.getPurchase()),
+                review.getReply() != null ? new ReplyDTO(review.getReply()) : null,
+                review.getPurchase().getCustomer().getUsername(),
                 review.getCopyLikedBy().stream().map(CustomerResponseDTO::new).collect(Collectors.toSet()));
     }
 

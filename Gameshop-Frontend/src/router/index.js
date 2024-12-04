@@ -10,6 +10,7 @@ import ManageCenter from '@/components/AccountManagement/ManageCenter.vue'
 import PurchaseHistory from "@/components/GameManagement/PurchaseHistory.vue";
 import RefundRequest from "@/components/GameManagement/RefundRequest.vue";
 import GameZone from '@/components/AccountManagement/GameZone.vue'
+import GamePage from "@/components/GameManagement/GamePage.vue";
  
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -67,6 +68,11 @@ const router = createRouter({
       path: '/game-zone',
       name: 'game-zone',
       component: GameZone,
+    },
+    {
+      path: '/game',
+      name: 'game-page',
+      component: GamePage,
     }
     
   ],
