@@ -11,12 +11,7 @@
             </BTab>
             <BTab title="Game Requests">
                 <br>
-<<<<<<< HEAD
-                <GameRequestNew :gameRequests="gameRequests"/>
-
-=======
                 <GameRequestNew :gameRequests="gameRequests" />
->>>>>>> clara-frontEnd
             </BTab>
             <BTab title="Policies">
                 <br />

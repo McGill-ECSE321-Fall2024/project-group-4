@@ -33,7 +33,8 @@ import GameCategories from "./GameCategories.vue";
 export default {
   name: "GameZone",
   components: {
-    GameCategories
+    GameCategories,
+    GameRequestEmployee,
     },
   methods : {
     async fetchCategories() {
