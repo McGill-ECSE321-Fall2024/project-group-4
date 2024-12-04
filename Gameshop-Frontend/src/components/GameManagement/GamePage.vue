@@ -1,6 +1,13 @@
 <script>
 import { ref, computed, onMounted } from "vue";
 import {useRoute, useRouter} from "vue-router";
+import axios from 'axios';
+
+const backendURL = 'http://localhost:8080';
+
+const axiosClient = axios.create({
+    baseURL: backendURL,
+});
 
 export default {
   name: "GamePage",
@@ -98,17 +105,24 @@ export default {
 
     const handleAddToCart = async (e) => {
       e.preventDefault();
-      const response = await fetch(
-          `http://localhost:8080/customers/${localStorage.getItem('accountId')}/cart/${gameDetails.value.id}`,
-          {
-            method: "PUT",
-          }
-      );
-      if (!response.ok) {
-        console.log(response);
-      } else{
+      try {
+        const response = await axiosClient.put(`/customers/${localStorage.getItem('accountId')}/cart/${gameDetails.value.id}`);
         await router.push('/cart');
       }
+      catch (error) {
+        alert(error);
+      }
+      // const response = await fetch(
+      //     `http://localhost:8080/customers/${localStorage.getItem('accountId')}/cart/${gameDetails.value.id}`,
+      //     {
+      //       method: "PUT",
+      //     }
+      // );
+      // if (!response.ok) {
+      //   console.log(response);
+      // } else{
+      //   await router.push('/cart');
+      // }
     }
 
     // Fetch data on component mount

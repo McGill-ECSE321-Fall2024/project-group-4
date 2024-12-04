@@ -1,4 +1,11 @@
 <script>
+import axios from 'axios';
+
+const backendURL = 'http://localhost:8080';
+
+const axiosClient = axios.create({
+    baseURL: backendURL,
+});
 export default {
   name: "GamePreview",
   props: {
@@ -37,15 +44,22 @@ export default {
   methods: {
     async handleAddToCart(e) {
       e.preventDefault();
-      const response = await fetch(
-          `http://localhost:8080/customers/${localStorage.getItem('accountId')}/cart/${this.game.id}`,
-          {
-            method: "PUT",
-          }
-      );
-      if (!response.ok) {
-        console.log(response);
+      try {
+        const response = await axiosClient.put(`/customers/${localStorage.getItem('accountId')}/cart/${this.game.id}`);
+        await this.$router.push('/cart');
       }
+      catch (error) {
+        alert(error);
+      }
+      // const response = await fetch(
+      //     `http://localhost:8080/customers/${localStorage.getItem('accountId')}/cart/${this.game.id}`,
+      //     {
+      //       method: "PUT",
+      //     }
+      // );
+      // if (!response.ok) {
+      //   console.log(response);
+      // }
     }
   }
 };
