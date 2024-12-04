@@ -11,11 +11,11 @@
             class="wishlist-item"
           >
             <GamePreview :game="game" />
-            <div class="add-to-cart-button add-btn">
-              <button @click="addGameToCart(index)">Add to cart</button>
+            <div class="add-btn">
+              <BButton @click="addGameToCart(index)">Add to cart</BButton>
             </div>
-            <div class="remove-from-wishlist-button delete-btn">
-              <button @click="removeGameFromWishlist(index)">Remove</button>
+            <div class="delete-btn">
+              <BButton @click="removeGameFromWishlist(index)">Remove</BButton>
             </div>
           </div>
         </div>
