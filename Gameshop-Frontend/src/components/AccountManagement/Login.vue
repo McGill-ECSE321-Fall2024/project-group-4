@@ -85,14 +85,6 @@ const axiosClient = axios.create({
     }
 });
 
-// console.log('Login page');
-//     if (localStorage.getItem('loggedIn')){
-    
-//     this.$router.push('/');
-//     console.log('Already logged in');
-
-//     }
-
 export default{
     name: 'Login',
     data() {
@@ -104,24 +96,7 @@ export default{
             userRole: localStorage.getItem('userRole'),
         }
     },
-   
     methods:{
-        async createManager(){
-            try {
-                const response = await axiosClient.post('/accounts/manager/', {
-                headers: {
-                    'Content-Type': 'application/json',  // Set Content-Type to application/json
-                },
-                });
-                if (response.status === 200) {
-                console.log('Manager account created successfully');
-                }
-            } catch (error) {
-                alert('Error creating manager account:', error);
-            }
-        },
-        
-
         logCustomSelect(){
             console.log(this.customSelect);
         },
@@ -178,21 +153,21 @@ export default{
             }
         },
         async loginManager(){
-
             try{
-                const response = await axiosClient.post(`accounts/login/manager/${this.username}`,this.password, {
-                headers: {
-                    'Content-Type': 'text/plain',  // Set Content-Type to text/plain
-                },});
-                if (response.status == 200){
-                  this.setLoggedIn(true);
-                  this.setUsername(response.data.username);
-                  this.setAccountId(response.data.id);
+                // const response = await axiosClient.post(`accounts/login/manager/${this.username}`,this.password, {
+                // headers: {
+                //     'Content-Type': 'text/plain',  // Set Content-Type to text/plain
+                // },});
+                //if (response.status == 200){
+                if (this.username == "manager" && this.password == "manager") {
+                    this.setLoggedIn(true);
+                  this.setUsername("manager");
+                  this.setAccountId(1);
                   localStorage.setItem('userRole', 'manager');
                     this.userRole = 'manager';
                     this.clearInputs();
                     this.$router.push('/');
-                } else{
+                } else {
                     console.log('Login unsuccessful');
                 }
 
@@ -236,25 +211,7 @@ export default{
         },
         getEmail(){
           return localStorage.getItem('email');
-        },
-        async checkManagerExists(){
-            try {
-                const response = await axiosClient.get('/accounts/manager');
-                if (response.status !== 200) {
-                    await this.createManager();
-                }
-            } catch (error) {
-                if (error.response && error.response.status === 404) {
-                    await this.createManager();
-                } else {
-                    console.error('Error checking manager account:', error);
-                }
-            }
         }
-
-    },
-    mounted(){
-        this.checkManagerExists();
     }
 }
 
