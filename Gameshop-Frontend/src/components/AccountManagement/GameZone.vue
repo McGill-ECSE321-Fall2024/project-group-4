@@ -37,7 +37,7 @@ export default {
     },
   methods : {
     async fetchCategories() {
-      console.log("A");
+      // console.log("A");
       await this.$refs.GameCategories.fetchCategories();
     }
 }
