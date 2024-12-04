@@ -17,9 +17,14 @@
         </div> -->
 
         <BTable :items="games" :fields="fields">
+            <template #cell(categories)="data">
+                <div>
+                    {{ data.item.categories.map(category => category.name).join(', ') }}
+                </div>
+            </template>
             <template #cell(stock)="data">
                 <div v-if="selectedGame && selectedGame.id === data.item.id">
-                <BFormInput v-model="selectedGame.stock" class="mb-2" />
+                    <BFormInput v-model="selectedGame.stock" class="mb-2" />
                 </div>
                 <div v-else>
                 {{ data.item.stock }}
@@ -74,17 +79,17 @@ export default {
             searchBy: 'all',
             searchQuery: '',
             fields: [
-                { key: 'id', label: 'ID' },
-                { key: 'name', label: 'Name' },
-                { key: 'genre', label: 'Genre' },
-                { key: 'stock', label: 'Stock' },
-                { key: 'isActive', label: 'Active Status' },
+                { key: 'id', label: 'ID', sortable: true },
+                { key: 'name', label: 'Name', sortable: true },
+                { key: 'categories', label: 'Categories', sortable: true },
+                { key: 'stock', label: 'Stock', sortable: true },
+                { key: 'isActive', label: 'Active Status', sortable: true },
                 { key: 'actions', label: '' },
             ],
             selectedGame: {
                 id: null,
                 name: '',
-                genre: '',
+                categories: [],
                 stock: null,
                 isActive: null,
             },
