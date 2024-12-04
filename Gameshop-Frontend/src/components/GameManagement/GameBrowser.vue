@@ -41,6 +41,6 @@ export default {
 .game-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 15px;
+  gap: 100px;
 }
 </style>

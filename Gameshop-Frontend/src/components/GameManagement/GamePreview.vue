@@ -100,9 +100,9 @@ export default {
             >
               Add to Cart
             </BButton>
-            <BButton class="save-info-btn">
+            <!-- <BButton class="save-info-btn" @click="handleAddToWishlist">
               Add to Wishlist
-            </BButton>
+            </BButton> -->
           </p>
         </BCardText>
         
