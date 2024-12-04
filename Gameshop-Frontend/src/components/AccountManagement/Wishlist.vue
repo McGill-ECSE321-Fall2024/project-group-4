@@ -4,58 +4,24 @@
         <div class="display-6 my-3" align="center">
             Wishlist
         </div>
-        <!-- <BCard v-for="(game, index) in wishlists" :key="game.id"
-        title={{ game.title }}
-        img-src= "../../assets/logo.png"
-        img-alt="Cover Picture"
-        img-top
-        tag="article"
-        style="max-width: 20rem" class="wish-game">
-            <BCardText>
-                {{ game.description}}
-            </BCardText><br>
-            <BCardText>
-                Price: ${{ game.price }}
-            </BCardText> 
-            <BCardText>
-                Stock: {{ game.stock }}
-            </BCardText><br>
-
-            <BButton variant="primary" size="sm" class="add-btn" @click="addToCart(game)">Add to cart</BButton>
-            <BButton size="sm" class="delete-btn" @click="removeFromWishlist(index)">Delete</BButton>
-
-        </BCard>  -->
-
-        <BCard
-        title="Game Title"
-        img-src="https://picsum.photos/600/300/?image=25"
-        img-alt="Cover Picture"
-        img-top
-        tag="article"
-        style="max-width: 20rem" class="wish-game">
-            <BCardText>
-                Description of the game
-            </BCardText><br>
-            <BCardText>
-                Price: $50
-            </BCardText> 
-            <BCardText>
-                Stock: 5
-            </BCardText><br>
-
-            <BButton size="sm" class="add-btn" @click="addToCart">Add to cart</BButton>
-            <BButton size="sm" class="delete-btn" @click="removeFromWishlist(id)">Delete</BButton>
-
-        </BCard>
-
-        <!-- Modal -->
-        <BModal id="cart-modal" ref="cartModal" title="Item Added to Cart">
-        <p class="my-4">The item has been added to your cart.</p>
-        <template #modal-footer="{ ok, cancel }">
-            <BButton variant="secondary" @click="continueShopping">Continue Shopping</BButton>
-            <BButton variant="primary" @click="goToCart">Go to Cart</BButton>
-        </template>
-        </BModal>
+        <div v-if="wishlist.length > 0" class="wishlist-items">
+          <div
+            v-for="(game, index) in wishlist"
+            :key="game.id"
+            class="wishlist-item"
+          >
+            <GamePreview :game="game" />
+            <div class="add-to-cart-button">
+              <button @click="addGameToCart(index)">Add to cart</button>
+            </div>
+            <div class="remove-from-wishlist-button">
+              <button @click="removeGameFromWishlist(index)">Remove</button>
+            </div>
+          </div>
+        </div>
+        <div v-else class="empty-wishlist">
+          Your wishlist is empty.
+        </div>
 
     </div>
 </template>
@@ -63,9 +29,10 @@
 <style scoped src="../../assets/main.css">
 </style>
 
-<script>
+<script setup>
 
 import {ref, onMounted} from "vue";
+import GamePreview from "@/components/GameManagement/GamePreview.vue";
 
 const wishlist = ref([]);
 const loading = ref(true);
@@ -104,35 +71,70 @@ const addGameToCart = async (index) => {
   }
 }
 
-export default{
-    data(){
-        return{
-            wishlists: [
-                // {id:1, title: "Game 1", description: "Game 1 description", price: 50, stock: 5},
-                // {id:2, title: "Game 2", description: "Game 2 description", price: 60, stock: 3},
-            ],
-            cart: [],
-        };
-    },
-    methods: {
-        removeFromWishlist(index){
-            this.wishlists.splice(index, 1);
-            //   /accounts/customers/{customerId}/wishlist/{gameId}
-        },
-        addToCart(game){
-            this.cart.push(game);
-            console.log("Added to cart!");
-        },
-        goToCart(){
-            this.$refs.cartModal.hide();
-            this.$router.push("/cart");
-        },
-        continueShopping(){
-            this.$refs.cartModal.hide();
-        }
-    },
-    
-    
-}
+onMounted(fetchWishlist)
+
 
 </script>
+
+<style scoped>
+.wishlist {
+  padding: 20px;
+}
+
+.wishlist h1 {
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+
+.loading,
+.error,
+.empty-wishlist {
+  font-size: 1.2em;
+  color: #555;
+  text-align: center;
+}
+
+.wishlist-items {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.wishlist-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.wishlist-summary {
+  margin-top: 20px;
+  text-align: right;
+  font-size: 1.2em;
+}
+
+.add-to-cart-button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  font-size: 1em;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.remove-from-wishlist-button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  font-size: 1em;
+  background-color: darkred;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+</style>
