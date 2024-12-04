@@ -6,6 +6,7 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,8 +38,12 @@ public class AccountManagementService {
 
     @Autowired
     private PolicyRepository policyRepository;
+
     @Autowired
     private AddressRepository addressRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /**
      *
@@ -90,7 +95,7 @@ public class AccountManagementService {
             throw new EntityExistsException("Customer with this email already exists.");
         }
 
-        Customer customer = new Customer(username, password, email, phoneNumber);
+        Customer customer = new Customer(username, passwordEncoder.encode(password), email, phoneNumber);
         customerRepository.save(customer);
         return customer;
     }
@@ -120,7 +125,7 @@ public class AccountManagementService {
         if (employeeRepository.findByUsername(username).isPresent()) {
             throw new IllegalArgumentException("Employee already exists with that username.");
         }
-        Employee employee = new Employee(username, password, is_active);
+        Employee employee = new Employee(username, passwordEncoder.encode(password), is_active);
         employeeRepository.save(employee);
         return employee;
     }
@@ -140,7 +145,7 @@ public class AccountManagementService {
             throw new IllegalArgumentException("There can only be one manager in the system");
         }
 
-        Manager manager = new Manager("manager", "manager");
+        Manager manager = new Manager("manager", passwordEncoder.encode("manager"));
         managerRepository.save(manager);
         return manager;
     }
@@ -293,7 +298,7 @@ public class AccountManagementService {
         }
 
         Customer customer = customerRepository.findByEmail(email).orElseThrow(()-> new EntityNotFoundException("Customer does not exist"));
-        if (!customer.getPassword().equals(password)) {
+        if (!passwordEncoder.matches(password, customer.getPassword())) {
             throw new IllegalArgumentException("Wrong password!" + password);
         }
 
@@ -321,7 +326,7 @@ public class AccountManagementService {
 
 
         Employee employee = employeeRepository.findByUsername(username).orElseThrow(()-> new EntityNotFoundException("Employee does not exist"));
-        if (!employee.getPassword().equals(password)) {
+        if (!passwordEncoder.matches(password, employee.getPassword())) {
             throw new IllegalArgumentException("Wrong password!");
         } else if (!employee.isActive()) {
             throw new IllegalArgumentException("Account is deactivated!");
@@ -351,7 +356,7 @@ public class AccountManagementService {
 
 
         Manager manager = managerRepository.findByUsername(username).orElseThrow(()-> new EntityNotFoundException("Manager does not exist"));
-        if (!manager.getPassword().equals(password)) {
+        if (!passwordEncoder.matches(password, manager.getPassword())) {
             throw new IllegalArgumentException("Wrong password!");
         }
         return manager;
@@ -381,11 +386,11 @@ public class AccountManagementService {
 
         Customer customer = customerRepository.findByEmail(email).orElseThrow(()-> new EntityNotFoundException("Customer does not exist"));
 
-        if (!customer.getPassword().equals(oldPassword)) {
+        if (!passwordEncoder.matches(oldPassword, customer.getPassword())) {
             throw new IllegalArgumentException("Incorrect password.");
         }
 
-        customer.setPassword(newPassword);
+        customer.setPassword(passwordEncoder.encode(newPassword));
         customerRepository.save(customer);
         return customer;
     }

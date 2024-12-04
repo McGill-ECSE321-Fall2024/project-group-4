@@ -216,7 +216,7 @@ export default {
         try {
             const accountId = parseInt(localStorage.getItem('accountId'));
             if (!isNaN(accountId)) {
-                if (this.userRole == 'customer'){
+                if (this.userRole === 'customer'){
                     const response = await axiosClient.get(`/accounts/customers/ids/${accountId}`);
                     const accountData = response.data;
                     this.username = accountData.username;
@@ -224,7 +224,7 @@ export default {
                     this.phoneNumber = accountData.phoneNumber;
                     this.addresses = accountData.addresses;
                     this.creditCards = accountData.creditCards;
-                } else if (this.userRole == 'employee'){
+                } else if (this.userRole === 'employee'){
                     const response = await axiosClient.get(`/accounts/employees/id/${accountId}`);
                     const accountData = response.data;
                     this.username = accountData.username;
@@ -361,10 +361,7 @@ export default {
     },async fetchCreditCards() { 
         let response ="";
         try {
-            const accountId = parseInt(localStorage.getItem('accountId'));
-            const customer = await axiosClient.get(`/accounts/customers/ids/${accountId}`);
-            console.log(customer.email);
-            response = axiosClient.get(`/customers/${customer.email}/credit-cards`);
+            response = axiosClient.get(`/customers/${localStorage.getItem('email')}/credit-cards`);
             if (response.status === 200) {
                 log(response.data);
                 this.creditCards = response.data;
@@ -408,16 +405,8 @@ export default {
         };
     },
     async deleteCard(cardId){
-        
-     
-
-
-
         try {
-            const accountId = parseInt(localStorage.getItem('accountId'));
-            const response = await axiosClient.get(`/accounts/customers/ids/${accountId}`);
-            console.log(`/customers/${response.email}/credit-cards/${cardId}`)
-            await axiosClient.delete(`/customers/${this.email}/credit-cards/${cardId}`);
+            await axiosClient.delete(`/customers/${localStorage.getItem('email')}/credit-cards/${cardId}`);
             await this.fetchCreditCards();
             this.$router.go();
         } catch (error) {
