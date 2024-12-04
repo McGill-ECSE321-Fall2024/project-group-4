@@ -4,14 +4,15 @@
     <BTable :items="promotions" :fields="fields2">
       <template #cell(actions)="row">
         <div class="d-flex align-items-center justify-content-between">
-          <BButton variant="danger" @click="deletePromotion(row.item.promotionId)">
-            Delete Promotion
+          <BButton variant="danger" class="delete-btn" @click="deletePromotion(row.item.promotionId)">
+            Delete
           </BButton>
-          <b-Dropdown text="Actions" variant="primary" class="ml-2">
+          <!-- <b-Dropdown text="Actions" variant="primary" class="ml-2">
             <b-dropdown-item @click="editPromotion(row.item)">
               Edit
             </b-dropdown-item>
-          </b-Dropdown>
+          </b-Dropdown> -->
+          <BButton @click="editPromotion(row.item)" class="save-info-btn">Edit</BButton>
           <b-Dropdown text="Add/Remove games from promotion" variant="primary" class="ml-2">
             <template v-for="(game) in this.games">
                         <b-dropdown-item>
@@ -211,7 +212,7 @@ export default {
 
 </script>
 
-<style>
+<style scoped src="../../assets/main.css">
 .added {
   font-size: 1.2em;
   color: #ffffffd8;
