@@ -20,7 +20,7 @@
             <BButton variant="primary" @click="saveGameRequest" size="sm" class="save-info-btn">Save</BButton>
         </div>
 
-        <BTable :items="gameRequests" :fields="fields">
+        <BTable :items="filteredRequests" :fields="fields">
           <template #cell(game)="data">
             <div>
               <strong>Game: {{ data.item.game.name }}</strong><br>
@@ -73,6 +73,18 @@ export default {
       
     };
   },
+  
+    computed: {
+        filteredRequests() {
+            return this.gameRequests.filter(gameRequest => {
+                const searchTerm = this.searchQuery.toLowerCase();
+            
+                return gameRequest.id.toString().includes(searchTerm);
+               
+            });        
+        },
+    },
+
   async created() {
     try {
       const response = await axiosClient.get(`/gameRequests`);
