@@ -244,9 +244,7 @@ const getTotalPrice = async () => {
         const text = await response.text();
 
         // Parse the text as a float
-        // totalPrice.value = parseFloat(text);
-        totalPrice.value= cart.value.reduce((total, game) => total + game.price * game.quantity, 0);
-        console.log(text);
+        totalPrice.value = parseFloat(text);
       } else{
         console.error(`HTTP error! Status: ${response.status}`);
       }
