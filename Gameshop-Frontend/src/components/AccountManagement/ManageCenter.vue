@@ -227,6 +227,7 @@ export default{
                     this.showAddPolicyForm = false;
                     this.newPolicy.description = ""; // Reset input field after successful save
                     this.fetchPolicies(); // Refresh the policies list
+                    this.$router.go();
                 } else {
                     console.error("Failed to save policy", response.data);
                     alert("Failed to save policy. Please try again.");
