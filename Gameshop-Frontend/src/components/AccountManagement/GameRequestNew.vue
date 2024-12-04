@@ -31,6 +31,25 @@
       </div>
       <br>
       <BTable :items="filteredRequests" :fields="fields">
+        <template #cell(game)="data">
+            <div>
+              <strong>Game: {{ data.item.game.name }}</strong><br>
+              <small>Game ID: {{ data.item.game.id }}</small><br>
+              <small>Description: {{ data.item.game.description }}</small><br>
+              <small>Active: {{ data.item.game.isActive }}</small><br>
+              <small>Price: ${{ data.item.game.price }}</small><br>
+              <small>Stock: {{ data.item.game.stock }}</small><br>
+              <small>Categories: {{ data.item.game.categories }}</small><br>
+              <small>Promotions: {{ data.item.game.promotions }}</small><br>
+              <small>External Review: {{ data.item.externalReview }}</small><br>
+            </div>
+        </template>
+        <template #cell(requestor)="data">
+          <div>
+            <strong>Requestor Username: {{ data.item.requestor.username }}</strong><br>
+            <small>Requestor ID: {{ data.item.requestor.id }}</small><br>
+          </div>
+        </template>
         <template #cell(actions)="data">
             <div v-if="data.item.requestStatus === 'PENDING'">
                 <BButton size="sm" variant="danger" @click="rejectGameRequest(data.item.id)" class="delete-btn" style="margin-left: -10px;margin-right: 10px;">Reject</BButton>
