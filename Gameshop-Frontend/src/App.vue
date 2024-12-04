@@ -159,7 +159,7 @@ import { ref, watch } from 'vue';
 // Reactive state
 const loggedIn = ref(localStorage.getItem('loggedIn') === 'true');
 const searchQuery = ref('');
-const searchBy = ref('');
+const searchBy = ref('name');
 const username = ref(localStorage.getItem('username'));
 const userRole = ref(localStorage.getItem('userRole'));
 
@@ -242,7 +242,6 @@ function search(e) {
     } else if(searchBy.value === "genre"){
       router.push(`/games?category=${searchQuery.value}`);
     }
-
   }
 }
 

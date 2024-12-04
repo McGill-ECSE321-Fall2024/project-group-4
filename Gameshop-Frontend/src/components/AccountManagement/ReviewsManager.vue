@@ -19,27 +19,14 @@
             {{ data.item.reply }}
           </div>
         </template>
-        <template #cell(rating)="data">
-          <div v-if="selectedReview && selectedReview.id === data.item.id">
-            <BFormSelect v-model="selectedReview.rating" class="mb-2">
-              <BFormSelectOption :value="1">1</BFormSelectOption>
-              <BFormSelectOption :value="2">2</BFormSelectOption>
-              <BFormSelectOption :value="3">3</BFormSelectOption>
-              <BFormSelectOption :value="4">4</BFormSelectOption>
-              <BFormSelectOption :value="5">5</BFormSelectOption>
-            </BFormSelect>
-          </div>
-          <div v-else>
-            {{ data.item.rating }}
-          </div>
-        </template>
+        
         <template #cell(actions)="data">
           <div v-if="selectedReview && selectedReview.id === data.item.id" class="mt-3">
             <BButton variant="secondary" size="sm" @click="cancelEditReview" class="delete-btn">Cancel</BButton>
-            <BButton variant="primary" size="sm" @click="updateReview" class="save-info-btn">Save</BButton>
+            <BButton variant="primary" size="sm" @click="updateReview" class="save-info-btn">Send</BButton>
           </div>
           <div v-else class="mt-3">
-            <BButton size="sm" variant="primary" @click="editReview(data.item)" class="save-info-btn">Edit</BButton>
+            <BButton size="sm" variant="primary" @click="editReview(data.item)" class="save-info-btn">Reply</BButton>
           </div>
         </template>
       </BTable>
@@ -67,23 +54,12 @@
         fields: [
           { key: 'id', label: 'ID' },
           { key: 'review', label: 'Game' },
-          { key: 'reply', label: 'Reply' },
           { key: 'rating', label: 'Rating' },
+          { key: 'reply', label: 'Reply' },
           { key: 'actions', label: 'Actions' },
         ],
         reviews: [
-            {
-                id: 1,
-                review: 'Great game',
-                reply: 'Thank you!',
-                rating: 5,
-            },
-            {
-                id: 2,
-                review: 'Bad game',
-                reply: 'We are sorry to hear that',
-                rating: 1,
-            },
+            
         ],
         selectedReview: null,
       };

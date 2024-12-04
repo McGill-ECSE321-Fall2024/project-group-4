@@ -62,7 +62,6 @@
                     Add Promotion
                 </BButton>
                 <div v-if="showAddPromotionForm" class="mb-4">
-<<<<<<< HEAD
                     <form @submit.prevent="updatePromotion">
                     <b-form-group label="Discount" label-for="discount">
           <b-form-input
@@ -89,17 +88,16 @@
           ></b-form-input>
         </b-form-group>
     </form>
+    <br>
                     <BButton variant="secondary" @click="cancelAddPromotion" class="delete-btn">Cancel</BButton>
                     <BButton variant="primary" @click="addPromotion" class="save-info-btn">Save</BButton>
-=======
                     <!-- Promotion Form -->
->>>>>>> clara-frontEnd
                 </div>
                 <Promotion ref="Promotion" :promotion="promotion" />
             </BTab>
             <BTab title="Reviews">
                 <br />
-                <ReviewsManager :reviews="reviews" />
+                <ReviewsManager />
             </BTab>
         </BTabs>
     </div>

@@ -39,8 +39,11 @@
               <small>Active: {{ data.item.game.isActive }}</small><br>
               <small>Price: ${{ data.item.game.price }}</small><br>
               <small>Stock: {{ data.item.game.stock }}</small><br>
-              <small>Categories: {{ data.item.game.categories }}</small><br>
-              <small>Promotions: {{ data.item.game.promotions }}</small><br>
+              <small>Categories: 
+
+                {{ data.item.game.categories.map(category => category.name).join(', ') }}
+              </small><br>
+              <small>Promotions: {{ data.item.game.promotions.map(promotion => promotion.name).join(', ') }}</small><br>
               <small>External Review: {{ data.item.externalReview }}</small><br>
             </div>
         </template>
