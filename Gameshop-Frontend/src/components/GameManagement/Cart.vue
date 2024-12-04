@@ -106,12 +106,12 @@ const fetchAddresses = async () => {
     if (!isNaN(accountId)) {
       
         const response = await axiosClient.get(`/accounts/customers/ids/${accountId}`);
-                    const accountData = response.data;
-                    // this.username = accountData.username;
-                    // this.email = accountData.email;
-                    // this.phoneNumber = accountData.phoneNumber;
-                    addresses.value = accountData.addresses;
-                    creditCards.value = accountData.creditCards;
+        const accountData = response.data;
+        // this.username = accountData.username;
+        // this.email = accountData.email;
+        // this.phoneNumber = accountData.phoneNumber;
+        addresses.value = accountData.addresses;
+        creditCards.value = accountData.creditCards;
       
     }
     
@@ -175,7 +175,9 @@ const getTotalPrice = async () => {
         const text = await response.text();
 
         // Parse the text as a float
-        totalPrice.value = parseFloat(text);
+        // totalPrice.value = parseFloat(text);
+        totalPrice.value= cart.value.reduce((total, game) => total + game.price * game.quantity, 0);
+        console.log(text);
       } else{
         console.error(`HTTP error! Status: ${response.status}`);
       }
@@ -195,6 +197,7 @@ const formatAddress = (address) => {
 const formatCreditCard = (creditCard) => {
       return `Card Number: ${creditCard.cardNumber}, Expiry Date: ${creditCard.expiryDate}, CVV: ${creditCard.cvv}, Billing Address: ${formatAddress(creditCard.billingAddress)}`;
 };
+
 
 
 onMounted(created);
