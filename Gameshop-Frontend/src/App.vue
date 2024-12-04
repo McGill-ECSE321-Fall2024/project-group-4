@@ -17,8 +17,9 @@
             <!-- Right aligned nav items -->
             <BNavbarNav class="ms-auto mb-2 mb-lg-0">
               <BNavForm :onsubmit="search" class="d-flex">
-                <BFormInput v-model="searchQuery" class="me-2" placeholder="Search" />
+                <BFormInput v-model="searchQuery" class="me-2" placeholder="Search Games" />
                 <BFormSelect v-model="searchBy" class="me-2 w-auto">
+                  <BFormSelectOption value="all">All</BFormSelectOption>
                   <BFormSelectOption value="name">Name</BFormSelectOption>
                   <BFormSelectOption value="genre">Genre</BFormSelectOption>
                   <BFormSelectOption value="id">ID</BFormSelectOption>
@@ -60,7 +61,13 @@
             <!-- Right aligned nav items -->
             <BNavbarNav class="ms-auto mb-2 mb-lg-0">
               <BNavForm :onsubmit="search" class="d-flex">
-                <BFormInput v-model="searchQuery" class="me-2" placeholder="Search" />
+                <BFormInput v-model="searchQuery" class="me-2" placeholder="Search Games" />
+                <BFormSelect v-model="searchBy" class="me-2 w-auto">
+                  <BFormSelectOption value="all">All</BFormSelectOption>
+                  <BFormSelectOption value="name">Name</BFormSelectOption>
+                  <BFormSelectOption value="genre">Genre</BFormSelectOption>
+                  <BFormSelectOption value="id">ID</BFormSelectOption>
+                </BFormSelect>
                 <BButton type="submit" class="search-btn">Search</BButton>
               </BNavForm>
                 <BNavItemDropdown text="Profile" right>
@@ -94,7 +101,13 @@
             <!-- Right aligned nav items -->
             <BNavbarNav class="ms-auto mb-2 mb-lg-0">
               <BNavForm :onsubmit="search" class="d-flex">
-                <BFormInput v-model="searchQuery" class="me-2" placeholder="Search" />
+                <BFormInput v-model="searchQuery" class="me-2" placeholder="Search Games" />
+                <BFormSelect v-model="searchBy" class="me-2 w-auto">
+                  <BFormSelectOption value="all">All</BFormSelectOption>
+                  <BFormSelectOption value="name">Name</BFormSelectOption>
+                  <BFormSelectOption value="genre">Genre</BFormSelectOption>
+                  <BFormSelectOption value="id">ID</BFormSelectOption>
+                </BFormSelect>
                 <BButton type="submit" class="search-btn">Search</BButton>
               </BNavForm>
                 <BNavItemDropdown text="Profile" right>
@@ -159,7 +172,7 @@ import { ref, watch } from 'vue';
 // Reactive state
 const loggedIn = ref(localStorage.getItem('loggedIn') === 'true');
 const searchQuery = ref('');
-const searchBy = ref('name');
+const searchBy = ref('all');
 const username = ref(localStorage.getItem('username'));
 const userRole = ref(localStorage.getItem('userRole'));
 
@@ -241,6 +254,10 @@ function search(e) {
       router.push(`/games?search=${searchQuery.value}`);
     } else if(searchBy.value === "genre"){
       router.push(`/games?category=${searchQuery.value}`);
+    } else if(searchBy.value === "all"){
+      router.push(`/games?search=${searchQuery.value}`);
+    } else {
+      router.push(`/games?search=${searchQuery.value}`);
     }
   }
 }
