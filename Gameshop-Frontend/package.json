@@ -11,6 +11,7 @@
   "dependencies": {
     "@vuepic/vue-datepicker": "^10.0.0",
     "axios": "^1.7.8",
+    "bcryptjs": "^2.4.3",
     "bootstrap": "^5.3.3",
     "bootstrap-vue": "^2.23.1",
     "bootstrap-vue-next": "^0.26.7",

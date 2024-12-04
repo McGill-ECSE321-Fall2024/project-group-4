@@ -73,8 +73,10 @@ const showCheckoutForm = ref(false);
 
 const finishedCheckout = async () => {
   try{
-    let response = await axiosClient.post(`customers/${localStorage.getItem('email')}/cart/${parseInt(selectedAddress.value.id)}/${parseInt(selectedCreditCard.value.id)}`);
-    
+    const response = await axiosClient.post(`customers/${localStorage.getItem('email')}/cart/${parseInt(selectedAddress.value.id)}/${parseInt(selectedCreditCard.value.id)}`);
+    if (!response.ok) {
+      throw new Error(`Error checking out: ${response.statusText}`);
+    }
     showCheckoutForm.value = false;
     cart.value = [];
     router.push("/");

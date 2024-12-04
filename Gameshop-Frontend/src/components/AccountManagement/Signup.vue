@@ -39,6 +39,11 @@
     <BFormGroup id="password-label" label="Password:" label-for="input-2">
       <BFormInput id="input-2" v-model="password" type="password" placeholder="Enter password" required />
     </BFormGroup>
+    <br>
+    <BFormGroup id="password-label-confirm" label="Confirm Password:" label-for="input-conf">
+      <BFormInput id="input-conf" v-model="confirmPassword" type="password" placeholder="Confirm password" required />
+    </BFormGroup>
+
 
     <br>
     
@@ -55,6 +60,7 @@
 
 <script>
 import axios from 'axios';
+// import bcrypt from 'bcryptjs';
 
 const frontendURL = 'http://localhost:8087';
 const backendURL = 'http://localhost:8080';
@@ -75,11 +81,19 @@ export default{
             password: null,
             username: null,
             phoneNumber: null,
+            confirmPassword: null,
         }
     },
     methods:{
         async signUpCustomer(){
+            if (this.password !== this.confirmPassword){
+                alert("Passwords do not match");
+                return;
+            }
             let response = '';
+            // const salt = bcrypt.genSaltSync(10);
+            // const hashedPassword = bcrypt.hashSync(this.password, salt);
+
             const credentials = {
                     username: this.username,
                     email: this.email,
@@ -97,8 +111,6 @@ export default{
                 response = await axiosClient.post("/accounts/customers", credentials);
                 console.log(response.data) ;
 
-               
-
                 console.log(response.status);
                 if (response.status === 200){
                     this.setLoggedIn(true);
@@ -107,11 +119,11 @@ export default{
                     this.clearInputs();
                     localStorage.setItem('userRole', 'customer');
                     this.$router.push('/');
-                    this.$router.go();
+                    // this.$router.go();
                 }
 
-                response = await axiosClient.get("/accounts/customers/");
-                console.log(response) ;
+                // response = await axiosClient.get("/accounts/customers/");
+                // console.log(response) ;
 
             } catch(error){
                 alert(error.response?.data?.errorMessages || error.message || "Something went wrong");
