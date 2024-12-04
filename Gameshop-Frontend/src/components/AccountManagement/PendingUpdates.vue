@@ -26,15 +26,15 @@
                 </div>
             </template>
 
-            <template #cell(active)="data">
+            <template #cell(isActive)="data">
                 <div v-if="selectedGame && selectedGame.id === data.item.id">
-                <BFormSelect v-model="selectedGame.active" class="mb-2">
+                <BFormSelect v-model="selectedGame.isActive" class="mb-2">
                     <BFormSelectOption :value="true">Active</BFormSelectOption>
                     <BFormSelectOption :value="false">Inactive</BFormSelectOption>
                 </BFormSelect>
                 </div>
                 <div v-else>
-                    {{ data.item.active ? 'Active' : 'Inactive' }}
+                    {{ data.item.isActive ? 'Active' : 'Inactive' }}
                 </div>
             </template>
 
@@ -70,29 +70,7 @@ export default {
     },
     data(){
         return{
-            games: [
-                {
-                    id: 1,
-                    name: 'Game 1',
-                    genre: 'Action',
-                    stock: 10,
-                    active: true,
-                },
-                {
-                    id: 2,
-                    name: 'Game 2',
-                    genre: 'Adventure',
-                    stock: 5,
-                    active: false,
-                },
-                {
-                    id: 3,
-                    name: 'Game 3',
-                    genre: 'RPG',
-                    stock: 15,
-                    active: true,
-                },
-            ],
+            games: [],
             searchBy: 'all',
             searchQuery: '',
             fields: [
@@ -100,7 +78,7 @@ export default {
                 { key: 'name', label: 'Name' },
                 { key: 'genre', label: 'Genre' },
                 { key: 'stock', label: 'Stock' },
-                { key: 'active', label: 'Active Status' },
+                { key: 'isActive', label: 'Active Status' },
                 { key: 'actions', label: '' },
             ],
             selectedGame: {
@@ -108,13 +86,22 @@ export default {
                 name: '',
                 genre: '',
                 stock: null,
-                active: null,
+                isActive: null,
             },
 
         }
     },
     computed: {
        
+    },
+    async created() {
+        try {
+            let response = await axiosClient.get("/games");
+            this.games = response.data;
+        }
+        catch (error) {
+            alert(error);
+        }       
     },
     methods:{
         cancelEditGame() {
@@ -123,7 +110,17 @@ export default {
         editGame(game){
             this.selectedGame = { ...game };
         },
-
+        async saveEditGame() {
+            try {
+                await axiosClient.put(`/games/${this.selectedGame.id}/stock/${this.selectedGame.stock}`);
+                await axiosClient.put(`/games/${this.selectedGame.id}/active/${this.selectedGame.isActive}`);
+                //console.log(this.selectedGame.active);
+                this.$router.go();
+            }
+            catch (error) {
+                alert(error)
+            }
+        }
     }
     
   };

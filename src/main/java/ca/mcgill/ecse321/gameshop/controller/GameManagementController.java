@@ -171,8 +171,8 @@ public class GameManagementController {
      *
      * @author Clara Mickail
      */
-    @PutMapping("/games/{gameId}/stock")
-    public void updateStock(@PathVariable int gameId, @RequestParam int stockChange) {
+    @PutMapping("/games/{gameId}/stock/{stockChange}")
+    public void updateStock(@PathVariable int gameId, @PathVariable int stockChange) {
         gameManagementService.updateStock(gameId, stockChange);
     }
 
@@ -337,8 +337,8 @@ public class GameManagementController {
     }
 
 
-    @PutMapping("/games/{gameId}/is_active")
-    public void setGameActivity(@RequestParam boolean is_active, @PathVariable int gameId) {
+    @PutMapping("/games/{gameId}/active/{is_active}")
+    public void setGameActivity(@PathVariable boolean is_active, @PathVariable int gameId) {
         gameManagementService.updateActivity(gameId, is_active);
     }
 
