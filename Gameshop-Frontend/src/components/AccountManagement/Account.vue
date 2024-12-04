@@ -12,7 +12,7 @@
                         <p class="text-secondary fst-italic" style="font-size:80%">
                             * Note that you cannot change your email address after signing up.
                         </p>
-                        <BFormInput id="input-0" type="text" v-model="email" readonly>{{ this.email }} </BFormInput>
+                        <BFormInput id="input-0" type="text" v-model="email" readonly></BFormInput>
                     </BFormGroup>  
                 </div>  
 
@@ -310,8 +310,19 @@ export default {
     toggleCreditForm() {
       this.showCreditForm = !this.showCreditForm;
     },
-    deleteAddress(index) {
-      const toDelete = this.addresses.splice(index, 1);
+    async deleteAddress(index,address) {
+      
+      let response = '';
+      try {
+        const addressId = address.id;
+        console.log(addressId);
+        response = await axiosClient.delete(`/accounts/${this.email}/addresses/${addressId}`);
+        const toDelete = this.addresses.splice(index, 1);
+        
+      }catch (error) {
+            alert(error.response?.data?.errorMessages || error.message || "Something went wrong"); 
+        }
+      
     },
     async saveAddress(){
         if (
@@ -350,7 +361,10 @@ export default {
     },async fetchCreditCards() { 
         let response ="";
         try {
-            response = axiosClient.get(`/customers/${this.email}/credit-cards`);
+            const accountId = parseInt(localStorage.getItem('accountId'));
+            const customer = await axiosClient.get(`/accounts/customers/ids/${accountId}`);
+            console.log(customer.email);
+            response = axiosClient.get(`/customers/${customer.email}/credit-cards`);
             if (response.status === 200) {
                 log(response.data);
                 this.creditCards = response.data;
@@ -394,7 +408,15 @@ export default {
         };
     },
     async deleteCard(cardId){
+        
+     
+
+
+
         try {
+            const accountId = parseInt(localStorage.getItem('accountId'));
+            const response = await axiosClient.get(`/accounts/customers/ids/${accountId}`);
+            console.log(`/customers/${response.email}/credit-cards/${cardId}`)
             await axiosClient.delete(`/customers/${this.email}/credit-cards/${cardId}`);
             await this.fetchCreditCards();
             this.$router.go();

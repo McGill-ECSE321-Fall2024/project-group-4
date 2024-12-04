@@ -336,5 +336,11 @@ public class AccountManagementController {
                 address.postalCode(), address.country(), customerEmail));
     }
 
+    @DeleteMapping("{customerEmail}/addresses/{addressId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteAddress(@PathVariable String customerEmail, @PathVariable int addressId) {
+        accountManagementService.removeAddressFromCustomer(customerEmail, addressId);
+    }
+
 }
 
