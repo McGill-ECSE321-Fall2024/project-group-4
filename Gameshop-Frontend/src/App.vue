@@ -18,6 +18,11 @@
             <BNavbarNav class="ms-auto mb-2 mb-lg-0">
               <BNavForm :onsubmit="search" class="d-flex">
                 <BFormInput v-model="searchQuery" class="me-2" placeholder="Search" />
+                <BFormSelect v-model="searchBy" class="me-2 w-auto">
+                  <BFormSelectOption value="name">Name</BFormSelectOption>
+                  <BFormSelectOption value="genre">Genre</BFormSelectOption>
+                  <BFormSelectOption value="id">ID</BFormSelectOption>
+                </BFormSelect>
                 <BButton type="submit" class="search-btn">Search</BButton>
               </BNavForm>
                 <BNavItemDropdown text="Profile" right>
@@ -154,6 +159,7 @@ import { ref, watch } from 'vue';
 // Reactive state
 const loggedIn = ref(localStorage.getItem('loggedIn') === 'true');
 const searchQuery = ref('');
+const searchBy = ref('');
 const username = ref(localStorage.getItem('username'));
 const userRole = ref(localStorage.getItem('userRole'));
 
@@ -229,8 +235,14 @@ function goPolicy() {
 }
 function search(e) {
   if (searchQuery.value.trim().length > 0) {
-    console.log(e);
-    router.push(`/games?search=${searchQuery.value}`);
+    if(searchBy.value === "id"){
+      router.push(`/game?gameId=${searchQuery.value}`);
+    } else if(searchBy.value === "name"){
+      router.push(`/games?search=${searchQuery.value}`);
+    } else if(searchBy.value === "genre"){
+      router.push(`/games?category=${searchQuery.value}`);
+    }
+
   }
 }
 

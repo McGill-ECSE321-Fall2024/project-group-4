@@ -339,6 +339,14 @@ public class GameManagementService {
         throw new EntityNotFoundException("No Game found");
     }
 
+    public Set<Game> getGameByCategory(String category){
+        Optional<Category> categoryOpt = categoryRepo.findByName(category);
+        if(categoryOpt.isEmpty()){
+            throw new EntityNotFoundException("Category not found");
+        }
+        return categoryOpt.get().getCopyInCategory();
+    }
+
     /**
      * Create a game request
      *

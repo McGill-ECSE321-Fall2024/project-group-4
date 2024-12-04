@@ -16,10 +16,14 @@ export default {
       try {
         loading.value = true; // Start loading
         error.value = null; // Reset error
-
-        const url = searchQuery
-            ? `http://localhost:8080/catalogue/games/${searchQuery}`
-            : "http://localhost:8080/games";
+        let url;
+        if(route.query.search){
+          url = `http://localhost:8080/catalogue/games/${searchQuery}`;
+        } else if(route.query.category){
+          url = `http://localhost:8080/games/categories/${route.query.category}`;
+        } else{
+          url = "http://localhost:8080/games";
+        }
 
         const response = await fetch(url);
         const data = await response.json();
@@ -27,8 +31,8 @@ export default {
         if (!response.ok) {
           throw new Error(`Error fetching games: ${response.statusText}`);
         }
-
         games.value = data;
+
       } catch (err) {
         error.value = err.message;
       } finally {
@@ -36,7 +40,8 @@ export default {
       }
     };
 
-    const searchQuery = computed(() => route.query.search || ""); // Reactive search query
+
+    const searchQuery = computed(() => route.query.search); // Reactive search query
 
     // Watch for changes in the search query
     watch(searchQuery, (newSearchQuery) => {
@@ -52,8 +57,6 @@ export default {
       games,
       loading,
       error,
-      searchBy: ref("all"),
-      searchQuery: '',
       userRole: ref(localStorage.getItem('userRole')),
       showAddForm: ref(false),
       newGame: {
@@ -95,21 +98,6 @@ export default {
 <template>
   <div class="game-catalogue">
     <div class="display-6 my-3" align="center">Game Catalogue</div>
-    <div class="d-flex mb-3">
-      <BFormSelect v-model="searchBy" class="me-2 w-auto">
-          <BFormSelectOption value="all">All</BFormSelectOption>
-          <BFormSelectOption value="name">Name</BFormSelectOption>
-          <BFormSelectOption value="genre">Genre</BFormSelectOption>
-          <BFormSelectOption value="id">ID</BFormSelectOption>
-      </BFormSelect>
-      <BFormInput
-          v-model="searchQuery"
-          placeholder="Search games"
-          class="me-2"
-      />
-      <BButton type="submit" class="search-btn">Search</BButton>
-      
-    </div>
     <div v-if="showAddForm" class="mb-3">
        <!-- create game here-->
       <BFormInput v-model="newGame.name" placeholder="Name" class="mb-2" />
