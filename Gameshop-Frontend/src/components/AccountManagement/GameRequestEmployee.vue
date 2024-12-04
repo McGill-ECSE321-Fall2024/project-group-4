@@ -79,25 +79,27 @@ export default {
     },
     async saveGameRequest() {
       try {
-        let response = await axiosClient.get(`/employees/username/${localStorage.getItem('username')}`);
-        const request = {
+        let requestor = await axiosClient.get(`/accounts/employees/username/${localStorage.getItem('username')}`);
+        let game = {
           id: null,
-          externalReview: this.newGameRequest.review,
-          requestStatus: 2,
-          requestor: response.data,
-          game: {
-            id: null,
             name: this.newGameRequest.title,
             description: this.newGameRequest.description,
             coverPicture: '', // FILL IN LATER
             price: this.newGameRequest.price,
-            isActive: true,
+            isActive: false,
             stock: 0,
             categories: [], // FILL IN LATER
             promotions: []
-          }
+        };
+        let gameResponse = await axiosClient.post("/games", game);
+        const request = {
+          id: null,
+          externalReview: this.newGameRequest.review,
+          requestStatus: 2,
+          requestor: requestor.data,
+          game: gameResponse.data
         }
-        response = await axiosClient.post('/gameRequests', request).then(this.$router.go());
+        let response = await axiosClient.post('/gameRequests', request).then(this.$router.go());
       } catch (error) {
         alert(error);
       }

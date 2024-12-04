@@ -145,7 +145,8 @@ export default {
     // },
     async approveGameRequest(gameRequestId) {
       try {
-        const response = await axiosClient.put(`/gameRequests/${gameRequestId}/requestStatus`, {status: 'approve' });
+        const status = 'approve';
+        const response = await axiosClient.put(`/gameRequests/${gameRequestId}/approve`);
         if (response.status === 200) {
           console.log('Game request approved');
           this.$router.go();
@@ -156,7 +157,7 @@ export default {
     },
     async rejectGameRequest(gameRequestId) {
       try {
-        const response = await axiosClient.put(`/gameRequests/${gameRequestId}/requestStatus`, { status: 'reject' });
+        const response = await axiosClient.put(`/gameRequests/${gameRequestId}/deny`);
         if (response.status === 200) {
           console.log('Game request rejected');
           this.$router.go();

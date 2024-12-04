@@ -142,7 +142,7 @@ public class GameManagementController {
         return inventory.stream().map(GameResponseDTO::new).collect(Collectors.toList());
     }
 
-    @PostMapping("games")
+    @PostMapping("/games")
     public GameResponseDTO addGame(@RequestBody GameInputDTO gameRequestDTO) {
         Game newGame = gameManagementService.addNewGame(gameRequestDTO.name(), gameRequestDTO.description(),
                 gameRequestDTO.coverPicture(), gameRequestDTO.price(), gameRequestDTO.isActive(),
@@ -245,16 +245,16 @@ public class GameManagementController {
      *
      * @author Camille Pouliot
      */
-    @PutMapping("/gameRequests/{gameRequestId}/requestStatus")
-    public String setGameRequestStatus(@PathVariable int gameRequestId, @RequestParam String status){
-        if(status.equalsIgnoreCase("approve")){
-            gameManagementService.approveGameRequest(gameRequestId);
-            return "Approved";
-        } else if(status.equalsIgnoreCase("reject")){
-            gameManagementService.rejectGameRequest(gameRequestId);
-            return "Rejected";
-        }
-        return "Unknown";
+    @PutMapping("/gameRequests/{gameRequestId}/approve")
+    public String approveGameRequest(@PathVariable int gameRequestId){
+        gameManagementService.approveGameRequest(gameRequestId);
+        return "Approved";
+    }
+
+    @PutMapping("/gameRequests/{gameRequestId}/deny")
+    public String denyGameRequest(@PathVariable int gameRequestId){
+        gameManagementService.rejectGameRequest(gameRequestId);
+        return "Rejected";
     }
 
     /**
