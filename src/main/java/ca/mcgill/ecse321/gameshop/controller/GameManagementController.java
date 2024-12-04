@@ -142,7 +142,7 @@ public class GameManagementController {
         return inventory.stream().map(GameResponseDTO::new).collect(Collectors.toList());
     }
 
-    @PostMapping("games")
+    @PostMapping("/games")
     public GameResponseDTO addGame(@RequestBody GameInputDTO gameRequestDTO) {
         Game newGame = gameManagementService.addNewGame(gameRequestDTO.name(), gameRequestDTO.description(),
                 gameRequestDTO.coverPicture(), gameRequestDTO.price(), gameRequestDTO.isActive(),
