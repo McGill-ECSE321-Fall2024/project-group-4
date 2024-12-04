@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -622,6 +623,16 @@ public class AccountManagementService {
         return customerAddress;
 
     }
+
+    
+
+    @Transactional
+    public List<Policy> getAllPolicies() {
+        return StreamSupport.stream(policyRepository.findAll().spliterator(), false)
+                            .collect(Collectors.toList());
+    }
+
+
 
 
 }

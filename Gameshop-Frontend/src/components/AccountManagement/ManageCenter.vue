@@ -8,22 +8,61 @@
             <BTab title="Employees">
                 <br>
                 <ViewEmployee :employees="employees" @update:employees="updateEmployees" />
-                
             </BTab>
-            <BTab title="Game Requests" >
+            <BTab title="Game Requests">
                 <br>
-                <GameRequestNew :gameRequests="gameRequests"/>
-
+                <GameRequestNew :gameRequests="gameRequests" />
             </BTab>
-            <BTab title="Policies" >
-                <br>
+            <BTab title="Policies">
+                <br />
                 <Policy :policy="policy" />
+
+                <!-- Form to add new policy -->
+                <div v-if="showAddPolicyForm" class="add-policy-form mb-3">
+                    
+                    <BFormTextarea
+                        v-model="newPolicy.description"
+                        placeholder="Enter policy description"
+                        class="mb-2"
+                    />
+                    <BButton
+                        variant="primary"
+                        @click="saveAddPolicy"
+                        size="sm"
+                        class="save-info-btn"
+                    >
+                        Save
+                    </BButton>
+                    <BButton
+                        variant="secondary"
+                        @click="cancelAddPolicy"
+                        size="sm"
+                        class="delete-btn"
+                    >
+                        Cancel
+                    </BButton>
+                </div>
+
+                <!-- Button to trigger the add new policy form -->
+                <BButton
+                    variant="success"
+                    class="ms-auto save-info-btn"
+                    @click="toggleAddPolicyForm"
+                >
+                    + Add Policy
+                </BButton>
             </BTab>
             <BTab title="Promotions" @click="fetchPromotions">
-                <br>
-               
-                <BButton variant="success" class="ms-auto save-info-btn" @click="showPromotionForm">Add Promotion</BButton>
+                <br />
+                <BButton
+                    variant="success"
+                    class="ms-auto save-info-btn"
+                    @click="showPromotionForm"
+                >
+                    Add Promotion
+                </BButton>
                 <div v-if="showAddPromotionForm" class="mb-4">
+<<<<<<< HEAD
                     <form @submit.prevent="updatePromotion">
                     <b-form-group label="Discount" label-for="discount">
           <b-form-input
@@ -52,18 +91,19 @@
     </form>
                     <BButton variant="secondary" @click="cancelAddPromotion" class="delete-btn">Cancel</BButton>
                     <BButton variant="primary" @click="addPromotion" class="save-info-btn">Save</BButton>
+=======
+                    <!-- Promotion Form -->
+>>>>>>> clara-frontEnd
                 </div>
                 <Promotion ref="Promotion" :promotion="promotion" />
             </BTab>
-            <BTab title="Reviews" >
-                <br>
+            <BTab title="Reviews">
+                <br />
                 <ReviewsManager :reviews="reviews" />
             </BTab>
         </BTabs>
-
     </div>
 </template>
-
 
 <script>
 import Promotion from './Promotion.vue';
@@ -82,9 +122,9 @@ const backendURL = 'http://localhost:8080';
 
 const axiosClient = axios.create({
     baseURL: backendURL,
-    // headers: {
-    //     'Access-Control-Allow-Origin': frontendURL,
-    // }
+     headers: {
+         'Access-Control-Allow-Origin': frontendURL,
+     }
 });
 
 
@@ -99,6 +139,7 @@ export default{
     components: {
       ReviewsManager,
       VueDatePicker,
+        VueDatePicker,
         Promotion,
         ViewEmployee,
         Policy,
@@ -106,6 +147,10 @@ export default{
     },
     data(){
         return{
+            showAddPolicyForm: false, // Tracks whether the form is visible
+            newPolicy: {
+                description: "", 
+            },
             searchBy: 'username',
             newEmployee: {
                 id: null,
@@ -115,12 +160,7 @@ export default{
             gameRequests: [],
             employees: [],
             showAddForm: false,
-            showAddPolicyForm: false,
             showAddPromotionForm: false,
-            newPolicy: {
-                title: '',
-                description: '',
-            },
             newPromotion: {
                 discount: '',
                 description: '',
@@ -132,6 +172,7 @@ export default{
  
         }
     },
+    
     
     methods:{
         updateEmployees(newemployees){
@@ -157,17 +198,53 @@ export default{
             this.showAddForm = false;
             this.newEmployee = { username: '', is_active: true };
         },
-        showAddPolicyForm() {
-            this.showAddPolicyForm = true;
+        // showAddPolicyForm() {
+        //     this.showAddPolicyForm = !this.showAddPolicyForm;
+        // },
+         
+        // Toggles the visibility of the add policy form
+        toggleAddPolicyForm() {
+            this.showAddPolicyForm = !this.showAddPolicyForm;
         },
+        // Resets the form and hides it
         cancelAddPolicy() {
             this.showAddPolicyForm = false;
-            this.newPolicy = { title: '', description: '' };
+            this.newPolicy.description = ""; // Reset description field
         },
-        saveAddPolicy() {
-            // Add logic to save the new policy
-            this.showAddPolicyForm = false;
-            this.newPolicy = { title: '', description: '' };
+
+        async saveAddPolicy() {
+            console.log("Saving policy");
+            try {
+                const response = await axiosClient.post("/accounts/policies", {
+                    description: this.newPolicy.description, 
+                }, {
+                    headers: {
+                        "Role": "MANAGER",
+                        "Content-Type": "application/json",
+                    },
+                });
+
+                if (response.status === 200) {
+                    console.log("Policy saved:", response.data);
+                    this.showAddPolicyForm = false;
+                    this.newPolicy.description = ""; // Reset input field after successful save
+                    this.fetchPolicies(); // Refresh the policies list
+                } else {
+                    console.error("Failed to save policy", response.data);
+                    alert("Failed to save policy. Please try again.");
+                }
+            } catch (error) {
+                console.error("Error saving policy:", error);
+                alert("There was an error saving the policy. Please check the console for details.");
+            }
+        },
+        async fetchPolicies() {
+            try {
+                const response = await axios.get("/accounts/policies");
+                this.policies = response.data; 
+            } catch (error) {
+                console.error("Error fetching policies:", error);
+            }
         },
         showPromotionForm() {
             console.log('showAddPromotionForm called');

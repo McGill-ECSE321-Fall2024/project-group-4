@@ -19,6 +19,10 @@
             <BButton variant="secondary" @click="cancelGameRequest" size="sm" class="delete-btn">Cancel</BButton>
             <BButton variant="primary" @click="saveGameRequest" size="sm" class="save-info-btn">Save</BButton>
         </div>
+
+        <BTable :items="filteredGameRequests" :fields="fields">
+
+        </BTable>
     </div>
 </template>
 
