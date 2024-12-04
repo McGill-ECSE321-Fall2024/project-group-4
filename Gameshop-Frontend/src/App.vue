@@ -12,6 +12,7 @@
             <BNavbarNav>
               <BNavItem @click="goCatalogue" class="BNavItem">Catalogue</BNavItem>
               <BNavItem @click="goReviews" class="BNavItem">Reviews</BNavItem>
+              <BNavItem @click="goPolicy" class="BNavItem">Policy</BNavItem>
             </BNavbarNav>
             <!-- Right aligned nav items -->
             <BNavbarNav class="ms-auto mb-2 mb-lg-0">
@@ -222,6 +223,9 @@ function goUpdates() {
 }
 function goReviewsManager() {
   router.push('/manager-reviews');
+}
+function goPolicy() {
+  router.push('/policies');
 }
 function search(e) {
   if (searchQuery.value.trim().length > 0) {

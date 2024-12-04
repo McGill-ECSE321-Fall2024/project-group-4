@@ -264,10 +264,15 @@ public class AccountManagementController {
      * @param description description of policy to add
      * @return Policy DTO of the created policy, different from the param
      *
-     * @author Camille Pouliot
-     */
-    @PostMapping("/policies")
-    public PolicyDTO createPolicy(@RequestBody String description) {
+     * @author Camille Pouliot and Clara Mickail
+          * @throws Exception 
+          */
+         @PostMapping("/policies")
+         public PolicyDTO createPolicy(@RequestBody String description, @RequestHeader("Role") String role) throws Exception {
+        if (!role.equals("MANAGER")) {
+            throw new Exception("Only managers can create policies");
+        }
+
         Policy createdPolicy = accountManagementService.createPolicy(description);
         return new PolicyDTO(createdPolicy);
     }
@@ -279,10 +284,15 @@ public class AccountManagementController {
      * @param description Updated description of policy
      * @return Policy DTO of the updated policy
      *
-     * @author Camille Pouliot
-     */
-    @PutMapping("/policies/{policyId}")
-    public PolicyDTO updatePolicy(@PathVariable int policyId, @RequestBody String description) {
+     * @author Camille Pouliot and Clara Mickail
+          * @throws Exception 
+          */
+         @PutMapping("/policies/{policyId}")
+         public PolicyDTO updatePolicy(@PathVariable int policyId, @RequestBody String description, @RequestHeader("Role") String role) throws Exception {
+        if (!role.equals("MANAGER")) {
+            throw new Exception("Only managers can update policies");
+        }
+        
         return new PolicyDTO(accountManagementService.updatePolicy(policyId,description));
     }
 
@@ -292,10 +302,28 @@ public class AccountManagementController {
      * @param policyId Policy unique identifier
      *
      * @author Camille Pouliot
-     */
-    @DeleteMapping("/policies/{policyId}")
-    public void deletePolicy(@PathVariable int policyId) {
+          * @throws Exception 
+          */
+         @DeleteMapping("/policies/{policyId}")
+         public void deletePolicy(@PathVariable int policyId, @RequestHeader("Role") String role) throws Exception {
+        if (!role.equals("MANAGER")) {
+            throw new Exception("Only managers can delete policies");
+        }
         accountManagementService.deletePolicy(policyId);
+    }
+
+    /**
+     * Get all policies
+     *
+     * @return List of all policies
+     * @author Clara Mickail
+     */
+    @GetMapping("/policies")
+    public List<PolicyDTO> getAllPolicies() {
+        return accountManagementService.getAllPolicies()
+                                    .stream()
+                                    .map(PolicyDTO::new)
+                                    .collect(Collectors.toList());
     }
 
 
@@ -313,5 +341,6 @@ public class AccountManagementController {
         return new AddressResponseDTO(accountManagementService.createAddress(address.street(), address.city(), address.province(),
                 address.postalCode(), address.country(), customerEmail));
     }
+
 }
 
