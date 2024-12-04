@@ -40,7 +40,7 @@ const error = ref(null);
 
 const fetchWishlist = async () => {
   try{
-    const response = await fetch(`http://localhost:8080/customers/${localStorage.getItem('accountId')}/wishlist`);
+    const response = await fetch(`http://localhost:8080/accounts/customers/${localStorage.getItem('accountId')}/wishlist`);
     if (!response.ok) {
       throw new Error(`Error fetching wishlist: ${response.statusText}`);
     }
@@ -54,7 +54,7 @@ const fetchWishlist = async () => {
 }
 
 const removeGameFromWishlist = async (index) => {
-  const response = await fetch("http://localhost:8080/customers/"+localStorage.getItem("accountId")+"/wishlist/"+wishlist.value[index].id, {method: "Delete",});
+  const response = await fetch("http://localhost:8080/accounts/customers/"+localStorage.getItem("accountId")+"/wishlist/"+wishlist.value[index].id, {method: "Delete",});
   if (!response.ok){
     console.error(`HTTP error! Status ${response.status}`)
   } else {

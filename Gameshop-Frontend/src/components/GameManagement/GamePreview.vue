@@ -51,15 +51,16 @@ export default {
       catch (error) {
         alert(error);
       }
-      // const response = await fetch(
-      //     `http://localhost:8080/customers/${localStorage.getItem('accountId')}/cart/${this.game.id}`,
-      //     {
-      //       method: "PUT",
-      //     }
-      // );
-      // if (!response.ok) {
-      //   console.log(response);
-      // }
+    },
+    async handleAddToWishlist(e) {
+      e.preventDefault();
+      try {
+        const response = await axiosClient.put(`/customers/${localStorage.getItem('accountId')}/wishlist/${gameDetails.value.id}`);
+        await router.push('/wishlist');
+      }
+      catch (error) {
+        alert(error);
+      }
     }
   }
 };

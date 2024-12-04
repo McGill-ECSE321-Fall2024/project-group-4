@@ -112,18 +112,18 @@ export default {
       catch (error) {
         alert(error);
       }
-      // const response = await fetch(
-      //     `http://localhost:8080/customers/${localStorage.getItem('accountId')}/cart/${gameDetails.value.id}`,
-      //     {
-      //       method: "PUT",
-      //     }
-      // );
-      // if (!response.ok) {
-      //   console.log(response);
-      // } else{
-      //   await router.push('/cart');
-      // }
     }
+
+    const handleAddToWishlist = async (e) => {
+      e.preventDefault();
+      try {
+        const response = await axiosClient.put(`accounts/customers/${localStorage.getItem('accountId')}/wishlist/${gameDetails.value.id}`);
+        await router.push('/wishlist');
+      }
+      catch (error) {
+        alert(error);
+      }
+    };
 
     // Fetch data on component mount
     onMounted(() => {
@@ -142,7 +142,8 @@ export default {
       averageRating,
       categoryNames,
       handleLikeReview,
-      handleAddToCart
+      handleAddToCart,
+      handleAddToWishlist
     };
   }
 };
@@ -175,7 +176,7 @@ export default {
         >
           Add to Cart
         </BButton>
-        <BButton class="save-info-btn">
+        <BButton class="save-info-btn" @click="handleAddToWishlist">
           Add to Wishlist
         </BButton>
       </div>
