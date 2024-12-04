@@ -11,11 +11,11 @@
             class="wishlist-item"
           >
             <GamePreview :game="game" />
-            <div class="add-btn">
-              <BButton @click="addGameToCart(index)">Add to cart</BButton>
+            <div >
+              <BButton @click="addGameToCart(index)" class="add-btn">Add to cart</BButton>
             </div>
-            <div class="delete-btn">
-              <BButton @click="removeGameFromWishlist(index)">Remove</BButton>
+            <div >
+              <BButton @click="removeGameFromWishlist(index)" class="delete-btn">Remove</BButton>
             </div>
           </div>
         </div>
@@ -115,7 +115,7 @@ onMounted(fetchWishlist)
   text-align: right;
   font-size: 1.2em;
 }
-
+/* 
 .add-to-cart-button {
   margin-top: 10px;
   padding: 10px 20px;
@@ -125,9 +125,9 @@ onMounted(fetchWishlist)
   border: none;
   border-radius: 5px;
   cursor: pointer;
-}
+} */
 
-.remove-from-wishlist-button {
+/* .remove-from-wishlist-button {
   margin-top: 10px;
   padding: 10px 20px;
   font-size: 1em;
@@ -136,5 +136,5 @@ onMounted(fetchWishlist)
   border: none;
   border-radius: 5px;
   cursor: pointer;
-}
+} */
 </style>

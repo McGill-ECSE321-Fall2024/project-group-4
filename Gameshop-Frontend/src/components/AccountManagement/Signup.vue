@@ -37,7 +37,7 @@
     </BFormGroup>
     <br>
     <BFormGroup id="password-label" label="Password:" label-for="input-2">
-      <BFormInput id="input-2" v-model="password" type="text" placeholder="Enter password" required />
+      <BFormInput id="input-2" v-model="password" type="password" placeholder="Enter password" required />
     </BFormGroup>
 
     <br>

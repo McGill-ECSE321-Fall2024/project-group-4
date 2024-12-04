@@ -35,8 +35,8 @@ export default {
       });
       if (activePromotions.length > 0) {
         const discountSum = activePromotions.reduce((sum, promo) => sum + promo.discount, 0)
-        const effectiveDiscount = Math.min(discountSum, 0);
-        return (this.game.price * (1 - effectiveDiscount / 100)).toFixed(2);
+        const discountMultiplier = Math.max(0, 1 - discountSum / 100);
+        return (this.game.price * discountMultiplier).toFixed(2);
       }
       return null;
     }
@@ -78,7 +78,7 @@ export default {
           class="wish-game">
         <BCardText>
           <p v-if="discountedPrice" class="discounted-price">
-            <del>Price: $ {{ game.price.toFixed(2) }}</del>
+            <del>Price: $ {{ game.price.toFixed(2) }}</del><br>
             <span>Now: $ {{ discountedPrice }}</span>
           </p>
           <p v-else>
