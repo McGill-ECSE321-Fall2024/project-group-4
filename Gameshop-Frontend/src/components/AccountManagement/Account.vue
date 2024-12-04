@@ -255,8 +255,12 @@ export default {
   methods: {
     formatCreditCard(creditCard) {
         const cardNumberStr = creditCard.cardNumber.toString();
-
-        const maskedCardNumber = '*'.repeat(cardNumberStr.length - 4) + cardNumberStr.slice(-4);
+        let maskedCardNumber = '';
+        if (cardNumberStr.length >4 ) {
+            maskedCardNumber = '*'.repeat(cardNumberStr.length - 4) + cardNumberStr.slice(-4);}
+        else {
+            maskedCardNumber = cardNumberStr;
+        }
         return `Card Number: ${maskedCardNumber}, Expiry Date: ${creditCard.expiryDate}, CVV: ***, Billing Address: ${this.formatAddress(creditCard.billingAddress)}`;
     },
     formCreditCard(creditCard){

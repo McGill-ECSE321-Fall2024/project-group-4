@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -44,6 +45,10 @@ public class AccountManagementService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private CreditCardRepository creditCardRepository;
+    @Autowired
+    private PurchaseManagementService purchaseManagementService;
 
     /**
      *
@@ -638,7 +643,16 @@ public class AccountManagementService {
         }
         Address address = addressRepository.findById(addressId).orElseThrow(() -> new EntityNotFoundException("Address not found"));
         customer.removeAddress(address);
+        Set<CreditCard> associatedCreditCards = new HashSet<>();
+        creditCardRepository.findAll().forEach(associatedCreditCards::add);
+        associatedCreditCards = associatedCreditCards.stream().filter(creditCard -> creditCard.getBillingAddress().getId() == addressId && creditCard.getCustomer().getEmail().equals(customerEmail)).collect(Collectors.toSet());
+        if (!associatedCreditCards.isEmpty()) {
+            System.out.println(associatedCreditCards);
+            associatedCreditCards.forEach(creditCard -> {purchaseManagementService.removeCreditCardFromWallet(customerEmail, creditCard.getId());});
+        }
+
         customerRepository.save(customer);
+        addressRepository.delete(address);
 
     }
 
