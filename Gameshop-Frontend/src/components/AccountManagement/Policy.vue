@@ -127,10 +127,7 @@ export default {
       newPolicy: {
         description: '',
       },
-      selectedPolicy: {
-        id: null,
-        description: '',
-      }
+      selectedPolicy: null,
     };
     
   },
@@ -139,7 +136,7 @@ export default {
             return this.policies.filter(policy => {
                 const searchTerm = this.searchQuery.toLowerCase();
           
-                return policy.id.toString().includes(searchTerm);
+                return policy.description.toLowerCase().includes(searchTerm) || policy.id.toString().includes(searchTerm);
                
             });        
         },
@@ -147,12 +144,11 @@ export default {
   methods: {
     async fetchPolicies() {
     try {
-      const response = await axiosClient.get("/accounts/policies", {
-        headers: {
-          Role: this.userRole,
-        },
-      });
-      this.policies = response.data;
+      const response = await axiosClient.get("/accounts/policies");
+      this.policies = response.data.map(policy => ({
+          ...policy,
+          description: JSON.parse(policy.description).description || policy.description,
+        }));
     } catch (error) {
       console.error("Error fetching policies:", error);
     }

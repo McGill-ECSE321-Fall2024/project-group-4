@@ -19,7 +19,7 @@
         </div>
         <div class="cart-summary">
           <p>Total: ${{ totalPrice.toFixed(2) }}</p>
-          <button class="checkout-button" @click="toggleCheckoutForm">Checkout</button>
+          <button class="checkout-button" @click="toggleCheckoutForm">Proceed to checkout</button>
         </div>
 
         <div v-if="showCheckoutForm">
@@ -31,6 +31,23 @@
               {{ formatAddress(address) }}
             </BFormSelectOption>
           </BFormSelect>
+          <div>
+            <p v-if="addresses.length === 0" class="text-secondary fst-italic" style="font-size:80%">No addresses available.</p>
+            <BButton class="add-btn" @click="toggleAddressForm" size="sm"> Add a new address</BButton>
+                
+                <div class="mb-3 new_address" v-if="showAddressForm">
+                    <br>
+                    <BFormGroup id="address-label" label="Enter Address:" label-for="input-4">
+                        <BFormInput id="street" type="text" v-model="newAddress.street" placeholder="Street" /><br />
+                        <BFormInput id="city" type="text" v-model="newAddress.city" placeholder="City" /><br />
+                        <BFormInput id="province" type="text" v-model="newAddress.province" placeholder="Province" /><br />
+                        <BFormInput id="country" type="text" v-model="newAddress.country" placeholder="Country" /><br />
+                        <BFormInput id="postalCode" type="text" v-model="newAddress.postalCode" placeholder="Postal Code" />
+                    </BFormGroup>
+                    <br>
+                    <BButton class="save-info-btn" @click="saveAddress" size="sm"> Save new address</BButton>
+                </div>
+          </div>
         </BFormGroup>
         <br>
         <BFormGroup id="credit-label" label="Credit Cards:">
@@ -40,9 +57,33 @@
               {{ formatCreditCard(creditCard) }}
             </BFormSelectOption>
           </BFormSelect>
+          <div>
+            <p v-if="creditCards.length === 0" class="text-secondary fst-italic" style="font-size:80%">No credit cards available.</p>
+            <BButton @click="toggleAddCreditForm" class="add-btn" size="sm"> Add new credit card</BButton>
+          </div>
+        
+          <div class="mb-3" size="sm" v-if="showAddCreditForm">
+              <br>
+              <BFormGroup id="credit-label" label="Enter Credit Card:">
+                  <BFormInput id="cardNumber" type="text" v-model="newCreditCard.cardNumber" placeholder="Card Number" /><br />
+                  <BFormInput id="expiryDate" type="date" v-model="newCreditCard.expiryDate" placeholder="Expiry Date" /><br />
+                  <BFormInput id="cvv" type="text" v-model="newCreditCard.cvv" placeholder="CVV" /><br />
+                  <BFormGroup id="billingAddress-label" label="Billing Address:">
+                  <BFormSelect v-model="newCreditCard.billingAddress">
+                      <BFormSelectOption value="" disabled>Select an address</BFormSelectOption>
+                      <BFormSelectOption v-for="(address, index) in addresses" :key="index" :value="address">
+                      {{ formatAddress(address) }}
+                      </BFormSelectOption>
+                      </BFormSelect>
+                  </BFormGroup>
+              </BFormGroup>
+              <br>
+              <BButton class="save-info-btn" @click="saveCredit" size="sm"> Save new credit card</BButton>
+          </div>
+    
         </BFormGroup><br>
-            <BButton variant="primary" @click="finishedCheckout">Submit Purchase</BButton>
-          </BForm>
+        <BButton variant="primary" @click="finishedCheckout" :disabled="!selectedAddress || !selectedCreditCard">Submit Purchase</BButton>
+      </BForm>
         </div>
       </div>
       <div v-else class="empty-cart">
@@ -70,6 +111,24 @@ const selectedCreditCard = ref(null);
 const addresses = ref([]);
 const creditCards = ref([]);
 const showCheckoutForm = ref(false);
+const newCreditCard = ref({
+  cardNumber: "",
+  expiryDate: "",
+  cvv: "",
+  billingAddress: null,
+});
+const showAddCreditForm = ref(false);
+const newAddress = ref({
+  street: "",
+  city: "",
+  province: "",
+  country: "",
+  postalCode: "",
+});
+const showAddressForm = ref(false);
+
+const addCreditCard = async () => {
+}
 
 const finishedCheckout = async () => {
   try{
@@ -89,6 +148,14 @@ const finishedCheckout = async () => {
   // showCheckoutForm.value = false;
   // router.push("/");
 
+};
+
+const toggleAddCreditForm = () => {
+  showAddCreditForm.value = !showAddCreditForm.value;
+};
+
+const toggleAddressForm = () => {
+  showAddressForm.value = !showAddressForm.value;
 };
 
 const toggleCheckoutForm = () => {
@@ -212,6 +279,18 @@ onMounted(created);
   padding: 20px;
 }
 
+.save-info-btn{
+  background-color: #3c67bf;
+  border-color: #3c67bf;
+  color: white;
+}
+
+.save-info-btn:hover {
+  background-color: #795ac6;
+  border-color: #795ac6;
+  color: white;
+}
+
 .cart h1 {
   font-size: 2em;
   margin-bottom: 20px;
@@ -282,5 +361,17 @@ onMounted(created);
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.add-btn {
+  background-color: #3428ba;
+  border-color: #3428ba;
+  color: white;
+}
+
+.add-btn:hover {
+  background-color: #85abff;
+  border-color: #85abff;
+  color: white;
 }
 </style>

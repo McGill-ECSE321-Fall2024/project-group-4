@@ -95,6 +95,8 @@
             <BNavbarNav>
               <BNavItem @click="goCatalogue" class="BNavItem">Catalogue</BNavItem>
               <BNavItem @click="goManageCenter" class="BNavItem">Manage Center</BNavItem>
+              <BNavItem @click="goGameZone" class="BNavItem">Game Zone</BNavItem>
+
               <!-- <BNavItem @click="goUpdates" class="BNavItem">Pending Updates</BNavItem>
               <BNavItem @click="goReviewsManager" class="BNavItem">Reviews</BNavItem> -->
             </BNavbarNav>
