@@ -287,12 +287,12 @@ public class AccountManagementController {
      * @author Camille Pouliot and Clara Mickail
           * @throws Exception 
           */
-         @PutMapping("/policies/{policyId}/{description}")
-         public PolicyDTO updatePolicy(@PathVariable int policyId, @PathVariable String description) {
-        
-        return new PolicyDTO(accountManagementService.updatePolicy(policyId,description));
+    @PutMapping("/policies/{policyId}/{description}")
+    public PolicyDTO updatePolicy(@PathVariable int policyId, @PathVariable String description) {
+        Policy updatedPolicy = accountManagementService.updatePolicy(policyId, description);
+        return new PolicyDTO(updatedPolicy);
     }
-
+          
     /**
      * Delete a policy
      *
@@ -301,8 +301,8 @@ public class AccountManagementController {
      * @author Camille Pouliot
           * @throws Exception 
           */
-         @DeleteMapping("/policies/{policyId}")
-         public void deletePolicy(@PathVariable int policyId) {
+    @DeleteMapping("/policies/{policyId}")
+    public void deletePolicy(@PathVariable int policyId) {
         accountManagementService.deletePolicy(policyId);
     }
 

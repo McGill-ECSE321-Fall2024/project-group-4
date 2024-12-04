@@ -11,7 +11,7 @@
             </BTab>
             <BTab title="Game Requests">
                 <br>
-                <GameRequestNew :gameRequests="gameRequests" />
+                <GameRequestNew :gameRequests="gameRequests"/>
             </BTab>
             <BTab title="Policies">
                 <br />
@@ -88,7 +88,6 @@
           ></b-form-input>
         </b-form-group>
     </form>
-    <br>
                     <BButton variant="secondary" @click="cancelAddPromotion" class="delete-btn">Cancel</BButton>
                     <BButton variant="primary" @click="addPromotion" class="save-info-btn">Save</BButton>
                     <!-- Promotion Form -->
@@ -97,7 +96,7 @@
             </BTab>
             <BTab title="Reviews">
                 <br />
-                <ReviewsManager />
+                <ReviewsManager :reviews="reviews" />
             </BTab>
         </BTabs>
     </div>

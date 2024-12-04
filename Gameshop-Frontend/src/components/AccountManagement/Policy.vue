@@ -8,14 +8,14 @@
         class="me-2"
       />
       <BButton type="submit" class="search-btn" @click="searchPolicy">Search</BButton>
-      <BButton
+      <!-- <BButton
         variant="success"
         class="ms-auto save-info-btn"
         @click="showAddPolicyForm"
         v-if="userRole === 'manager'"
       >
         +
-      </BButton>
+      </BButton> -->
       <br />
     </div>
     <div v-if="showAddForm" class="d-flex mb-3">
@@ -52,7 +52,7 @@
         </div>
       </template>
 
-      <!-- Actions Column Visible Only for Managers -->
+      <!-- Only for Managers -->
       <template #cell(actions)="data">
         <div v-if="userRole === 'manager'">
           <div v-if="selectedPolicy && selectedPolicy.id === data.item.id" class="mt-3">
@@ -74,14 +74,14 @@
             </BButton>
           </div>
           <div v-else class="mt-3">
-            <!-- <BButton
+             <BButton
               size="sm"
               variant="primary"
               @click="editPolicy(data.item)"
               class="save-info-btn"
             >
               Edit
-            </BButton> -->
+            </BButton>
             <BButton
               size="sm"
               variant="danger"
@@ -120,12 +120,9 @@ export default {
       fields: [
         { key: 'id', label: 'ID', sortable: true },
         { key: 'description', label: 'Description' },
-        { key: 'actions', label: '' } // Conditionally add actions
-        //{ key: 'actions', label: 'Actions' },
+        { key: 'actions', label: '' },
       ],
-      policies: [
-        
-      ],
+      policies: [],
       showAddForm: false,
       newPolicy: {
         description: '',
@@ -135,6 +132,7 @@ export default {
         description: '',
       }
     };
+    
   },
   computed: {
         filteredPolicies() {
@@ -151,7 +149,7 @@ export default {
     try {
       const response = await axiosClient.get("/accounts/policies", {
         headers: {
-          Role: this.userRole, // Use the userRole from localStorage or data
+          Role: this.userRole,
         },
       });
       this.policies = response.data;
@@ -186,8 +184,7 @@ export default {
         },
       });
       const policy = response.data;
-      alert(`Policy: ${policy.description}`); // Display the policy description in a simple alert
-      // Alternatively, navigate to a new page or modal to display the policy
+      alert(`Policy: ${policy.description}`); 
     } catch (error) {
       console.error("Error opening policy:", error);
     }
@@ -209,7 +206,6 @@ export default {
                 "Role": role
             }
         });
-
                 
         //const response = await axiosClient.post('/accounts/policies', { description: this.newPolicy.description });
         if (response.status === 200) {
@@ -221,33 +217,53 @@ export default {
         console.error('Error creating policy:', error);
       }
     },
-    
     async updatePolicy() {
-     
-  try {
-      const response = await axiosClient.put(`/accounts/policies/${this.selectedPolicy.id}/${this.selectedPolicy.description}`);
-      if (response.status === 200) {
-        const index = this.policies.findIndex(policy => policy.id === this.selectedPolicy.id);
-        if (index !== -1) {
-          this.policies.splice(index, 1, response.data);
-        }
-        this.selectedPolicy = null;
+      if (!this.selectedPolicy.id || !this.selectedPolicy.description) {
+        alert('Policy ID or description is missing.');
+        return;
       }
-    } catch (error) {
-      console.error('Error updating policy:', error);
-    }
-  },
 
+      try {
+        const response = await axiosClient.put(`/accounts/policies/${this.selectedPolicy.id}`, {
+          description: this.selectedPolicy.description 
+        }, {
+          headers: {
+            'Content-Type': 'application/json', 
+            'Role': "MANAGER",
+          }
+        });
+
+        if (response.status === 200) {
+          const index = this.policies.findIndex(policy => policy.id === this.selectedPolicy.id);
+          if (index !== -1) {
+            this.policies[index].description = this.selectedPolicy.description;
+          }
+          this.selectedPolicy = null; 
+          alert('Policy updated successfully.');
+        }
+      } catch (error) {
+        console.error('Error updating policy:', error);
+        alert('Failed to update policy.');
+      }
+    },
     async deletePolicy(policyId) {
-      
-    try {
-      await axiosClient.delete(`/accounts/policies/${policyId}`);
-      this.policies = this.policies.filter(policy => policy.id !== policyId);
-    } catch (error) {
-      console.error('Error deleting policy:', error);
-    }
-  },
+      const confirmDelete = window.confirm("Are you sure you want to delete this policy?");
+      if (!confirmDelete) return;
 
+      try {
+        await axiosClient.delete(`/accounts/policies/${policyId}`, {
+          headers: {
+            Role: "MANAGER",
+          },
+        });
+        this.policies = this.policies.filter(policy => policy.id !== policyId);
+        alert("Policy deleted successfully.");
+      } catch (error) {
+        console.error("Error deleting policy:", error);
+        const errorMessage = error.response?.data?.message || "Unable to delete policy.";
+        alert(errorMessage);
+      }
+    },
     editPolicy(policy) {
       this.selectedPolicy = { ...policy };
     },
