@@ -16,7 +16,7 @@
             <template #cell(actions)="row">
                 <div class="d-flex align-items-center justify-content-between">
                     <BButton variant="danger" @click="deleteCategory(row.item.name)">
-                        -
+                        Delete
                     </BButton>
                     <b-Dropdown text="Games in category" variant="primary" class="ml-2">
                         <b-dropdown-item
@@ -87,14 +87,18 @@ export default {
   }, methods: {
     async addCategory(categoryName) {
         let response = '';
-        try {
-        const response = await axiosClient.post(`/categories/${categoryName}`);
-        if (response.status === 200) {
-            await this.fetchCategories();
+        if (!categoryName) {
+            alert('Category name cannot be empty');
+            return;
         }
-    } catch (error) {
-        alert(error.response?.data?.errorMessages || error.message || "Something went wrong");
-    }   
+        try {
+            const response = await axiosClient.post(`/categories/${categoryName}`);
+            if (response.status === 200) {
+                await this.fetchCategories();
+            }
+        } catch (error) {
+            alert(error.response?.data?.errorMessages || error.message || "Something went wrong");
+        }   
     }, async fetchCategories() {
         let response = '';
         try {

@@ -13,8 +13,8 @@
         <GameRequestEmployee />
       </BTab>
 
-      <BTab title="Pending Updates" >
-        <PendingUpdates />
+      <BTab title="Update Game" >
+        <UpdateGame />
       </BTab>
     </BTabs>
   </div>
@@ -26,7 +26,7 @@
 import {ref, onMounted, watch, computed} from "vue";
 import {useRoute} from "vue-router";
 import axios from 'axios';
-import PendingUpdates from "./PendingUpdates.vue";
+import UpdateGame from "./PendingUpdates.vue";
 import GameRequestEmployee from "./GameRequestEmployee.vue";
 import GameCategories from "./GameCategories.vue";
 
@@ -35,6 +35,7 @@ export default {
   components: {
     GameCategories,
     GameRequestEmployee,
+    UpdateGame
     },
   methods : {
     async fetchCategories() {
