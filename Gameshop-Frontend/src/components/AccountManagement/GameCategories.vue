@@ -5,7 +5,7 @@
             
             <BFormInput
                 v-model="categoryName"
-                placeholder="Enter category name :"
+                placeholder="Enter new category name :"
                 class="me-2"
             />
             <BButton variant="success" class="ms-auto save-info-btn" @click="addCategory(categoryName)">+
@@ -66,7 +66,6 @@
 <script>
 import axios from 'axios';
 
-const frontendURL = 'http://localhost:8087';
 const backendURL = 'http://localhost:8080';
 
 const axiosClient = axios.create({
@@ -89,7 +88,7 @@ export default {
     async addCategory(categoryName) {
         let response = '';
         try {
-        const response = await axiosClient.post(`/categories/` + categoryName);
+        const response = await axiosClient.post(`/categories/${categoryName}`);
         if (response.status === 200) {
             await this.fetchCategories();
         }
