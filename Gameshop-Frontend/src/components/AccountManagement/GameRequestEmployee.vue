@@ -20,9 +20,22 @@
             <BButton variant="primary" @click="saveGameRequest" size="sm" class="save-info-btn">Save</BButton>
         </div>
 
-        <BTable :items="filteredGameRequests" :fields="fields">
-
+        <BTable :items="gameRequests" :fields="fields">
+          <template #cell(game)="data">
+            <div>
+              <strong>Game: {{ data.item.game.name }}</strong><br>
+              <small>Game ID: {{ data.item.game.id }}</small><br>
+              <small>Description: {{ data.item.game.description }}</small><br>
+              <small>Active: {{ data.item.game.isActive }}</small><br>
+              <small>Price: ${{ data.item.game.price }}</small><br>
+              <small>Stock: {{ data.item.game.stock }}</small><br>
+              <small>Categories: {{ data.item.game.categories }}</small><br>
+              <small>Promotions: {{ data.item.game.promotions }}</small><br>
+              <small>External Review: {{ data.item.externalReview }}</small><br>
+            </div>
+          </template>
         </BTable>
+       
     </div>
 </template>
 
@@ -44,17 +57,20 @@ export default {
       gameRequests: [],
       fields: [
         { key: 'id', label: 'ID', sortable: true },
-        { key: 'description', label: 'Description', sortable: true },
         { key: 'game', label: 'Game', sortable: true },
         { key: 'requestStatus', label: 'Request Status', sortable: true },
-        { key: 'actions', label: 'Actions' },
       ],
       newGameRequest:{
         description: '',
         title: '',
         price: '',
         review: '',
-      }
+        isActive: false,
+        categories: [],
+        promotions: [],
+        stock: 0,
+      },
+      
     };
   },
   async created() {
@@ -81,7 +97,7 @@ export default {
       try {
         let requestor = await axiosClient.get(`/accounts/employees/username/${localStorage.getItem('username')}`);
         let game = {
-          id: null,
+            id: null,
             name: this.newGameRequest.title,
             description: this.newGameRequest.description,
             coverPicture: '', // FILL IN LATER
