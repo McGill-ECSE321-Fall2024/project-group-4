@@ -12,7 +12,7 @@
             <BNavbarNav>
               <BNavItem @click="goCatalogue" class="BNavItem">Catalogue</BNavItem>
               <BNavItem @click="goReviews" class="BNavItem">Reviews</BNavItem>
-              <BNavItem @click="goPolicy" class="BNavItem">Policy</BNavItem>
+              <!-- <BNavItem @click="goPolicy" class="BNavItem">Policy</BNavItem> -->
             </BNavbarNav>
             <!-- Right aligned nav items -->
             <BNavbarNav class="ms-auto mb-2 mb-lg-0">
@@ -56,7 +56,7 @@
               <BNavItem @click="goCatalogue" class="BNavItem">Catalogue</BNavItem>
               <BNavItem @click="goRefundRequests" class="BNavItem">Refund Requests</BNavItem>
               <BNavItem @click="goGameZone" class="BNavItem">Game Zone</BNavItem>
-              <BNavItem @click="goReviews" class="BNavItem">View History</BNavItem>
+              <!-- <BNavItem @click="goReviews" class="BNavItem">View History</BNavItem> -->
             </BNavbarNav>
             <!-- Right aligned nav items -->
             <BNavbarNav class="ms-auto mb-2 mb-lg-0">

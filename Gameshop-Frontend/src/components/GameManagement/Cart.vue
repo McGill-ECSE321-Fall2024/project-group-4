@@ -19,7 +19,30 @@
         </div>
         <div class="cart-summary">
           <p>Total: ${{ totalPrice.toFixed(2) }}</p>
-          <button class="checkout-button" @click="checkout">Checkout</button>
+          <button class="checkout-button" @click="toggleCheckoutForm">Checkout</button>
+        </div>
+
+        <div v-if="showCheckoutForm">
+          <BForm>
+            <BFormGroup id="address-label" label="Addresses:" label-for="input-5">
+          <BFormSelect v-model="selectedAddress" class="mb-2">
+            <BFormSelectOption :value="null" disabled>Select an address</BFormSelectOption>
+            <BFormSelectOption v-for="(address, index) in addresses" :key="index" :value="address">
+              {{ formatAddress(address) }}
+            </BFormSelectOption>
+          </BFormSelect>
+        </BFormGroup>
+        <br>
+        <BFormGroup id="credit-label" label="Credit Cards:">
+          <BFormSelect v-model="selectedCreditCard" class="mb-2">
+            <BFormSelectOption :value="null" disabled>Select a credit card</BFormSelectOption>
+            <BFormSelectOption v-for="(creditCard, index) in creditCards" :key="index" :value="creditCard">
+              {{ formatCreditCard(creditCard) }}
+            </BFormSelectOption>
+          </BFormSelect>
+        </BFormGroup><br>
+            <BButton variant="primary" @click="finishedCheckout">Submit</BButton>
+          </BForm>
         </div>
       </div>
       <div v-else class="empty-cart">
@@ -31,12 +54,60 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
+import axios from "axios";
 import GamePreview from "./GamePreview.vue";
+
+const axiosClient = axios.create({
+  baseURL: "http://localhost:8080",
+});
 
 const cart = ref([]);
 const loading = ref(true);
 const error = ref(null);
 const totalPrice = ref(0);
+const selectedAddress = ref(null);
+const selectedCreditCard = ref(null);
+const addresses = ref([]);
+const creditCards = ref([]);
+const showCheckoutForm = ref(false);
+
+const finishedCheckout = () => {
+  cart.value = [];
+  showCheckoutForm.value = false;
+  router.push("/");
+
+};
+
+const toggleCheckoutForm = () => {
+  showCheckoutForm.value = !showCheckoutForm.value;
+};
+
+const created = async () => {
+  await fetchCart();
+  await fetchAddresses();
+};
+
+const fetchAddresses = async () => {
+  try {
+    const accountId = parseInt(localStorage.getItem('accountId'));
+    if (!isNaN(accountId)) {
+      
+        const response = await axiosClient.get(`/accounts/customers/ids/${accountId}`);
+                    const accountData = response.data;
+                    // this.username = accountData.username;
+                    // this.email = accountData.email;
+                    // this.phoneNumber = accountData.phoneNumber;
+                    addresses.value = accountData.addresses;
+                    creditCards.value = accountData.creditCards;
+      
+    }
+    
+  } catch (err) {
+    error.value = err.message;
+  } finally {
+    loading.value = false;
+  }
+};
 
 const fetchCart = async () => {
   try {
@@ -104,7 +175,16 @@ const checkout = async () => {
   console.log(response)
 };
 
-onMounted(fetchCart);
+const formatAddress = (address) => {
+      return `${address.street}, ${address.city}, ${address.province}, ${address.country}, ${address.postalCode}`;
+};
+
+const formatCreditCard = (creditCard) => {
+      return `Card Number: ${creditCard.cardNumber}, Expiry Date: ${creditCard.expiryDate}, CVV: ${creditCard.cvv}, Billing Address: ${formatAddress(creditCard.billingAddress)}`;
+};
+
+
+onMounted(created);
 </script>
 
 <style scoped>
