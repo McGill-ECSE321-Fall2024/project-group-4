@@ -369,6 +369,7 @@ export default {
             });//.then(this.$router.go());
             console.log(response.data);
             await this.fetchCreditCards();
+            this.$router.go();
         } catch(error) {
             alert(error.response?.data?.errorMessages || error.message || "Something went wrong"); 
         }
