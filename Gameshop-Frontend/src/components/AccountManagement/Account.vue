@@ -384,8 +384,9 @@ export default {
     },
     async deleteCard(cardId){
         try {
-            await axiosClient.delete(`/customers/${this.email}/credit-cards/${cardId}`).then(this.$router.go());
-            await fetchCreditCards();
+            await axiosClient.delete(`/customers/${this.email}/credit-cards/${cardId}`);
+            await this.fetchCreditCards();
+            this.$router.go();
         } catch (error) {
             alert(error.response?.data?.errorMessages || error.message || "Something went wrong"); 
         }
