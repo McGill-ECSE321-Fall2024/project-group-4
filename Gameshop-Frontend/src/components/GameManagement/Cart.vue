@@ -71,7 +71,8 @@ const addresses = ref([]);
 const creditCards = ref([]);
 const showCheckoutForm = ref(false);
 
-const finishedCheckout = () => {
+const finishedCheckout = async () => {
+  let response = await axiosClient.post(`customers/${localStorage.getItem('email')}/cart/${selectedAddress.value.id}/${selectedCreditCard.value.id}`);
   cart.value = [];
   showCheckoutForm.value = false;
   router.push("/");
