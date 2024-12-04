@@ -458,7 +458,6 @@ public class PurchaseManagementService {
         Customer customer = findCustomerByEmail(customerEmail);
         CreditCard creditCardToRemove = findCreditCardById(creditCardId);
         var wallet = customer.getCopyofCreditCards();
-        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAA");
         if (!wallet.contains(creditCardToRemove)) {
             throw new IllegalArgumentException("Customer is not associated with given credit card");
         }
@@ -470,7 +469,6 @@ public class PurchaseManagementService {
 
         customerRepository.save(customer);
         //creditCardRepository.delete(creditCardToRemove);
-        System.out.println("A");
     }
 
     /**
