@@ -13,9 +13,11 @@
         <div v-if="showAddForm" class="mb-3">
             <br>
             <BFormTextarea v-model="newGameRequest.description" placeholder="Description" class="mb-2" />
-            <BFormInput v-model="newGameRequest.game" placeholder="Game" class="mb-2" />
+            <BFormInput v-model="newGameRequest.title" placeholder="Title" class="mb-2" />
+            <BFormInput v-model="newGameRequest.price" placeholder="Price" class="mb-2" />
+            <BFormInput v-model="newGameRequest.review" placeholder="Review" class="mb-2" />
             <BButton variant="secondary" @click="cancelGameRequest" size="sm" class="delete-btn">Cancel</BButton>
-            <BButton variant="primary" @click="" size="sm" class="save-info-btn">Save</BButton>
+            <BButton variant="primary" @click="saveGameRequest" size="sm" class="save-info-btn">Save</BButton>
         </div>
     </div>
 </template>
@@ -45,11 +47,19 @@ export default {
       ],
       newGameRequest:{
         description: '',
-        game: '',
-        requestStatus: '',
-        requestor: '',
+        title: '',
+        price: '',
+        review: '',
       }
     };
+  },
+  async created() {
+    try {
+      const response = await axiosClient.get(`/gameRequests`);
+      this.gameRequests = response.data;
+    } catch (error) {
+      alert(`Error fetching data: ${error}`);
+    }
   },
   methods:{
     showGameRequests() {
@@ -63,17 +73,33 @@ export default {
         requestorId: '',
       };
     },
+    async saveGameRequest() {
+      try {
+        let response = await axiosClient.get(`/employees/username/${localStorage.getItem('username')}`);
+        const request = {
+          id: null,
+          externalReview: this.newGameRequest.review,
+          requestStatus: 2,
+          requestor: response.data,
+          game: {
+            id: null,
+            name: this.newGameRequest.title,
+            description: this.newGameRequest.description,
+            coverPicture: '', // FILL IN LATER
+            price: this.newGameRequest.price,
+            isActive: true,
+            stock: 0,
+            categories: [], // FILL IN LATER
+            promotions: []
+          }
+        }
+        response = await axiosClient.post('/gameRequests', request).then(this.$router.go());
+      } catch (error) {
+        alert(error);
+      }
+    }
   }
   };
-
-        // String name,
-        // String description,
-        // String coverPicture,
-        // float price,
-        // boolean isActive,
-        // int stock,
-        // Set<CategoryResponseDTO> categories,
-        // Set<PromotionResponseDTO> promotions
 
 </script>
 
