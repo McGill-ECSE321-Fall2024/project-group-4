@@ -299,7 +299,7 @@ public class GameManagementController {
      *
      * @author Camille Pouliot
      */
-    @PutMapping("/promotions/{promotionId}")
+    @PostMapping("/promotions/{promotionId}")
     public void updatePromotion(@PathVariable int promotionId, @RequestBody PromotionRequestDTO promotionDTO){
         gameManagementService.updatePromotion(promotionId, promotionDTO.discount(), promotionDTO.startDate(), promotionDTO.endDate());
     }
