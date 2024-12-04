@@ -4,10 +4,10 @@ import TheWelcome from '../components/TheWelcome.vue';
 
 <template>
   <div class="mainContainer">
-        <div class="display-6 my-3" align="center">
-          Welcome to our website! 
-        </div>
+      <div class="display-6 my-3" align="center">
+        Browse GameChest's Games Today
+      </div>
 
-        </div>
+  </div>
 
 </template>

@@ -41,7 +41,7 @@
             </BFormSelectOption>
           </BFormSelect>
         </BFormGroup><br>
-            <BButton variant="primary" @click="finishedCheckout">Submit</BButton>
+            <BButton variant="primary" @click="finishedCheckout">Submit Purchase</BButton>
           </BForm>
         </div>
       </div>
@@ -72,10 +72,20 @@ const creditCards = ref([]);
 const showCheckoutForm = ref(false);
 
 const finishedCheckout = async () => {
-  let response = await axiosClient.post(`customers/${localStorage.getItem('email')}/cart/${selectedAddress.value.id}/${selectedCreditCard.value.id}`);
-  cart.value = [];
-  showCheckoutForm.value = false;
-  router.push("/");
+  try{
+    let response = await axiosClient.post(`customers/${localStorage.getItem('email')}/cart/${parseInt(selectedAddress.value.id)}/${parseInt(selectedCreditCard.value.id)}`);
+    
+    showCheckoutForm.value = false;
+    cart.value = [];
+    router.push("/");
+    
+  } catch (err) {
+    error.value = err.message;
+  }
+  // let response = await axiosClient.post(`customers/${localStorage.getItem('email')}/cart/${selectedAddress.value.id}/${selectedCreditCard.value.id}`);
+  // cart.value = [];
+  // showCheckoutForm.value = false;
+  // router.push("/");
 
 };
 
