@@ -8,23 +8,27 @@ export default {
     const isLoading = ref(false);
     const error = ref(null);
 
-    // Dialog State
-    const isDialogOpen = ref(false);
+    // Dialog states
+    const isRefundDialogOpen = ref(false);
     const selectedPurchase = ref(null);
     const refundReason = ref("");
+
+    const isReviewDialogOpen = ref(false);
+    const reviewRating = ref(0);
+    const reviewDescription = ref("");
 
     // Fetch purchase history
     const fetchPurchaseHistory = async () => {
       isLoading.value = true;
       try {
         const response = await fetch(
-            `http://localhost:8080/customers/${localStorage.getItem('email')}/purchases`
+            `http://localhost:8080/customers/${localStorage.getItem("email")}/purchases`
         );
         if (!response.ok) {
           throw new Error(`Failed to fetch purchase history. Status: ${response.status}`);
         }
         purchases.value = await response.json();
-        console.log(purchases.value)
+        purchases.value.sort((a, b) => new Date(b.purchaseDate) - new Date(a.purchaseDate));
       } catch (err) {
         error.value = err.message;
       } finally {
@@ -36,7 +40,7 @@ export default {
     const openRefundDialog = (purchase) => {
       selectedPurchase.value = purchase;
       refundReason.value = "";
-      isDialogOpen.value = true;
+      isRefundDialogOpen.value = true;
     };
 
     // Submit refund request
@@ -52,40 +56,88 @@ export default {
             {
               method: "POST",
               headers: {
-                "Content-Type": "text/plain"
+                "Content-Type": "text/plain",
               },
-              body: refundReason.value
+              body: refundReason.value,
             }
         );
         if (!response.ok) {
           throw new Error(`Refund request failed. Status: ${response.status}`);
         }
-        alert("Refund request submitted successfully.");
         fetchPurchaseHistory(); // Refresh purchase history
       } catch (err) {
         alert(`Error: ${err.message}`);
       } finally {
-        isDialogOpen.value = false;
+        isRefundDialogOpen.value = false;
       }
     };
 
-    // Determine if the refund button should be displayed
+    // Determine if refund button should be displayed
     const canRequestRefund = (purchase) => {
       const purchaseDate = new Date(purchase.purchaseDate);
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-      return (
-          !purchase.refundRequest &&
-          purchaseDate >= sevenDaysAgo
-      );
+      return !purchase.refundRequest && purchaseDate >= sevenDaysAgo;
+    };
+
+    // Open review dialog
+    const openReviewDialog = (purchase) => {
+      selectedPurchase.value = purchase;
+      reviewRating.value = 0;
+      reviewDescription.value = "";
+      isReviewDialogOpen.value = true;
+    };
+
+    // Submit review
+    const submitReview = async () => {
+      if (!reviewRating.value || !reviewDescription.value.trim()) {
+        alert("Please provide a rating and a description for your review.");
+        return;
+      }
+
+      try {
+        const response = await fetch(
+            `http://localhost:8080/customers/${localStorage.getItem('email')}/reviews?purchaseId=${selectedPurchase.value.id}&rating=${reviewRating.value}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "text/plain",
+              },
+              body: reviewDescription.value
+            }
+        );
+        if (!response.ok) {
+          throw new Error(`Review submission failed. Status: ${response.status}`);
+        }
+        fetchPurchaseHistory(); // Refresh purchase history
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      } finally {
+        isReviewDialogOpen.value = false;
+      }
     };
 
     // Fetch data on mount
     onMounted(fetchPurchaseHistory);
 
-    return { purchases, isLoading, error, canRequestRefund, submitRefundRequest, isDialogOpen, refundReason, selectedPurchase, openRefundDialog };
-  }
+    return {
+      purchases,
+      isLoading,
+      error,
+      isRefundDialogOpen,
+      refundReason,
+      selectedPurchase,
+      openRefundDialog,
+      submitRefundRequest,
+      canRequestRefund,
+      isReviewDialogOpen,
+      reviewRating,
+      reviewDescription,
+      openReviewDialog,
+      submitReview,
+    };
+  },
 };
 </script>
 
@@ -122,9 +174,15 @@ export default {
               Refund Status: {{ purchase.refundRequest.status }}
             </span>
           <!-- Refund not available -->
-          <span v-else>
-              Refund not available
-            </span>
+          <span v-else>Refund not available</span>
+          <!-- Review Button -->
+          <button
+              v-if="!purchase.review"
+              @click="openReviewDialog(purchase)"
+              class="review-button"
+          >
+            Create Review
+          </button>
         </td>
       </tr>
       </tbody>
@@ -132,7 +190,7 @@ export default {
     <p v-else>No purchases found.</p>
 
     <!-- Refund Dialog -->
-    <div v-if="isDialogOpen" class="dialog-overlay">
+    <div v-if="isRefundDialogOpen" class="dialog-overlay">
       <div class="dialog-box">
         <h3>Request Refund</h3>
         <p>Game: {{ selectedPurchase?.game.name }}</p>
@@ -143,7 +201,34 @@ export default {
         ></textarea>
         <div class="dialog-actions">
           <button @click="submitRefundRequest" class="dialog-button">Submit</button>
-          <button @click="isDialogOpen = false" class="dialog-button cancel">Cancel</button>
+          <button @click="isRefundDialogOpen = false" class="dialog-button cancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Review Dialog -->
+    <div v-if="isReviewDialogOpen" class="dialog-overlay">
+      <div class="dialog-box">
+        <h3>Create Review</h3>
+        <p>Game: {{ selectedPurchase?.game.name }}</p>
+        <label>
+          Rating:
+          <input
+              type="number"
+              v-model="reviewRating"
+              min="1"
+              max="5"
+              placeholder="Enter a rating from 1 to 5"
+          />
+        </label>
+        <textarea
+            v-model="reviewDescription"
+            placeholder="Write your review here"
+            rows="4"
+        ></textarea>
+        <div class="dialog-actions">
+          <button @click="submitReview" class="dialog-button">Submit</button>
+          <button @click="isReviewDialogOpen = false" class="dialog-button cancel">Cancel</button>
         </div>
       </div>
     </div>
@@ -235,5 +320,20 @@ export default {
 
 .dialog-button:hover {
   opacity: 0.9;
+}
+
+/* Styles from your original component */
+.review-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.review-button:hover {
+  background-color: #218838;
 }
 </style>

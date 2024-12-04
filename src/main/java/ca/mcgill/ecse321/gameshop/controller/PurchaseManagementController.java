@@ -34,6 +34,12 @@ public class PurchaseManagementController {
         return new ReviewDTO(purchaseManagementService.findReviewById(reviewId));
     }
 
+    @GetMapping("games/{gameId}/reviews")
+    public List<ReviewDTO> getReviewByGame(@PathVariable int gameId) {
+        return purchaseManagementService.getReviewByGame(gameId).stream().map(ReviewDTO::new)
+                .collect(Collectors.toList());
+    }
+
     @GetMapping("/reviews")
     public List<ReviewDTO> getAllReviews() {
         return purchaseManagementService.getAllReviews().stream().map(ReviewDTO::new)
