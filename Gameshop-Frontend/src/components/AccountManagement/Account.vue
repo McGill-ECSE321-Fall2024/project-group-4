@@ -12,7 +12,7 @@
                         <p class="text-secondary fst-italic" style="font-size:80%">
                             * Note that you cannot change your email address after signing up.
                         </p>
-                        <BFormInput id="input-0" type="text" v-del="email" readonly>{{ this.email }} </BFormInput>
+                        <BFormInput id="input-0" type="text" v-model="email" readonly>{{ this.email }} </BFormInput>
                     </BFormGroup>  
                 </div>  
 
