@@ -27,11 +27,11 @@ export default {
 
         const response = await fetch(url);
         const data = await response.json();
-
+        let filtered_data = data.filter(g => g.isActive);
         if (!response.ok) {
           throw new Error(`Error fetching games: ${response.statusText}`);
         }
-        games.value = data;
+        games.value = filtered_data;
 
       } catch (err) {
         error.value = err.message;
