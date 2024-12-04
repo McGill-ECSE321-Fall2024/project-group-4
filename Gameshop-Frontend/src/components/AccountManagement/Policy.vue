@@ -74,14 +74,14 @@
             </BButton>
           </div>
           <div v-else class="mt-3">
-            <BButton
+            <!-- <BButton
               size="sm"
               variant="primary"
               @click="editPolicy(data.item)"
               class="save-info-btn"
             >
               Edit
-            </BButton>
+            </BButton> -->
             <BButton
               size="sm"
               variant="danger"
@@ -225,15 +225,7 @@ export default {
     async updatePolicy() {
      
   try {
-      const response = await axiosClient.put(
-        `/accounts/policies/${this.selectedPolicy.id}`,
-        { description: this.selectedPolicy.description },
-        {
-          headers: {
-            "Role": this.userRole,
-          },
-        }
-      );
+      const response = await axiosClient.put(`/accounts/policies/${this.selectedPolicy.id}/${this.selectedPolicy.description}`);
       if (response.status === 200) {
         const index = this.policies.findIndex(policy => policy.id === this.selectedPolicy.id);
         if (index !== -1) {
@@ -249,11 +241,7 @@ export default {
     async deletePolicy(policyId) {
       
     try {
-      await axiosClient.delete(`/accounts/policies/${policyId}`, {
-        headers: {
-          "Role": this.userRole,
-        },
-      });
+      await axiosClient.delete(`/accounts/policies/${policyId}`);
       this.policies = this.policies.filter(policy => policy.id !== policyId);
     } catch (error) {
       console.error('Error deleting policy:', error);

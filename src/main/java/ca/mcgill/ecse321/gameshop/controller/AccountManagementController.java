@@ -287,11 +287,8 @@ public class AccountManagementController {
      * @author Camille Pouliot and Clara Mickail
           * @throws Exception 
           */
-         @PutMapping("/policies/{policyId}")
-         public PolicyDTO updatePolicy(@PathVariable int policyId, @RequestBody String description, @RequestHeader("Role") String role) throws Exception {
-        if (!role.equals("MANAGER")) {
-            throw new Exception("Only managers can update policies");
-        }
+         @PutMapping("/policies/{policyId}/{description}")
+         public PolicyDTO updatePolicy(@PathVariable int policyId, @PathVariable String description) {
         
         return new PolicyDTO(accountManagementService.updatePolicy(policyId,description));
     }
@@ -305,10 +302,7 @@ public class AccountManagementController {
           * @throws Exception 
           */
          @DeleteMapping("/policies/{policyId}")
-         public void deletePolicy(@PathVariable int policyId, @RequestHeader("Role") String role) throws Exception {
-        if (!role.equals("MANAGER")) {
-            throw new Exception("Only managers can delete policies");
-        }
+         public void deletePolicy(@PathVariable int policyId) {
         accountManagementService.deletePolicy(policyId);
     }
 
