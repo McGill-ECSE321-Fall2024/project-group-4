@@ -120,24 +120,20 @@ export default {
       fields: [
         { key: 'id', label: 'ID', sortable: true },
         { key: 'description', label: 'Description' },
-        ...(this.userRole === 'manager' ? [{ key: 'actions', label: 'Actions' }] : []), // Conditionally add actions
+        { key: 'actions', label: '' } // Conditionally add actions
         //{ key: 'actions', label: 'Actions' },
       ],
       policies: [
-        {
-          id: 1,
-          description: 'Policy 1',
-        },
-        {
-          id: 2,
-          description: 'Policy 2',
-        },
+        
       ],
       showAddForm: false,
       newPolicy: {
         description: '',
       },
-      selectedPolicy: null,
+      selectedPolicy: {
+        id: null,
+        description: '',
+      }
     };
   },
   computed: {
