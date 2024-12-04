@@ -169,13 +169,17 @@ export default {
         <p><strong>Categories:</strong> {{ categoryNames }}</p>
         <p><strong>Description:</strong> {{ gameDetails.description }}</p>
         <BButton
-            class="add-to-cart"
+            class="add-to-cart add"
             :disabled="gameDetails.stock <= 0 || !gameDetails.isActive"
             @click="handleAddToCart"
         >
           Add to Cart
         </BButton>
+        <BButton class="save-info-btn">
+          Add to Wishlist
+        </BButton>
       </div>
+      <br>
       <h2>Reviews</h2>
       <div v-if="isReviewsLoading">Loading reviews...</div>
       <div v-if="reviewsError" class="error">{{ reviewsError }}</div>
@@ -191,7 +195,31 @@ export default {
   </div>
 </template>
 
-<style scoped>
+<style scoped >
+.add {
+  background-color: #85abff;
+  border-color: #85abff;
+  color: white;
+}
+
+.add:hover {
+  background-color: #3428ba;
+  border-color: #3428ba;
+  color: white;
+}
+
+.save-info-btn{
+  background-color: #3c67bf;
+  border-color: #3c67bf;
+  color: white;
+}
+
+.save-info-btn:hover {
+  background-color: #795ac6;
+  border-color: #795ac6;
+  color: white;
+}
+
 .game-page {
   margin: 20px;
 }

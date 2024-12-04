@@ -74,8 +74,7 @@ export default {
           img-top
           tag="article"
           style="max-width: 20rem"
-          class="wish-game"
-      >
+          class="wish-game">
         <BCardText>
           <p v-if="discountedPrice" class="discounted-price">
             <del>Price: $ {{ game.price.toFixed(2) }}</del>
@@ -91,23 +90,51 @@ export default {
               game.stock > 0
                   ? `${game.stock} copies remaining`
                   : 'Out of stock'
-            }}
+            }}<br>
             <BButton
                 v-if="enableAddToCart"
-                class="add-to-cart"
+                class="add-to-cart add"
                 :disabled="game.stock <= 0"
                 @click="handleAddToCart"
             >
               Add to Cart
             </BButton>
+            <BButton class="save-info-btn">
+              Add to Wishlist
+            </BButton>
           </p>
         </BCardText>
+        
       </BCard>
     </div>
   </a>
 </template>
 
-<style scoped>
+<style scoped >
+.add {
+  background-color: #85abff;
+  border-color: #85abff;
+  color: white;
+}
+
+.add:hover {
+  background-color: #3428ba;
+  border-color: #3428ba;
+  color: white;
+}
+
+.save-info-btn{
+  background-color: #3c67bf;
+  border-color: #3c67bf;
+  color: white;
+}
+
+.save-info-btn:hover {
+  background-color: #795ac6;
+  border-color: #795ac6;
+  color: white;
+}
+
 .game-page {
   margin: 20px;
 }
