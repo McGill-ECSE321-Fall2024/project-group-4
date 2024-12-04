@@ -97,6 +97,7 @@
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import GamePreview from "./GamePreview.vue";
+import {useRouter} from "vue-router";
 
 const axiosClient = axios.create({
   baseURL: "http://localhost:8080",
@@ -126,6 +127,7 @@ const newAddress = ref({
   postalCode: "",
 });
 const showAddressForm = ref(false);
+const router = useRouter();
 
 const addCreditCard = async () => {
 }
@@ -133,7 +135,7 @@ const addCreditCard = async () => {
 const finishedCheckout = async () => {
   try{
     const response = await axiosClient.post(`customers/${localStorage.getItem('email')}/cart/${parseInt(selectedAddress.value.id)}/${parseInt(selectedCreditCard.value.id)}`);
-    if (!response.ok) {
+    if (response.status !== 202) {
       throw new Error(`Error checking out: ${response.statusText}`);
     }
     showCheckoutForm.value = false;
