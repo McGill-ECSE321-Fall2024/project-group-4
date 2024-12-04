@@ -184,9 +184,9 @@ public class PurchaseManagementController {
         purchaseManagementService.removeCreditCardFromWallet(customerEmail, creditCardId);
     }
 
-    @PostMapping("customers/{customerEmail}/cart")
+    @PostMapping("customers/{customerEmail}/cart/{billingAddressId}/{creditCardId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void checkout(@PathVariable String customerEmail, @RequestParam int billingAddressId, @RequestParam int creditCardId) {
+    public void checkout(@PathVariable String customerEmail, @PathVariable int billingAddressId, @PathVariable int creditCardId) {
         purchaseManagementService.checkout(customerEmail, billingAddressId, creditCardId);
     }
 
