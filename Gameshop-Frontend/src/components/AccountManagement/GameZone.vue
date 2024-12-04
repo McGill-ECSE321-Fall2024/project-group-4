@@ -9,7 +9,7 @@
         <GameCategories ref="GameCategories" />
       </BTab>
 
-      <BTab title="Game Requests" >
+      <BTab title="Game Requests"  v-if="userRole==='employee'">
         <GameRequestEmployee />
       </BTab>
 
