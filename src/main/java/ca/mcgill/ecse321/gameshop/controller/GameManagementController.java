@@ -190,6 +190,12 @@ public class GameManagementController {
         return new GameResponseDTO(gameManagementService.findGameById(gameId));
     }
 
+    @GetMapping("/games/categories/{category}")
+    public List<GameResponseDTO> getGameByCategory(@PathVariable String category) {
+        return gameManagementService.getGameByCategory(category).stream().map(GameResponseDTO::new)
+                .collect(Collectors.toList());
+    }
+
 
     /**
      * Return the games that contains the search prompt
