@@ -381,8 +381,9 @@ public class GameManagementService {
      */
     @Transactional
     public GameRequest approveGameRequest(int gameRequestId){
+        System.out.println("Service happened");
         GameRequest gameRequest = findGameRequestById(gameRequestId);
-
+        System.out.println(gameRequest.getStatus());
         if(gameRequest.getStatus() == RequestStatus.APPROVED){
             throw new IllegalArgumentException("Game Request is already approved");
         }

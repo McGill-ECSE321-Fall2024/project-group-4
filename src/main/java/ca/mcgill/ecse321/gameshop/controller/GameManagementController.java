@@ -245,16 +245,16 @@ public class GameManagementController {
      *
      * @author Camille Pouliot
      */
-    @PutMapping("/gameRequests/{gameRequestId}/requestStatus")
-    public String setGameRequestStatus(@PathVariable int gameRequestId, @RequestParam String status){
-        if(status.equalsIgnoreCase("approve")){
-            gameManagementService.approveGameRequest(gameRequestId);
-            return "Approved";
-        } else if(status.equalsIgnoreCase("reject")){
-            gameManagementService.rejectGameRequest(gameRequestId);
-            return "Rejected";
-        }
-        return "Unknown";
+    @PutMapping("/gameRequests/{gameRequestId}/approve")
+    public String approveGameRequest(@PathVariable int gameRequestId){
+        gameManagementService.approveGameRequest(gameRequestId);
+        return "Approved";
+    }
+
+    @PutMapping("/gameRequests/{gameRequestId}/deny")
+    public String denyGameRequest(@PathVariable int gameRequestId){
+        gameManagementService.rejectGameRequest(gameRequestId);
+        return "Rejected";
     }
 
     /**
