@@ -237,10 +237,24 @@ export default{
         getEmail(){
           return localStorage.getItem('email');
         },
+        async checkManagerExists(){
+            try {
+                const response = await axiosClient.get('/accounts/manager');
+                if (response.status !== 200) {
+                    await this.createManager();
+                }
+            } catch (error) {
+                if (error.response && error.response.status === 404) {
+                    await this.createManager();
+                } else {
+                    console.error('Error checking manager account:', error);
+                }
+            }
+        }
 
     },
     mounted(){
-        //this.createManager();
+        this.checkManagerExists();
     }
 }
 
