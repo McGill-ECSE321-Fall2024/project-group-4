@@ -65,6 +65,45 @@
 
 <script>
 
+import {ref, onMounted} from "vue";
+
+const wishlist = ref([]);
+const loading = ref(true);
+const error = ref(null);
+
+const fetchWishlist = async () => {
+  try{
+    const response = await fetch(`http://localhost:8080/customers/${localStorage.getItem('accountId')}/wishlist`);
+    if (!response.ok) {
+      throw new Error(`Error fetching wishlist: ${response.statusText}`);
+    }
+    wishlist.value = await response.json();
+
+  } catch (err) {
+    error.value = err.message;
+  } finally {
+    loading.value = false;
+  }
+}
+
+const removeGameFromWishlist = async (index) => {
+  const response = await fetch("http://localhost:8080/customers/"+localStorage.getItem("accountId")+"/wishlist/"+wishlist.value[index].id, {method: "Delete",});
+  if (!response.ok){
+    console.error(`HTTP error! Status ${response.status}`)
+  } else {
+    wishlist.value.splice(index, 1);
+  }
+}
+
+const addGameToCart = async (index) => {
+  const response = await fetch(`http://localhost:8080/customers/${localStorage.getItem('accountId')}/cart/${wishlist.value[index].id}`, {method: "PUT",});
+  if (!response.ok) {
+    console.error(`HTTP error! Status: ${response.status}`);
+  } else {
+    console.log(response);
+  }
+}
+
 export default{
     data(){
         return{
