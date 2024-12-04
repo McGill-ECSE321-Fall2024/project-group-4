@@ -195,7 +195,11 @@ const formatAddress = (address) => {
 };
 
 const formatCreditCard = (creditCard) => {
-      return `Card Number: ${creditCard.cardNumber}, Expiry Date: ${creditCard.expiryDate}, CVV: ${creditCard.cvv}, Billing Address: ${formatAddress(creditCard.billingAddress)}`;
+    const cardNumberStr = creditCard.cardNumber.toString();
+
+        const maskedCardNumber = '*'.repeat(creditCard.cardNumber.toString().length - 4) + creditCard.cardNumber.toString().slice(-4);
+        // return `Card Number: ${creditCard.cardNumber}, Expiry Date: ${creditCard.expiryDate}, CVV: ${creditCard.cvv}, Billing Address: ${this.formatAddress(creditCard.billingAddress)}`;
+      return `Card Number: ${maskedCardNumber}, Expiry Date: ${creditCard.expiryDate}, CVV: ***, Billing Address: ${formatAddress(creditCard.billingAddress)}`;
 };
 
 
