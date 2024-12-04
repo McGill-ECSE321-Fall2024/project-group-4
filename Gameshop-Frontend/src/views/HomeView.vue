@@ -3,5 +3,11 @@ import TheWelcome from '../components/TheWelcome.vue';
 </script>
 
 <template>
-  Home view for everyone
+  <div class="mainContainer">
+        <div class="display-6 my-3" align="center">
+          Welcome to our website! 
+        </div>
+
+        </div>
+
 </template>

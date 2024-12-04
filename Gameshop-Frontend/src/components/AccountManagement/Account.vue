@@ -44,7 +44,7 @@
                     <BFormGroup id="address-label" label="Addresses:" label-for="input-5">
                     <BListGroup v-if="addresses.length">
                         <BListGroupItem v-for="(address, index) in addresses" :key="index">
-                        {{ address }}
+                        {{ formatAddress(address) }}
                         <BButton class="delete-btn" @click="deleteAddress(index, address)" variant="danger" size="sm">Delete</BButton>
                         </BListGroupItem>
                     </BListGroup>
@@ -74,7 +74,7 @@
                     <BFormGroup id="credit-label" label="Credit Cards:" >
                     <BListGroup v-if="creditCards.length">
                         <BListGroupItem v-for="(creditCard, index) in creditCards" :key="index">
-                        {{ creditCard }}
+                        {{ formatCreditCard(creditCard) }}
                         <BButton class="delete-btn" @click="deleteCard(creditCard.id)" variant="danger" size="sm">Delete</BButton>
                         </BListGroupItem>
                     </BListGroup>
@@ -96,7 +96,7 @@
                         <BFormSelect v-model="newCreditCard.billingAddress">
                             <BFormSelectOption value="" disabled>Select an address</BFormSelectOption>
                             <BFormSelectOption v-for="(address, index) in addresses" :key="index" :value="address">
-                            {{ address }}
+                            {{ formatAddress(address) }}
                             </BFormSelectOption>
                             </BFormSelect>
                         </BFormGroup>
@@ -253,7 +253,12 @@ export default {
         }
     },
   methods: {
-    
+    formatCreditCard(creditCard) {
+      return `Card Number: ${creditCard.cardNumber}, Expiry Date: ${creditCard.expiryDate}, CVV: ${creditCard.cvv}, Billing Address: ${this.formatAddress(creditCard.billingAddress)}`;
+    },
+    formatAddress(address) {
+      return `${address.street}, ${address.city}, ${address.province}, ${address.country}, ${address.postalCode}`;
+    },
     handleInputChange(field) {
         this.changedField = field;
         this.showSaveInfoButton = true;

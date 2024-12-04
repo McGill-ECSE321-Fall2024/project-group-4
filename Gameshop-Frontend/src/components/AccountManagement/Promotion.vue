@@ -180,7 +180,7 @@ export default {
       const uri = `/games/${gameId}/promotions/${promotionId}`
       let response = "";
       try {
-      const response = await axiosClient.put(uri);
+        const response = await axiosClient.put(uri);
       if (response.status === 200) {
       }
       } catch (error) {
