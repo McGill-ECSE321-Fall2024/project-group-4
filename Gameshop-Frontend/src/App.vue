@@ -229,4 +229,5 @@ function search(e) {
     router.push(`/games?search=${searchQuery.value}`);
   }
 }
+
 </script>

@@ -110,6 +110,11 @@ public class PurchaseManagementService {
         throw new EntityNotFoundException("No Review found with id " + reviewId);
     }
 
+    public Set<Review> getReviewByGame(int gameId){
+        return reviewRepository.findByPurchase_GamePurchased_Id(gameId);
+    }
+
+
     public Set<Review> getAllReviews(){
         Set<Review> set = new HashSet<>();
         reviewRepository.findAll().forEach(set::add);

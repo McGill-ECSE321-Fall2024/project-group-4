@@ -12,7 +12,7 @@
                         <p class="text-secondary fst-italic" style="font-size:80%">
                             * Note that you cannot change your email address after signing up.
                         </p>
-                        <BFormInput id="input-0" type="text" v-del="email" readonly>{{ this.email }} </BFormInput>
+                        <BFormInput id="input-0" type="text" v-model="email" readonly>{{ this.email }} </BFormInput>
                     </BFormGroup>  
                 </div>  
 
@@ -383,7 +383,7 @@ export default {
     },
     async deleteCard(cardId){
         try {
-            await axiosClient.delete(`/customers/${this.customerEmail}}/credit-cards/${cardId}`).then(this.$router.go());
+            await axiosClient.delete(`/customers/${this.email}/credit-cards/${cardId}`).then(this.$router.go());
             await fetchCreditCards();
         } catch (error) {
             alert(error.response?.data?.errorMessages || error.message || "Something went wrong"); 
