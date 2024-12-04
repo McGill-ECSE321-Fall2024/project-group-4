@@ -624,6 +624,19 @@ public class AccountManagementService {
 
     }
 
+
+    @Transactional
+    public void removeAddressFromCustomer(String customerEmail, int addressId) {
+        Customer customer = customerRepository.findByEmail(customerEmail).orElseThrow(() -> new EntityNotFoundException("Customer not found"));
+        if (!customer.getCopyAddresses().stream().map(address -> address.getId()).collect(Collectors.toSet()).contains(addressId)) {
+            throw new EntityNotFoundException("Address does not exist under customer");
+        }
+        Address address = addressRepository.findById(addressId).orElseThrow(() -> new EntityNotFoundException("Address not found"));
+        customer.removeAddress(address);
+        customerRepository.save(customer);
+
+    }
+
     
 
     @Transactional
