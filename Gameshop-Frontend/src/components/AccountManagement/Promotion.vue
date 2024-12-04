@@ -76,7 +76,7 @@
             required
           ></b-form-input>
         </b-form-group>
-        <b-button variant="primary" type="submit">Save Changes</b-button>
+        <b-button variant="primary" type="submit" @click="saveEditPromotion">Save Changes</b-button>
       </form>
     </b-modal>
   </div>
@@ -202,8 +202,16 @@ export default {
       const promotionIds = promotionsOnGame.map(promotion => promotion.id);
       this.$forceUpdate();
       return promotionIds.includes(parseInt(promotionId));
+    },
+    async saveEditPromotion() {
+      const request = {
+        discount : this.promotionToEdit.discount,
+        startDate : this.promotionToEdit.start_date,
+        endDate : this.promotionToEdit.end_date
+      };
+      let response = axiosClient.post(`/promotions/${this.promotionToEdit.promotionId}`, request);
+      this.$router.go();
     }
-
   }
 
 };
