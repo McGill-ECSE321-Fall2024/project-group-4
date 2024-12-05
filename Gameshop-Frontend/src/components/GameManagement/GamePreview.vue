@@ -91,7 +91,7 @@ export default {
                   ? `${game.stock} copies remaining`
                   : 'Out of stock'
             }}<br>
-            <div>
+            
               <BButton
                 v-if="enableAddToCart"
                 class="add-to-cart add"
@@ -103,7 +103,7 @@ export default {
              <BButton class="save-info-btn" @click="handleAddToWishlist(game.id)">
               Add to Wishlist
             </BButton> 
-            </div>
+            
           </p>
         </BCardText>
         
