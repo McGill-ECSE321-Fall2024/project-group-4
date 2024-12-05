@@ -296,15 +296,15 @@ public class AccountManagementService {
     public Customer customerLogin(String email, String password) {
 
         if (!validateStringParameter(email)) {
-            throw new IllegalArgumentException("Email " + email + " cannot be empty, null or contain spaces.");
+            throw new IllegalArgumentException("Email cannot be empty, null or contain spaces.");
         }
         if (!validateStringParameter(password)) {
-            throw new IllegalArgumentException("Password " +password+ " cannot be empty, null or contain spaces.");
+            throw new IllegalArgumentException("Password cannot be empty, null or contain spaces.");
         }
 
         Customer customer = customerRepository.findByEmail(email).orElseThrow(()-> new EntityNotFoundException("Customer does not exist"));
         if (!passwordEncoder.matches(password, customer.getPassword())) {
-            throw new IllegalArgumentException("Wrong password!" + password);
+            throw new IllegalArgumentException("Wrong password!");
         }
 
         return customer;
