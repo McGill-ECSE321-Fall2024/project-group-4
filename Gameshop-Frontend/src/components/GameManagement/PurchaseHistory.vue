@@ -143,9 +143,10 @@ export default {
 
 <template>
   <div class="purchase-history">
-    <h2>Purchase History</h2>
+    <div class="display-6 my-3" align="center">Purchase History</div>
     <div v-if="isLoading">Loading...</div>
     <div v-if="error" class="error">{{ error }}</div>
+  
     <table v-if="purchases.length > 0" class="purchase-table">
       <thead>
       <tr>
@@ -309,7 +310,9 @@ export default {
 
 .dialog-button {
   padding: 5px 10px;
-  border: none;
+  border: #3c67bf;
+  background-color: #3c67bf;
+  color: white;
   border-radius: 3px;
   cursor: pointer;
 }
@@ -318,15 +321,19 @@ export default {
   background-color: #ccc;
 }
 
+.dialog-button.cancel:hover {
+  background-color: red;
+}
+
 .dialog-button:hover {
   opacity: 0.9;
 }
 
 /* Styles from your original component */
 .review-button {
-  background-color: #28a745;
+  background-color: #3428ba;
   color: white;
-  border: none;
+  border: #3428ba;
   padding: 5px 10px;
   border-radius: 3px;
   cursor: pointer;
@@ -334,6 +341,6 @@ export default {
 }
 
 .review-button:hover {
-  background-color: #218838;
+  background-color: #85abff;
 }
 </style>

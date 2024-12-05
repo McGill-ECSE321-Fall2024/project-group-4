@@ -12,6 +12,7 @@ import RefundRequest from "@/components/GameManagement/RefundRequest.vue";
 import GameZone from '@/components/AccountManagement/GameZone.vue'
 import GamePage from "@/components/GameManagement/GamePage.vue";
 import Policy from "@/components/AccountManagement/Policy.vue";
+import Purchases from "@/components/GameManagement/Purchases.vue";
  
  
 const router = createRouter({
@@ -80,7 +81,12 @@ const router = createRouter({
       path: '/game',
       name: 'game-page',
       component: GamePage,
-    }
+    },
+    {
+      path: '/purchases',
+      name: 'purchases',
+      component: Purchases,
+    },
 
     
   ],
