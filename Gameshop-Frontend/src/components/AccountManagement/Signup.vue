@@ -118,6 +118,7 @@ export default{
                     this.setAccountId(response.data.id);
                     this.clearInputs();
                     localStorage.setItem('userRole', 'customer');
+                    localStorage.setItem("email",`${response.data.email}`);
                     this.$router.push('/');
                     // this.$router.go();
                 }

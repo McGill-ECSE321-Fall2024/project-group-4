@@ -114,6 +114,7 @@ export default{
                     this.setAccountId(response.data.id);
                     this.setEmail(response.data.email);
                     localStorage.setItem('userRole', 'customer');
+                    localStorage.setItem("email",`${response.data.email}`);
                     this.userRole = 'customer';
                     this.clearInputs();
                     this.$router.push('/');
@@ -141,6 +142,7 @@ export default{
                     this.setEmail(response.data.email);
 
                     localStorage.setItem('userRole', 'employee');
+                    localStorage.setItem('id', `${response.data.id}`);
                     this.userRole = 'employee';
                     this.clearInputs();
                     this.$router.push('/');
