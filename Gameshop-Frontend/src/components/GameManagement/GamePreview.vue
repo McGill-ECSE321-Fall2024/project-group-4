@@ -52,11 +52,10 @@ export default {
         alert(error);
       }
     },
-    async handleAddToWishlist(e) {
-      e.preventDefault();
+    async handleAddToWishlist(gameId) {
+      console.log(`/customers/${localStorage.getItem('email')}/wishlist/${gameId}`);
       try {
-        const response = await axiosClient.put(`/customers/${localStorage.getItem('accountId')}/wishlist/${gameDetails.value.id}`);
-        await router.push('/wishlist');
+        const response = await axiosClient.put(`/accounts/customers/${localStorage.getItem('accountId')}/wishlist/${gameId}`);
       }
       catch (error) {
         alert(error);
@@ -92,7 +91,8 @@ export default {
                   ? `${game.stock} copies remaining`
                   : 'Out of stock'
             }}<br>
-            <BButton
+            <div>
+              <BButton
                 v-if="enableAddToCart"
                 class="add-to-cart add"
                 :disabled="game.stock <= 0"
@@ -100,9 +100,10 @@ export default {
             >
               Add to Cart
             </BButton>
-            <!-- <BButton class="save-info-btn" @click="handleAddToWishlist">
+             <BButton class="save-info-btn" @click="handleAddToWishlist(game.id)">
               Add to Wishlist
-            </BButton> -->
+            </BButton> 
+            </div>
           </p>
         </BCardText>
         

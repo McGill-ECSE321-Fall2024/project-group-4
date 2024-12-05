@@ -31,7 +31,7 @@
 
 <script setup>
 
-import {ref, onMounted} from "vue";
+import {onMounted, ref} from "vue";
 import GamePreview from "@/components/GameManagement/GamePreview.vue";
 
 const wishlist = ref([]);
@@ -69,6 +69,7 @@ const addGameToCart = async (index) => {
   } else {
     console.log(response);
   }
+  alert("Added wishlisted game to cart !")
 }
 
 onMounted(fetchWishlist)
