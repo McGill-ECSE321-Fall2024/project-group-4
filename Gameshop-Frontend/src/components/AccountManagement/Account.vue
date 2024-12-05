@@ -137,13 +137,13 @@
             <BForm > 
                 <div class="mb-3">
                     <BFormGroup  id="username-label" label="Username:" label-for="input-1">
-                        <BFormInput id="input-1" type="text" v-model="username" readonly>manager </BFormInput>
+                        <BFormInput id="input-1" type="text" v-model="username" readonly>{{ this.username}} </BFormInput>
                     </BFormGroup>  
                 </div>  
 
                 <div class="mb-3">
                     <BFormGroup  id="password-label" label="Password:" label-for="input-3">
-                        <BFormInput id="input-3" type="text" v-model="password" readonly>manager </BFormInput>
+                        <BFormInput id="input-3" type="text" v-model="password" readonly>{{ this.password }} </BFormInput>
                     </BFormGroup>  
                 </div> 
 
@@ -232,10 +232,10 @@ export default {
                     this.password = accountData.password;
                     this.oldPassword = accountData.password;
                 } else if (this.userRole == 'manager'){
-                    const response = await axiosClient.get(`/accounts/managers/ids/${accountId}`);
-                    const accountData = response.data;
-                    this.username = accountData.username;
-                    this.password = accountData.password;
+                    // const response = await axiosClient.get(`/accounts/managers/ids/${accountId}`);
+                    // const accountData = response.data;
+                    this.username = "manager";
+                    this.password = "manager";
                 }
                 // const response = await axiosClient.get(`/accounts/customers/ids/${accountId}`);
                 // const accountData = response.data;
