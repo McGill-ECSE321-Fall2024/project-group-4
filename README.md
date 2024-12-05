@@ -45,9 +45,9 @@ The main goal of this deliverable was to start the project's software design pro
 ## Team Members
 | Name | GitHub Username | Deliverable 1 | Deliverable 2 | Deliverable 3 | Total Hours |
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
-| Ana Gordon  | [anagordon](https://github.com/anagordon) | 11 | | | 30|
-| Aerin Brown | [aerin-brown-codes](https://github.com/aerin-brown-codes) | 11 | | | 16|
-| Tarek Namani | [Tatok-n](https://github.com/Tatok-n) | 11 | | | 25|
-| Jake Kogut | [jacobkogut](https://github.com/jacobkogut) | 11 | | | 16|
-| Camille Pouliot | [Camomille103](https://github.com/Camomille103) | 11 | | | 20 |
-| Clara Mickail |  [claraMickail](https://github.com/claraMickail) | 11 | | | 18|
+| Ana Gordon  | [anagordon](https://github.com/anagordon) | 11 | | 30|
+| Aerin Brown | [aerin-brown-codes](https://github.com/aerin-brown-codes) | 11 | | 16|
+| Tarek Namani | [Tatok-n](https://github.com/Tatok-n) | 11 | | 25|
+| Jake Kogut | [jacobkogut](https://github.com/jacobkogut) | 11 | | 16|
+| Camille Pouliot | [Camomille103](https://github.com/Camomille103) | 11 |  | 20 |
+| Clara Mickail |  [claraMickail](https://github.com/claraMickail) | 11 | | 18|
