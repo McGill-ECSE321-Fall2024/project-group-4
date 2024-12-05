@@ -10,11 +10,12 @@ public record AddressResponseDTO(
         String city,
         String province,
         String country,
-        String postalCode
+        String postalCode,
+        boolean isActive
 ) implements Serializable {
 
     public AddressResponseDTO(Address address) {
-        this(address.getId(), address.getStreet(), address.getCity(), address.getProvince(), address.getCountry(), address.getPostalCode());
+        this(address.getId(), address.getStreet(), address.getCity(), address.getProvince(), address.getCountry(), address.getPostalCode(), address.getActive());
     }
 
 

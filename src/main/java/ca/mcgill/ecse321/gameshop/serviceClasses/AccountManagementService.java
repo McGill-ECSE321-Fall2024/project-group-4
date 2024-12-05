@@ -643,16 +643,13 @@ public class AccountManagementService {
         }
         Address address = addressRepository.findById(addressId).orElseThrow(() -> new EntityNotFoundException("Address not found"));
         customer.removeAddress(address);
+        address.deactivateAddress();
         Set<CreditCard> associatedCreditCards = new HashSet<>();
         creditCardRepository.findAll().forEach(associatedCreditCards::add);
-        associatedCreditCards = associatedCreditCards.stream().filter(creditCard -> creditCard.getBillingAddress().getId() == addressId && creditCard.getCustomer().getEmail().equals(customerEmail)).collect(Collectors.toSet());
-        if (!associatedCreditCards.isEmpty()) {
-            System.out.println(associatedCreditCards);
-            associatedCreditCards.forEach(creditCard -> {purchaseManagementService.removeCreditCardFromWallet(customerEmail, creditCard.getId());});
-        }
 
+        addressRepository.save(address);
         customerRepository.save(customer);
-        addressRepository.delete(address);
+
 
     }
 

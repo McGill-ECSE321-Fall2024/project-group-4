@@ -462,13 +462,10 @@ public class PurchaseManagementService {
             throw new IllegalArgumentException("Customer is not associated with given credit card");
         }
         boolean success = customer.removeCreditCartFromWallet(creditCardToRemove);
-
-        if(!success){
-            throw new IllegalStateException("Failed to delete credit card from customer");
-        }
-
+        creditCardToRemove.deactivateCreditCard();
+        creditCardRepository.save(creditCardToRemove);
         customerRepository.save(customer);
-        //creditCardRepository.delete(creditCardToRemove);
+
     }
 
     /**

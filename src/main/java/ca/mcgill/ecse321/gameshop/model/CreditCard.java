@@ -17,6 +17,7 @@ public class CreditCard {
     private Customer customer;
     @ManyToOne(optional = false)
     private Address billingAddress;
+    private boolean is_Active = true;
 
     public CreditCard(int cardNumber, int cvv, LocalDate expiryDate, Customer customer, Address billingAddress) {
         this.cardNumber = cardNumber;
@@ -28,6 +29,14 @@ public class CreditCard {
 
     protected CreditCard() {
 
+    }
+
+    public boolean getActive() {
+        return is_Active;
+    }
+
+    public void deactivateCreditCard() {
+        is_Active = false;
     }
 
     public int getId() {

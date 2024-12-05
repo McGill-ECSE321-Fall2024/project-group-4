@@ -19,6 +19,7 @@ public class Address {
     private String postalCode;
     @ManyToOne(optional = false)
     private Customer customer;
+    private boolean is_active = true;
 
     public Address(String street, String city, String province, String country, String postalCode, Customer customer) {
         this.street = street;
@@ -33,6 +34,14 @@ public class Address {
 
     protected Address() {
 
+    }
+
+    public boolean getActive() {
+        return is_active;
+    }
+
+    public void deactivateAddress() {
+        this.is_active = false;
     }
 
     public Customer getCustomer() {

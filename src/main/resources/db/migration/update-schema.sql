@@ -15,6 +15,7 @@ CREATE TABLE address
     country     VARCHAR(255)                             NOT NULL,
     postal_code VARCHAR(255)                             NOT NULL,
     customer_id INTEGER                                  NOT NULL,
+    is_active boolean,
     CONSTRAINT pk_address PRIMARY KEY (id)
 );
 
@@ -47,6 +48,7 @@ CREATE TABLE credit_card
     expiry_date        date                                     NOT NULL,
     customer_id        INTEGER                                  NOT NULL,
     billing_address_id INTEGER                                  NOT NULL,
+    is_Active boolean,
     CONSTRAINT pk_creditcard PRIMARY KEY (id)
 );
 

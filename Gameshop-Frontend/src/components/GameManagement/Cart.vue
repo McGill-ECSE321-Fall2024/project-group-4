@@ -94,7 +94,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import {onMounted, ref} from "vue";
 import axios from "axios";
 import GamePreview from "./GamePreview.vue";
 import {useRouter} from "vue-router";
@@ -179,8 +179,8 @@ const fetchAddresses = async () => {
         // this.username = accountData.username;
         // this.email = accountData.email;
         // this.phoneNumber = accountData.phoneNumber;
-        addresses.value = accountData.addresses;
-        creditCards.value = accountData.creditCards;
+        addresses.value = accountData.addresses.filter(address => address.isActive);
+        creditCards.value = accountData.creditCards.filter(creditCard => creditCard.isActive);
       
     }
     
@@ -242,7 +242,7 @@ const getTotalPrice = async () => {
       if (response.ok) {
         // Extract the response body as text
         const text = await response.text();
-
+        console.log(text);
         // Parse the text as a float
         totalPrice.value = parseFloat(text);
       } else{
@@ -263,8 +263,12 @@ const formatAddress = (address) => {
 
 const formatCreditCard = (creditCard) => {
     const cardNumberStr = creditCard.cardNumber.toString();
-
-        const maskedCardNumber = '*'.repeat(creditCard.cardNumber.toString().length - 4) + creditCard.cardNumber.toString().slice(-4);
+    let maskedCardNumber = '';
+    if (cardNumberStr.length >4 ) {
+            maskedCardNumber = '*'.repeat(cardNumberStr.length - 4) + cardNumberStr.slice(-4);}
+        else {
+            maskedCardNumber = cardNumberStr;
+        }
         // return `Card Number: ${creditCard.cardNumber}, Expiry Date: ${creditCard.expiryDate}, CVV: ${creditCard.cvv}, Billing Address: ${this.formatAddress(creditCard.billingAddress)}`;
       return `Card Number: ${maskedCardNumber}, Expiry Date: ${creditCard.expiryDate}, CVV: ***, Billing Address: ${formatAddress(creditCard.billingAddress)}`;
 };

@@ -8,13 +8,15 @@ import java.time.LocalDate;
 public record CreditCardResponseDTO(int id,
                                     int cardNumber,
                                     int cvv,
+                                    boolean isActive,
                                     LocalDate expiryDate,
                                     AddressResponseDTO billingAddress)
+
         implements Serializable {
 
 
     public CreditCardResponseDTO(CreditCard creditCard) {
-        this(creditCard.getId(), creditCard.getCardNumber(), creditCard.getCvv(),  creditCard.getExpiryDate(), new AddressResponseDTO(creditCard.getBillingAddress()));
+        this(creditCard.getId(), creditCard.getCardNumber(), creditCard.getCvv(), creditCard.getActive(), creditCard.getExpiryDate(), new AddressResponseDTO(creditCard.getBillingAddress()));
 
     }
 

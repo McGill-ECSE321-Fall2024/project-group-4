@@ -42,7 +42,7 @@
 
                 <div class="mb-3">
                     <BFormGroup id="address-label" label="Addresses:" label-for="input-5">
-                    <BListGroup v-if="addresses.length">
+                    <BListGroup v-if="addresses">
                         <BListGroupItem v-for="(address, index) in addresses" :key="index">
                         {{ formatAddress(address) }}
                         <BButton class="delete-btn" @click="deleteAddress(index, address)" variant="danger" size="sm">Delete</BButton>
@@ -222,8 +222,8 @@ export default {
                     this.username = accountData.username;
                     this.email = accountData.email;
                     this.phoneNumber = accountData.phoneNumber;
-                    this.addresses = accountData.addresses;
-                    this.creditCards = accountData.creditCards;
+                    this.addresses = accountData.addresses.filter(address => address.isActive);;
+                    this.creditCards = accountData.creditCards.filter(creditCard => creditCard.isActive);
                 } else if (this.userRole === 'employee'){
                     const response = await axiosClient.get(`/accounts/employees/id/${accountId}`);
                     const accountData = response.data;
@@ -320,8 +320,7 @@ export default {
       try {
         const addressId = address.id;
         console.log(addressId);
-        response = await axiosClient.delete(`/accounts/${this.email}/addresses/${addressId}`);
-        const toDelete = this.addresses.splice(index, 1);
+        response = await axiosClient.delete(`/accounts/${this.email}/addresses/${addressId}`).then(this.$router.go());
         
       }catch (error) {
             alert(error.response?.data?.errorMessages || error.message || "Something went wrong"); 
@@ -368,7 +367,7 @@ export default {
             response = axiosClient.get(`/customers/${localStorage.getItem('email')}/credit-cards`);
             if (response.status === 200) {
                 log(response.data);
-                this.creditCards = response.data;
+                this.creditCards = response.data.filter(creditCard => creditCard.isActive)
                 return response.data;
             }
         } catch (error) {

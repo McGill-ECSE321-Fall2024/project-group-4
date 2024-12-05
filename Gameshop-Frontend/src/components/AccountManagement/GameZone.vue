@@ -9,7 +9,7 @@
         <GameCategories ref="GameCategories" />
       </BTab>
 
-      <BTab title="Game Requests"  v-if="userRole==='employee'">
+      <BTab title="Game Requests"  v-if="this.userRole==='employee'">
         <GameRequestEmployee />
       </BTab>
 
@@ -23,14 +23,17 @@
 
 
 <script>
-import {ref, onMounted, watch, computed} from "vue";
-import {useRoute} from "vue-router";
-import axios from 'axios';
 import UpdateGame from "./PendingUpdates.vue";
 import GameRequestEmployee from "./GameRequestEmployee.vue";
 import GameCategories from "./GameCategories.vue";
 
 export default {
+  data() {
+    return {
+      userRole : ''
+    }
+    
+  },
   name: "GameZone",
   components: {
     GameCategories,
@@ -42,6 +45,8 @@ export default {
       // console.log("A");
       await this.$refs.GameCategories.fetchCategories();
     }
+},async mounted() {
+    this.userRole = localStorage.getItem('userRole');
 }
 
 }
