@@ -42,7 +42,7 @@
 
                 <div class="mb-3">
                     <BFormGroup id="address-label" label="Addresses:" label-for="input-5">
-                    <BListGroup v-if="addresses">
+                    <BListGroup v-if="addresses.length">
                         <BListGroupItem v-for="(address, index) in addresses" :key="index">
                         {{ formatAddress(address) }}
                         <BButton class="delete-btn" @click="deleteAddress(index, address)" variant="danger" size="sm">Delete</BButton>
